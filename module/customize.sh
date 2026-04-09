@@ -7,13 +7,10 @@ checkSuLogEnabled() {
 echo "Welcome"
 #仅限ksu使用
 if [ ! "$KSU" ]; then
-  echo "This module only support KernelSU!"
-  exit 1
+  abort "This module only support KernelSU!"
 fi
 if [ "$KSU_KERNEL_VER_CODE" -lt 32457 ]; then
-  echo "Please update KernelSU!(Minimum version required 32457)"
-  echo "Please update both the manager and the kernel!"
-  exit 1
+  abort "Please update KernelSU!(Minimum version required 32457)"
 fi
 #检查suLog功能状态 没开启则强提醒
 if ! checkSuLogEnabled; then

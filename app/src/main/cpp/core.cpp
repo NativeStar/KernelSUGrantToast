@@ -53,7 +53,7 @@ void processSuEvent(JNIEnv *threadJniEnv, uint32_t ppid) {
     AndroidAppInfo appInfo = queryAndroidApplicationInfo(static_cast<pid_t>(ppid));
     if (appInfo.isAndroidApp && !appInfo.cmdline.empty()) {
         if (toastedApplication.count(appInfo.realPid) != 0) {
-            //来自相同pid申请 提醒至少间隔3秒
+            //来自相同pid申请 提醒至少间隔5秒
             if (currentTime - toastedApplication[appInfo.realPid] <= 5) return;
         }
         pushToastedApplicationMap(appInfo.realPid, currentTime);

@@ -53,12 +53,12 @@ public class Entry {
                 onInitFailed("Native init failed!");
                 return;
             }
-            Log.i("KsuToast", "Init success!");
-            modifyModuleDescription("✅Working");
+            modifyModuleDescription("✅Working PID:"+Process.myPid());
             //降权 不然就是java.lang.SecurityException: Package android is not owned by uid 0
             //等写入描述完成才执行 系统框架没模块目录权限
             jniSetUid(1000);
             System.gc();
+            Log.i("KsuToast", "Init success!");
             Looper.loop();
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
                  IllegalAccessException | PackageManager.NameNotFoundException |
