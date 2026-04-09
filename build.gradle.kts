@@ -17,6 +17,17 @@ val copyModule by tasks.registering(Copy::class) {
     dependsOn(cleanPackWorkspace)
     from(rootProject.file("module"))
     into(stagedModuleDir)
+    doLast {
+        fileTree(stagedModuleDir) {
+            include("**/*.sh")
+        }.files.forEach { scriptFile ->
+            val source = scriptFile.readText(Charsets.UTF_8)
+            val normalized = source.replace("\r\n", "\n").replace('\r', '\n')
+            if (source != normalized) {
+                scriptFile.writeText(normalized, Charsets.UTF_8)
+            }
+        }
+    }
 }
 val copyRenamedApk by tasks.registering(Copy::class) {
     dependsOn(":app:assembleRelease", copyModule)

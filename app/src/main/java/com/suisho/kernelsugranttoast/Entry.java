@@ -51,12 +51,14 @@ public class Entry {
             System.load(libraryFile.getAbsolutePath());
             if(!jniInit()) {
                 onInitFailed("Native init failed!");
+                System.exit(1);
                 return;
             }
             modifyModuleDescription("✅Working PID:"+Process.myPid());
             //降权 不然就是java.lang.SecurityException: Package android is not owned by uid 0
             //等写入描述完成才执行 系统框架没模块目录权限
             jniSetUid(1000);
+            //刚启动时不知道为啥占用会达到130MB 调用以加速回落
             System.gc();
             Log.i("KsuToast", "Init success!");
             Looper.loop();
