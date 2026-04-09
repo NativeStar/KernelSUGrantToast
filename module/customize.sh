@@ -37,7 +37,7 @@ echo "The original SU log will no longer be recorded"
 echo "And SuLog cannot be viewed in the manager"
 echo "This is normal. No need to be alarmed."
 sleep 5
-echo "Extracting files..."
+echo "Extracting library..."
 unzip -oj "$MODPATH/daemon.apk" 'lib/arm64-v8a/libshimizu.so' -d "$MODPATH"
 mv -f "$MODPATH/libshimizu.so" "$MODPATH/Shimizu"
 set_perm "$MODPATH/Shimizu" 0 0 0755

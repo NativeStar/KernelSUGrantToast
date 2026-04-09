@@ -9,7 +9,6 @@ val exportRootDir = file("./tempOutput")
 val stagedModuleDir = exportRootDir.resolve("KernelSUGrantToast")
 val apkOutput = project(":app").layout.buildDirectory.file("outputs/apk/release/app-release-unsigned.apk")
 val apkNameAfterRename = "daemon.apk"
-//val apkRelativeDirInModule = "" // APK 放到 module 内的相对路径
 val zipName = "KernelSUGrantToast.zip"
 val cleanPackWorkspace by tasks.registering(Delete::class) {
     delete(stagedModuleDir, exportRootDir.resolve(zipName))

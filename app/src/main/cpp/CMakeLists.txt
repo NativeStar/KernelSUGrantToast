@@ -28,7 +28,19 @@ project("shimizu")
 add_library(${CMAKE_PROJECT_NAME} SHARED
     # List C/C++ source files with relative paths to this CMakeLists.txt.
     core.cpp util.cpp)
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
+      -Oz
+      -g0
+      -fvisibility=hidden
+      -fvisibility-inlines-hidden
+  )
 
+  target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
+      -Wl,--gc-sections
+      -Wl,--exclude-libs,ALL
+      -Wl,--icf=safe
+      -Wl,-O2
+  )
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
 # build script, prebuilt third-party libraries, or Android system libraries.
@@ -36,3 +48,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     # List libraries link to the target library
     android
     log)
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
+      -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libshimizu.map.txt
+  )

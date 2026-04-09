@@ -45,6 +45,9 @@ android {
     }
     ndkVersion = "28.0.13004108"
     packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
         resources {
             excludes += "kotlin/**"
         }

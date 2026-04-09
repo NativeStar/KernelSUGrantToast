@@ -1,0 +1,7 @@
+{
+    global:
+      JNI_OnLoad;
+      Java_com_suisho_kernelsugranttoast_Entry_jniInit;
+      Java_com_suisho_kernelsugranttoast_Entry_jniSetUid;
+    local: *;
+  };

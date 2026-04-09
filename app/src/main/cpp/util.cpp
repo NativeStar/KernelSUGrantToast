@@ -4,8 +4,8 @@
 #include "cstdio"
 #include "string"
 #include "vector"
+#include "fcntl.h"
 #include "sys/syscall.h"
-#include "fstream"
 
 using namespace std;
 
@@ -17,13 +17,34 @@ using namespace std;
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "KsuToast", __VA_ARGS__)
 static vector<int> zygotePids;
 
+bool readProcFile(const std::string &path, std::string &out) {
+    int fd = open(path.c_str(), O_RDONLY | O_CLOEXEC);
+    if (fd < 0) return false;
+    out.clear();
+    char buf[512];
+    constexpr size_t kMaxBytes = 4096;
+    while (out.size() < kMaxBytes) {
+        size_t remain = kMaxBytes - out.size();
+        size_t want = remain < sizeof(buf) ? remain : sizeof(buf);
+        ssize_t n = read(fd, buf, want);
+        if (n > 0) {
+            out.append(buf, static_cast<size_t>(n));
+            continue;
+        }
+        if (n == 0) break; // EOF
+        if (errno == EINTR) continue;
+        close(fd);
+        out.clear();
+        return false;
+    }
+    close(fd);
+    return !out.empty();
+}
+
 string getProcessCmdline(pid_t pid) {
     string statFilePath = "/proc/" + to_string(pid) + "/cmdline";
-    ifstream cmdlineFile(statFilePath);
-    if (cmdlineFile.is_open()) {
-        string cmdline;
-        getline(cmdlineFile, cmdline);
-        cmdlineFile.close();
+    string cmdline;
+    if (readProcFile(statFilePath, cmdline)) {
         return cmdline;
     }
     return "";
@@ -100,11 +121,8 @@ int getSuLogFd(int driverFd) {
 
 pid_t getPpid(pid_t pid) {
     string statFilePath = "/proc/" + to_string(pid) + "/stat";
-    ifstream statFile(statFilePath);
-    if (statFile.is_open()) {
-        string line;
-        getline(statFile, line);
-        statFile.close();
+    string line;
+    if (readProcFile(statFilePath, line)) {
         size_t afterComm = line.find(") ");
         if (afterComm == string::npos) return -1;
         size_t statePos = afterComm + 2;
