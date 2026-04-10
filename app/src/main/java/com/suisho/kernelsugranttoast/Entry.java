@@ -20,16 +20,29 @@ import java.util.List;
 import java.util.Locale;
 
 public class Entry {
+    private static final String TAG = "KsuToast";
     private static Context systemContext;
     private static Handler handler;
     private static PackageManager packageManager;
     //缓存应用名 避免每次都走PackageManager
     private static final LruCache<String, String> appNameCache = new LruCache<>(16);
+    private static String customToastText = "%s 已被授予超级用户权限";
 
     public static void main(String[] args) {
         if(Process.myUid() != 0) {
             Log.e("KsuToast", "Need root access!!!");
             return;
+        }
+        if(args.length > 0 && args[0] != null) {
+            String tempCustomText = args[0];
+            Log.i(TAG, "Found custom toast text");
+            if(tempCustomText.length() < 64 && tempCustomText.contains("%s")) {
+                customToastText=tempCustomText;
+            }else{
+                Log.w(TAG, "Invalid custom toast text!");
+            }
+        }else{
+            Log.i(TAG, "Use default toast text");
         }
         HiddenApiBypass.addHiddenApiExemptions("Landroid/app/ActivityThread;");
         try {
@@ -54,18 +67,18 @@ public class Entry {
                 System.exit(1);
                 return;
             }
-            modifyModuleDescription("✅Working PID:"+Process.myPid());
+            modifyModuleDescription("✅Working PID:" + Process.myPid());
             //降权 不然就是java.lang.SecurityException: Package android is not owned by uid 0
             //等写入描述完成才执行 系统框架没模块目录权限
             jniSetUid(1000);
             //刚启动时不知道为啥占用会达到130MB 调用以加速回落
             System.gc();
-            Log.i("KsuToast", "Init success!");
+            Log.i(TAG, "Init success!");
             Looper.loop();
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
                  IllegalAccessException | PackageManager.NameNotFoundException |
                  RuntimeException e) {
-            Log.e("KsuToast", "Failed to init!", e);
+            Log.e(TAG, "Failed to init!", e);
             onInitFailed("Init failed!");
             systemContext = null;
             System.exit(1);
@@ -74,8 +87,7 @@ public class Entry {
 
     private static void showToast(String pkgName) {
         if(handler == null) handler = new Handler(Looper.getMainLooper());
-        //TODO 自定义提示消息 等开发webUi界面
-        handler.post(() -> Toast.makeText(systemContext, String.format(Locale.getDefault(), "%s 已被授予超级用户权限", pkgName), Toast.LENGTH_SHORT).show());
+        handler.post(() -> Toast.makeText(systemContext, String.format(Locale.getDefault(), customToastText, pkgName), Toast.LENGTH_SHORT).show());
     }
 
     public static void jniOnNewSuEvent(String cmdline) {
@@ -88,7 +100,7 @@ public class Entry {
             packageName = cmdline;
         }
         try {
-            String cachedAppName=appNameCache.get(packageName);
+            String cachedAppName = appNameCache.get(packageName);
             if(cachedAppName != null) {
                 showToast(cachedAppName);
                 return;
@@ -98,7 +110,7 @@ public class Entry {
             appNameCache.put(packageName, appName);
             showToast(appName);
         } catch (PackageManager.NameNotFoundException e) {
-            Log.w("KsuToast", "Failed to get app info", e);
+            Log.w(TAG, "Failed to get app info", e);
         }
     }
 
@@ -112,13 +124,13 @@ public class Entry {
         try {
             List<String> lines = Files.readAllLines(propFile.toPath());
             if(lines.size() < 6) {
-                Log.w("KsuToast", "module.prop too short");
+                Log.w(TAG, "module.prop too short");
                 return;
             }
             lines.set(5, String.format(Locale.getDefault(), "description=(%s)Show a root granted toast like Magisk.Require SuLog enabled.", descText));
             Files.write(propFile.toPath(), lines);
         } catch (IOException e) {
-            Log.e("KsuToast", "Failed to modify module.prop", e);
+            Log.e(TAG, "Failed to modify module.prop", e);
         }
     }
 

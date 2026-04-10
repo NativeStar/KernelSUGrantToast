@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Setting</title>
+</head>
+<body>
+<input maxlength="64" type="text" id="customToastTextInput" placeholder="%s 已被授予超级用户权限">
+<label for="customToastTextInput">自定义提示消息(须带有%s占位符用于显示应用名且长度小于64字符)</label>
+<br>
+<button id="save">保存</button>
+<br>
+<span>更改需重启生效</span>
+</body>
+<script>
+    let inputElement;
+    window.onLoadCustomMessageConfig=(errno,stdout,stderr)=>{
+        if(errno===0){
+            inputElement.value=stdout;
+            return
+        }
+    };
+    window.addEventListener("load",()=>{
+        inputElement=document.getElementById("customToastTextInput");
+        ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config get customToastText`,"onLoadCustomMessageConfig")
+    });
+    document.getElementById("save").addEventListener("click",()=>{
+        //校验
+        const tempInputValue=inputElement.value;
+        if(tempInputValue===""){
+            ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config delete customToastText`)
+            alert("已恢复默认消息");
+            return
+        }else if(tempInputValue.length>64||!tempInputValue.includes("%s")){
+            alert("消息无效 需带有%s占位符且长度小于64字符");
+            return
+        }
+        ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set customToastText "${inputElement.value}"`);
+        alert("保存成功");
+    });
+</script>
+</html>

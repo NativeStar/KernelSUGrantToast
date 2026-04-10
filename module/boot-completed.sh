@@ -11,4 +11,5 @@ if ! checkSuLogEnabled; then
   sed -i "s/description=.*/description=$desc/" "$MODDIR/module.prop"
   exit 1
 fi
-exec /system/bin/app_process -Djava.class.path=./daemon.apk / --nice-name=SuToaster com.suisho.kernelsugranttoast.Entry "$@"
+customToastText="$(/data/adb/ksud module config get customToastText)"
+exec /system/bin/app_process -Djava.class.path=./daemon.apk / --nice-name=SuToaster com.suisho.kernelsugranttoast.Entry "$@" "$customToastText"
