@@ -65,8 +65,9 @@ void processSuEvent(JNIEnv *threadJniEnv, uint32_t ppid) {
     auto findPpidResult = ignoredProcess.find(ppid);
     if (findPpidResult != ignoredProcess.end()) {
         //相同ppid的请求每3秒最多处理一个
-        if (currentTime - ignoredProcess[ppid] <= 3) return;
+        if (currentTime - findPpidResult->second <= 3) return;
     }
+    pushIgnoredProcessMap(ppid, currentTime);
     AndroidAppInfo appInfo = queryAndroidApplicationInfo(static_cast<pid_t>(ppid));
     if (appInfo.isAndroidApp && !appInfo.cmdline.empty()) {
         //不再对管理器弹出提醒
@@ -74,10 +75,9 @@ void processSuEvent(JNIEnv *threadJniEnv, uint32_t ppid) {
         auto findToastedApplicationResult = toastedApplication.find(appInfo.realPid);
         if (findToastedApplicationResult != toastedApplication.end()) {
             //是Android应用且拥有相同pid 提醒至少间隔5秒
-            if (currentTime - toastedApplication[appInfo.realPid] <= 5) return;
+            if (currentTime - findToastedApplicationResult->second <= 5) return;
         }
         pushToastedApplicationMap(appInfo.realPid, currentTime);
-        pushIgnoredProcessMap(ppid, currentTime);
         jstring cmd = threadJniEnv->NewStringUTF(appInfo.cmdline.c_str());
         threadJniEnv->CallStaticVoidMethod(globalEntryClass, onNewSuEventJavaMethod, cmd);
         threadJniEnv->DeleteLocalRef(cmd);
@@ -125,8 +125,8 @@ void pollingLogEvent(int suLogFd) {
                             if (rec->payload_len >= sizeof(SulogEventHeader)
                                 //只有这两个是来自第三方的调用 GRANT_ROOT是对管理器自动授权 不要处理
                                 && (hdr->retval == 0 &&
-                                    hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE ||
-                                    hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT)) {
+                                    (hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE ||
+                                    hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT))) {
                                 if (hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE) {
                                     //应该是所有root获取都会走ksud
                                     if (std::memcmp(ksudExec, hdr->comm, sizeof(ksudExec)) == 0 ||
