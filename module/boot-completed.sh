@@ -1,5 +1,6 @@
 #!/system/bin/sh
 KSUD=/data/adb/ksud
+export KSU_MODULE=ksuGrantToast
 checkSuLogEnabled() {
     v="$($KSUD feature get sulog 2>/dev/null | awk -F': *' '/^Value:/ {print $2; exit}')"
     [ "$v" = "1" ]
