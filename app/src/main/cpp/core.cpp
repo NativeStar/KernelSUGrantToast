@@ -26,6 +26,7 @@ static JavaVM *jvm = nullptr;
 static jclass globalEntryClass = nullptr;
 static jmethodID onNewSuEventJavaMethod = nullptr;
 static std::map<uint32_t, time_t> toastedApplication;
+static std::map<uint32_t, time_t> ignoredProcess;
 
 struct __attribute__((packed)) EventRecordHeader {
     uint16_t record_type;
@@ -51,17 +52,32 @@ void pushToastedApplicationMap(uint32_t pid, time_t timestamp) {
     toastedApplication[pid] = timestamp;
 }
 
+void pushIgnoredProcessMap(uint32_t pid, time_t timestamp) {
+    if (!ignoredProcess.empty() && ignoredProcess.size() > 16) {
+        ignoredProcess.erase(ignoredProcess.begin());
+    }
+    ignoredProcess[pid] = timestamp;
+}
+
 void processSuEvent(JNIEnv *threadJniEnv, uint32_t ppid) {
+    time_t currentTime = time(nullptr);
+    //限制相同ppid
+    auto findPpidResult = ignoredProcess.find(ppid);
+    if (findPpidResult != ignoredProcess.end()) {
+        //相同ppid的请求每3秒最多处理一个
+        if (currentTime - ignoredProcess[ppid] <= 3) return;
+    }
     AndroidAppInfo appInfo = queryAndroidApplicationInfo(static_cast<pid_t>(ppid));
     if (appInfo.isAndroidApp && !appInfo.cmdline.empty()) {
         //不再对管理器弹出提醒
         if (appInfo.cmdline == ksuPackageName) return;
-        time_t currentTime = time(nullptr);
-        if (toastedApplication.count(appInfo.realPid) != 0) {
-            //来自相同pid申请 提醒至少间隔5秒
+        auto findToastedApplicationResult = toastedApplication.find(appInfo.realPid);
+        if (findToastedApplicationResult != toastedApplication.end()) {
+            //是Android应用且拥有相同pid 提醒至少间隔5秒
             if (currentTime - toastedApplication[appInfo.realPid] <= 5) return;
         }
         pushToastedApplicationMap(appInfo.realPid, currentTime);
+        pushIgnoredProcessMap(ppid, currentTime);
         jstring cmd = threadJniEnv->NewStringUTF(appInfo.cmdline.c_str());
         threadJniEnv->CallStaticVoidMethod(globalEntryClass, onNewSuEventJavaMethod, cmd);
         threadJniEnv->DeleteLocalRef(cmd);
