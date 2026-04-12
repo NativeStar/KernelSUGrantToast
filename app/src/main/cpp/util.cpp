@@ -41,16 +41,20 @@ bool readProcFile(const std::string &path, std::string &out) {
     return !out.empty();
 }
 
-string getProcessCmdline(pid_t pid) {
+inline string getProcessCmdline(pid_t pid) {
     string statFilePath = "/proc/" + to_string(pid) + "/cmdline";
     string cmdline;
     if (readProcFile(statFilePath, cmdline)) {
+        size_t nullPos=cmdline.find('\0');
+        if (nullPos != string::npos){
+            cmdline = cmdline.substr(0, nullPos);
+        }
         return cmdline;
     }
     return "";
 }
 
-pid_t getPidByName(const string &name) {
+inline pid_t getPidByName(const string &name) {
     FILE *result = popen(("pidof " + name).c_str(), "r");
     if (!result) return -1;
     char buf[64];
