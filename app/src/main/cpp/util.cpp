@@ -20,25 +20,21 @@ static vector<int> zygotePids;
 bool readProcFile(const std::string &path, std::string &out) {
     int fd = open(path.c_str(), O_RDONLY | O_CLOEXEC);
     if (fd < 0) return false;
-    out.clear();
-    char buf[512];
-    constexpr size_t kMaxBytes = 4096;
-    while (out.size() < kMaxBytes) {
-        size_t remain = kMaxBytes - out.size();
-        size_t want = remain < sizeof(buf) ? remain : sizeof(buf);
-        ssize_t n = read(fd, buf, want);
-        if (n > 0) {
-            out.append(buf, static_cast<size_t>(n));
-            continue;
-        }
-        if (n == 0) break; // EOF
-        if (errno == EINTR) continue;
-        close(fd);
+    string tmpString;
+    tmpString.resize(1536);
+    ssize_t readLength;
+    while (true) {
+        readLength = read(fd, tmpString.data(), tmpString.size());
+        if (readLength < 0 && errno == EINTR) continue;
+        break;
+    }
+    close(fd);
+    if (readLength <= 0) {
         out.clear();
         return false;
     }
-    close(fd);
-    return !out.empty();
+    out.assign(tmpString.data(), readLength);
+    return true;
 }
 
 inline string getProcessCmdline(pid_t pid) {

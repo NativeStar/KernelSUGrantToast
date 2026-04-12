@@ -89,7 +89,6 @@ void pollingLogEvent(int suLogFd) {
     jvm->AttachCurrentThread(&localJniEnv, nullptr);
     //Android特色对线程提权
     setresuid(0, 0, 0);
-    prctl(PR_SET_NAME, "EventPoller");
     {
         int fl = fcntl(suLogFd, F_GETFL);
         fcntl(suLogFd, F_SETFL, fl | O_NONBLOCK);
@@ -124,15 +123,13 @@ void pollingLogEvent(int suLogFd) {
                                                                              sizeof(EventRecordHeader));
                             if (rec->payload_len >= sizeof(SulogEventHeader)
                                 //只有这两个是来自第三方的调用 GRANT_ROOT是对管理器自动授权 不要处理
-                                && (hdr->retval == 0 &&
-                                    (hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE ||
-                                    hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT))) {
+                                && hdr->retval == 0) {
                                 if (hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE) {
                                     //应该是所有root获取都会走ksud
                                     if (std::memcmp(ksudExec, hdr->comm, sizeof(ksudExec)) == 0 ||
                                         std::memcmp(ksuLibExec, hdr->comm, sizeof(ksuLibExec)) == 0)
                                         processSuEvent(localJniEnv, hdr->ppid);
-                                } else {
+                                } else if (hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT) {
                                     processSuEvent(localJniEnv, hdr->ppid);
                                 }
                             }

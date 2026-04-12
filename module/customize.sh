@@ -38,5 +38,7 @@ echo "Extracting library..."
 unzip -oj "$MODPATH/daemon.apk" 'lib/arm64-v8a/libshimizu.so' -d "$MODPATH"
 mv -f "$MODPATH/libshimizu.so" "$MODPATH/Shimizu"
 set_perm "$MODPATH/Shimizu" 0 0 0755
+echo "set description..."
+"$KSUD" module config set --temp override.description "(Waiting reboot)Show a root granted toast like Magisk.Require SuLog enabled."
 echo "Install successful!"
 echo "Please reboot to take effect"

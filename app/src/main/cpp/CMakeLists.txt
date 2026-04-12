@@ -29,7 +29,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
     # List C/C++ source files with relative paths to this CMakeLists.txt.
     core.cpp util.cpp)
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
-      -Oz
+      -O3
       -g0
       -fvisibility=hidden
       -fvisibility-inlines-hidden

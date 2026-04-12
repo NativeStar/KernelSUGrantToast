@@ -1,5 +1,4 @@
 #!/system/bin/sh
-MODDIR=${0%/*};
 KSUD=/data/adb/ksud
 checkSuLogEnabled() {
     v="$($KSUD feature get sulog 2>/dev/null | awk -F': *' '/^Value:/ {print $2; exit}')"
@@ -7,8 +6,7 @@ checkSuLogEnabled() {
 }
 #必须启用SuLog
 if ! checkSuLogEnabled; then
-  desc="(❌Please enable SuLog and reboot!)Show a root granted toast like Magisk.Require SuLog enabled."
-  sed -i "s/description=.*/description=$desc/" "$MODDIR/module.prop"
+  "$KSUD" module config set --temp override.description "(❌Please enable SuLog and reboot!)Show a root granted toast like Magisk.Require SuLog enabled."
   exit 1
 fi
 customToastText="$(/data/adb/ksud module config get customToastText)"

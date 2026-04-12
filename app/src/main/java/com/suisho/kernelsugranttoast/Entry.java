@@ -18,6 +18,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class Entry {
     private static final String TAG = "KsuToast";
@@ -37,11 +38,11 @@ public class Entry {
             String tempCustomText = args[0];
             Log.i(TAG, "Found custom toast text");
             if(tempCustomText.length() < 64 && tempCustomText.contains("%s")) {
-                customToastText=tempCustomText;
-            }else{
+                customToastText = tempCustomText;
+            } else {
                 Log.w(TAG, "Invalid custom toast text!");
             }
-        }else{
+        } else {
             Log.i(TAG, "Use default toast text");
         }
         HiddenApiBypass.addHiddenApiExemptions("Landroid/app/ActivityThread;");
@@ -118,19 +119,23 @@ public class Entry {
         modifyModuleDescription("❌" + errorMessage);
     }
 
+    //description=(%s)Show a root granted toast like Magisk.Require SuLog enabled.
     private static void modifyModuleDescription(String descText) {
-        File localPath = new File("");
-        File propFile = new File(localPath.getAbsolutePath(), "module.prop");
+        //使用ksu特性临时更改描述
         try {
-            List<String> lines = Files.readAllLines(propFile.toPath());
-            if(lines.size() < 6) {
-                Log.w(TAG, "module.prop too short");
+            File ksudFile = new File("/data/adb/ksud");
+            if(!ksudFile.exists()) {
+                Log.w(TAG, "ksud file not found!");
                 return;
             }
-            lines.set(5, String.format(Locale.getDefault(), "description=(%s)Show a root granted toast like Magisk.Require SuLog enabled.", descText));
-            Files.write(propFile.toPath(), lines);
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to modify module.prop", e);
+            String desc = String.format(Locale.getDefault(), "(%s)Show a root granted toast like Magisk.Require SuLog enabled.", descText);
+            ProcessBuilder processBuilder = new ProcessBuilder("/data/adb/ksud", "module", "config", "set","--temp", "override.description", desc);
+            processBuilder.environment().put("KSU_MODULE", "ksuGrantToast");
+            java.lang.Process changeDescriptorProcess = processBuilder.start();
+            //等待写入完成 方便降权
+            changeDescriptorProcess.waitFor(10, TimeUnit.SECONDS);
+        } catch (IOException | InterruptedException e) {
+            Log.e(TAG, "Failed to modify module description", e);
         }
     }
 
