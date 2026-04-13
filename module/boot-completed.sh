@@ -10,5 +10,5 @@ if ! checkSuLogEnabled; then
   "$KSUD" module config set --temp override.description "(❌Please enable SuLog and reboot!)Show a root granted toast like Magisk.Require SuLog enabled."
   exit 1
 fi
-customToastText="$(/data/adb/ksud module config get customToastText)"
+customToastText="$($KSUD module config get customToastText)"
 exec /system/bin/app_process -Djava.class.path=./daemon.apk / --nice-name=SuToaster com.suisho.kernelsugranttoast.Entry "$@" "$customToastText"

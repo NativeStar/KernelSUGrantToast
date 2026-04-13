@@ -13,6 +13,12 @@ fi
 if [ "$KSU_KERNEL_VER_CODE" -lt 32457 ]; then
   abort "Please update KernelSU!(Minimum version required 32457)"
 fi
+#判断旧进程是否存在
+oldProcessPid=$(pidof SuToaster)
+if [ "$oldProcessPid" ]; then
+  echo "Killing old process..."
+  kill -9 "$oldProcessPid"
+fi
 #检查suLog功能状态 没开启则强提醒
 if ! checkSuLogEnabled; then
   echo "警告:"
