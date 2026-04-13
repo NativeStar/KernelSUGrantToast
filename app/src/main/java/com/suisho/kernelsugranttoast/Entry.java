@@ -119,7 +119,6 @@ public class Entry {
         modifyModuleDescription("❌" + errorMessage);
     }
 
-    //description=(%s)Show a root granted toast like Magisk.Require SuLog enabled.
     private static void modifyModuleDescription(String descText) {
         //使用ksu特性临时更改描述
         try {
@@ -129,11 +128,12 @@ public class Entry {
                 return;
             }
             String desc = String.format(Locale.getDefault(), "(%s)Show a root granted toast like Magisk.Require SuLog enabled.", descText);
-            ProcessBuilder processBuilder = new ProcessBuilder("/data/adb/ksud", "module", "config", "set","--temp", "override.description", desc);
+            ProcessBuilder processBuilder = new ProcessBuilder("/data/adb/ksud", "module", "config", "set", "--temp", "override.description", desc);
             processBuilder.environment().put("KSU_MODULE", "ksuGrantToast");
             java.lang.Process changeDescriptorProcess = processBuilder.start();
             //等待写入完成 方便降权
-            changeDescriptorProcess.waitFor(10, TimeUnit.SECONDS);
+            changeDescriptorProcess.waitFor(20, TimeUnit.SECONDS);
+            changeDescriptorProcess.destroyForcibly();
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "Failed to modify module description", e);
         }
