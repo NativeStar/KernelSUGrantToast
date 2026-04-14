@@ -21,7 +21,6 @@
 #define KSU_SULOG_EVENT_SUCOMPAT 2u
 static constexpr char ksudExec[] = "ksud";
 static constexpr char ksuLibExec[] = "libksud.so";
-static const std::string ksuPackageName = "me.weishu.kernelsu";
 static JavaVM *jvm = nullptr;
 static jclass globalEntryClass = nullptr;
 static jmethodID onNewSuEventJavaMethod = nullptr;
@@ -70,8 +69,6 @@ void processSuEvent(JNIEnv *threadJniEnv, uint32_t ppid) {
     pushIgnoredProcessMap(ppid, currentTime);
     AndroidAppInfo appInfo = queryAndroidApplicationInfo(static_cast<pid_t>(ppid));
     if (appInfo.isAndroidApp && !appInfo.cmdline.empty()) {
-        //不再对管理器弹出提醒
-        if (appInfo.cmdline == ksuPackageName) return;
         auto findToastedApplicationResult = toastedApplication.find(appInfo.realPid);
         if (findToastedApplicationResult != toastedApplication.end()) {
             //是Android应用且拥有相同pid 提醒至少间隔5秒
