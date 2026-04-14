@@ -9,7 +9,7 @@
 <input maxlength="64" type="text" id="customToastTextInput" placeholder="%s 已被授予超级用户权限">
 <label for="customToastTextInput">自定义提示消息(须带有%s占位符用于显示应用名且长度小于64字符)</label>
 <br>
-<button id="saveCustomToastText">保存</button>
+<button id="saveCustomToastText">保存提示消息</button>
 <br>
 <label for="ignorePackageNames">忽略提示的应用包名(以';'分隔)</label><textarea id="ignorePackageNames"
                                                                            placeholder="示例:com.abc.test;com.def.test"
@@ -17,6 +17,7 @@
 maxlength="4096"></textarea>
 <br>
 <button id="saveIgnorePackageNames">保存忽略包名</button>
+<br>
 <span>所有更改需重启生效</span>
 </body>
 <script>
