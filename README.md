@@ -8,6 +8,8 @@
 
 安装完成后需要重启生效 记得在重启前确保SuLog功能已启用
 
+可以通过启动KernelSU管理器进行自测 如弹出授权Toast表示模块正常工作
+
 该模块不依赖Zygisk和MetaModule
 ### 兼容性提醒
 模块仅限最新(支持SuLog的版本)KernelSU使用 且仅在官方版本上测试
