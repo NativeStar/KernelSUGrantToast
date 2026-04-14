@@ -9,25 +9,40 @@
 <input maxlength="64" type="text" id="customToastTextInput" placeholder="%s 已被授予超级用户权限">
 <label for="customToastTextInput">自定义提示消息(须带有%s占位符用于显示应用名且长度小于64字符)</label>
 <br>
-<button id="save">保存</button>
+<button id="saveCustomToastText">保存</button>
 <br>
-<span>更改需重启生效</span>
+<label for="ignorePackageNames">忽略提示的应用包名(以';'分隔)</label><textarea id="ignorePackageNames"
+                                                                           placeholder="示例:com.abc.test;com.def.test"
+                                                                           style="width:90%;"
+maxlength="4096"></textarea>
+<br>
+<button id="saveIgnorePackageNames">保存忽略包名</button>
+<span>所有更改需重启生效</span>
 </body>
 <script>
-    let inputElement;
+    let customToastTextInputElement;
+    let ignorePackageNamesElement;
     window.onLoadCustomMessageConfig=(errno,stdout,stderr)=>{
         if(errno===0){
-            inputElement.value=stdout;
+            customToastTextInputElement.value=stdout;
+            return
+        }
+    };
+    window.onLoadIgnorePackageNamesConfig=(errno,stdout,stderr)=>{
+        if(errno===0){
+            ignorePackageNamesElement.value=stdout;
             return
         }
     };
     window.addEventListener("load",()=>{
-        inputElement=document.getElementById("customToastTextInput");
+        customToastTextInputElement=document.getElementById("customToastTextInput");
+        ignorePackageNamesElement=document.getElementById("ignorePackageNames");
         ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config get customToastText`,"onLoadCustomMessageConfig")
+        ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config get ignorePackageNames`,"onLoadIgnorePackageNamesConfig")
     });
-    document.getElementById("save").addEventListener("click",()=>{
+    document.getElementById("saveCustomToastText").addEventListener("click",()=>{
         //校验
-        const tempInputValue=inputElement.value;
+        const tempInputValue=customToastTextInputElement.value;
         if(tempInputValue===""){
             ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config delete customToastText`)
             alert("已恢复默认消息");
@@ -36,8 +51,23 @@
             alert("消息无效 需带有%s占位符且长度小于64字符");
             return
         }
-        ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set customToastText "${inputElement.value}"`);
+        ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set customToastText "${customToastTextInputElement.value}"`);
         alert("保存成功");
     });
+    document.getElementById("saveIgnorePackageNames").addEventListener("click",()=>{
+        //校验
+        let tempInputValue=ignorePackageNamesElement.value;
+        if(tempInputValue===""){
+            ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config delete ignorePackageNames`)
+            alert("已恢复默认配置");
+            return
+        }
+        if(tempInputValue.endsWith(";")){
+            tempInputValue=tempInputValue.substring(0,tempInputValue.length-1);
+            ignorePackageNamesElement.value=tempInputValue;
+        }
+        ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set ignorePackageNames "${ignorePackageNamesElement.value}"`)
+        alert("保存成功");
+    })
 </script>
 </html>

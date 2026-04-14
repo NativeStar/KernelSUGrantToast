@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -28,12 +29,14 @@ public class Entry {
     //缓存应用名 避免每次都走PackageManager
     private static final LruCache<String, String> appNameCache = new LruCache<>(16);
     private static String customToastText = "%s 已被授予超级用户权限";
+    private static final HashSet<String> ignorePackageList=new HashSet<>();
 
     public static void main(String[] args) {
         if(Process.myUid() != 0) {
             Log.e("KsuToast", "Need root access!!!");
             return;
         }
+        //自定义提示文本
         if(args.length > 0 && args[0] != null) {
             String tempCustomText = args[0];
             Log.i(TAG, "Found custom toast text");
@@ -44,6 +47,19 @@ public class Entry {
             }
         } else {
             Log.i(TAG, "Use default toast text");
+        }
+        if(args.length > 1 && args[1] != null) {
+            String tempRawIgnorePackageList = args[1];
+            Log.i(TAG, "Found ignore package list");
+            if(tempRawIgnorePackageList.contains(";")) {
+                String[] rawSplit = tempRawIgnorePackageList.split(";");
+                for(String packageName : rawSplit) {
+                    if(!packageName.isEmpty()) ignorePackageList.add(packageName);
+                }
+                Log.i(TAG, "Added all ignore package");
+            } else {
+                Log.w(TAG, "Invalid ignore package list");
+            }
         }
         HiddenApiBypass.addHiddenApiExemptions("Landroid/app/ActivityThread;");
         try {
@@ -100,6 +116,8 @@ public class Entry {
         } else {
             packageName = cmdline;
         }
+        //忽略提示的包名
+        if(ignorePackageList.contains(packageName)) return;
         try {
             String cachedAppName = appNameCache.get(packageName);
             if(cachedAppName != null) {
