@@ -45,14 +45,14 @@ struct __attribute__((packed)) SulogEventHeader {
 };
 
 void pushToastedApplicationMap(uint32_t pid, time_t timestamp) {
-    if (!toastedApplication.empty() && toastedApplication.size() > 10) {
+    if (toastedApplication.size() > 4) {
         toastedApplication.erase(toastedApplication.begin());
     }
     toastedApplication[pid] = timestamp;
 }
 
 void pushIgnoredProcessMap(uint32_t pid, time_t timestamp) {
-    if (!ignoredProcess.empty() && ignoredProcess.size() > 16) {
+    if (ignoredProcess.size() > 8) {
         ignoredProcess.erase(ignoredProcess.begin());
     }
     ignoredProcess[pid] = timestamp;
