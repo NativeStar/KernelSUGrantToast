@@ -13,14 +13,12 @@
 #include "ctime"
 
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "KsuToast", __VA_ARGS__)
-#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, "KsuToast", __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "KsuToast", __VA_ARGS__)
 #define TASK_COMM_LEN  16
 #define KSU_EVENT_TYPE_DROPPED          0xFFFFu
 #define KSU_SULOG_EVENT_ROOT_EXECVE 1u
 #define KSU_SULOG_EVENT_SUCOMPAT 2u
 static constexpr char ksudExec[] = "ksud";
-static constexpr char ksuLibExec[] = "libksud.so";
 static JavaVM *jvm = nullptr;
 static jclass globalEntryClass = nullptr;
 static jmethodID onNewSuEventJavaMethod = nullptr;
@@ -118,13 +116,11 @@ void pollingLogEvent(int suLogFd) {
                         if (rec->record_type != KSU_EVENT_TYPE_DROPPED) {
                             auto *hdr = reinterpret_cast<SulogEventHeader *>(buf + off +
                                                                              sizeof(EventRecordHeader));
-                            if (rec->payload_len >= sizeof(SulogEventHeader)
+                            if (rec->payload_len >= sizeof(SulogEventHeader) && hdr->retval == 0) {
                                 //只有这两个是来自第三方的调用 GRANT_ROOT是对管理器自动授权 不要处理
-                                && hdr->retval == 0) {
                                 if (hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE) {
                                     //应该是所有root获取都会走ksud
-                                    if (std::memcmp(ksudExec, hdr->comm, sizeof(ksudExec)) == 0 ||
-                                        std::memcmp(ksuLibExec, hdr->comm, sizeof(ksuLibExec)) == 0)
+                                    if (std::memcmp(ksudExec, hdr->comm, sizeof(ksudExec)) == 0)
                                         processSuEvent(localJniEnv, hdr->ppid);
                                 } else if (hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT) {
                                     processSuEvent(localJniEnv, hdr->ppid);
