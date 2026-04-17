@@ -72,7 +72,7 @@ public class Entry {
             File localPath = new File("");
             File libraryFile = new File(localPath.getAbsolutePath(), "Shimizu");
             if(!libraryFile.exists()) {
-                onInitFailed("Library file not found!Please reinstall module");
+                onInitFailed("Library file not found!Please reinstall module!!!");
                 System.exit(1);
                 return;
             }
@@ -84,7 +84,7 @@ public class Entry {
                 System.exit(1);
                 return;
             }
-            modifyModuleDescription("✅Working PID:" + Process.myPid());
+            modifyModuleDescription(String.format(Locale.getDefault(),"✅Working PID:%d Ignored package(s) count:%d",Process.myPid(), ignorePackageList.size()));
             //降权 不然就是java.lang.SecurityException: Package android is not owned by uid 0
             //等写入描述完成才执行 系统框架没模块目录权限
             jniSetUid(1000);
@@ -145,7 +145,7 @@ public class Entry {
                 Log.w(TAG, "ksud file not found!");
                 return;
             }
-            String desc = String.format(Locale.getDefault(), "(%s)Show a root granted toast like Magisk.Require SuLog enabled.", descText);
+            String desc = String.format(Locale.getDefault(), "[%s]Show a root granted toast like Magisk.Require SuLog enabled.", descText);
             ProcessBuilder processBuilder = new ProcessBuilder("/data/adb/ksud", "module", "config", "set", "--temp", "override.description", desc);
             processBuilder.environment().put("KSU_MODULE", "ksuGrantToast");
             java.lang.Process changeDescriptorProcess = processBuilder.start();

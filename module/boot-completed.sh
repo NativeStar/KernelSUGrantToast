@@ -7,7 +7,7 @@ checkSuLogEnabled() {
 }
 #必须启用SuLog
 if ! checkSuLogEnabled; then
-  "$KSUD" module config set --temp override.description "(❌Please enable SuLog and reboot!)Show a root granted toast like Magisk.Require SuLog enabled."
+  "$KSUD" module config set --temp override.description "[❌Please enable SuLog and reboot!]Show a root granted toast like Magisk.Require SuLog enabled."
   exit 1
 fi
 customToastText="$($KSUD module config get customToastText)"
