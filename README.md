@@ -1,7 +1,7 @@
 # KernelSU Grant Toast
 ##### 让KernelSU像Magisk一样弹出'授予超级用户权限' Toast
 ### 截图
-![](./mdAssets/1000130679.png)
+![](./mdAssets/1000132279.png)
 ![](./mdAssets/1000130680.png)
 ### 安装
 在Release中下载模块包后进入KernelSU中选中模块包安装即可
