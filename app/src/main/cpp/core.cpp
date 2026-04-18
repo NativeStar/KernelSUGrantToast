@@ -4,8 +4,6 @@
 #include <unistd.h>
 #include <asm-generic/fcntl.h>
 #include "sys/epoll.h"
-#include "sys/syscall.h"
-#include "sys/ioctl.h"
 #include "sys/prctl.h"
 #include "thread"
 #include "util.h"
@@ -15,7 +13,7 @@
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "KsuToast", __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "KsuToast", __VA_ARGS__)
 #define TASK_COMM_LEN  16
-#define KSU_EVENT_TYPE_DROPPED          0xFFFFu
+#define KSU_EVENT_TYPE_DROPPED 0xFFFFu
 #define KSU_SULOG_EVENT_ROOT_EXECVE 1u
 #define KSU_SULOG_EVENT_SUCOMPAT 2u
 static constexpr char ksudExec[] = "ksud";
@@ -172,6 +170,8 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     vm->GetEnv(reinterpret_cast<void **>(&jniEnv), JNI_VERSION_1_6);
     jclass entryClass = jniEnv->FindClass("com/suisho/kernelsugranttoast/Entry");
     globalEntryClass = reinterpret_cast<jclass>(jniEnv->NewGlobalRef(entryClass));
+    onNewSuEventJavaMethod = jniEnv->GetStaticMethodID(globalEntryClass, "jniOnNewSuEvent",
+                                                       "(Ljava/lang/String;)V");
     jniEnv->DeleteLocalRef(entryClass);
     return JNI_VERSION_1_6;
 }

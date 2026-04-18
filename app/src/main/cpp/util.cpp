@@ -1,21 +1,18 @@
 #include <unistd.h>
 #include "util.h"
 #include "android/log.h"
-#include "cstdio"
-#include "string"
-#include "vector"
 #include "fcntl.h"
 #include "sys/syscall.h"
 
 using namespace std;
-
-#define KSU_INSTALL_MAGIC1     0xDEADBEEFu
-#define KSU_INSTALL_MAGIC2     0xCAFEBABEu
-#define KSU_IOCTL_GET_SULOG_FD  0x40044B14u
+#define KSU_INSTALL_MAGIC1 0xDEADBEEFu
+#define KSU_INSTALL_MAGIC2 0xCAFEBABEu
+#define KSU_IOCTL_GET_SULOG_FD 0x40044B14u
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "KsuToast", __VA_ARGS__)
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN, "KsuToast", __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "KsuToast", __VA_ARGS__)
-static vector<int> zygotePids;
+static int zygotePid = -886;
+static int zygote64Pid = -996;
 
 bool readProcFile(const std::string &path, std::string &out) {
     int fd = open(path.c_str(), O_RDONLY | O_CLOEXEC);
@@ -41,8 +38,8 @@ inline string getProcessCmdline(pid_t pid) {
     string statFilePath = "/proc/" + to_string(pid) + "/cmdline";
     string cmdline;
     if (readProcFile(statFilePath, cmdline)) {
-        size_t nullPos=cmdline.find('\0');
-        if (nullPos != string::npos){
+        size_t nullPos = cmdline.find('\0');
+        if (nullPos != string::npos) {
             cmdline = cmdline.substr(0, nullPos);
         }
         return cmdline;
@@ -63,11 +60,9 @@ inline pid_t getPidByName(const string &name) {
 }
 
 bool utilInit() {
-    pid_t zygotePid = getPidByName("zygote");
-    pid_t zygote64Pid = getPidByName("zygote64");
-    if (zygotePid > 0) zygotePids.push_back(zygotePid);
-    if (zygote64Pid > 0) zygotePids.push_back(zygote64Pid);
-    return !zygotePids.empty();
+    zygotePid = getPidByName("zygote");
+    zygote64Pid = getPidByName("zygote64");
+    return zygotePid > 1 || zygote64Pid > 1;
 }
 
 bool tryKillKsudProcess() {
@@ -145,14 +140,12 @@ AndroidAppInfo queryAndroidApplicationInfo(pid_t pid) {
     pid_t targetPpid = getPpid(pid);
     //不可能有Android应用pid小于100
     if (targetPpid < 100) return {false, pid, ""};
-    bool parentIsZygote =
-            std::find(zygotePids.begin(), zygotePids.end(), targetPpid) != zygotePids.end();
+    bool parentIsZygote = targetPpid == zygotePid || targetPpid == zygote64Pid;
     if (!parentIsZygote) {
         //尝试获取一次父进程
         pid_t newTargetPpid = getPpid(targetPpid);
         bool parentPpidIsZygote =
-                std::find(zygotePids.begin(), zygotePids.end(), newTargetPpid) !=
-                zygotePids.end();
+                newTargetPpid == zygotePid || newTargetPpid == zygote64Pid;
         return {parentPpidIsZygote, targetPpid, getProcessCmdline(targetPpid)};
     }
     //是android应用了 再加个包名
