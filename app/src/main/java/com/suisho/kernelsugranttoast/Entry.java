@@ -1,5 +1,6 @@
 package com.suisho.kernelsugranttoast;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -31,6 +32,7 @@ public class Entry {
     private static String customToastText = "%s 已被授予超级用户权限";
     private static final HashSet<String> ignorePackageList=new HashSet<>();
 
+    @SuppressLint("UnsafeDynamicallyLoadedCode")
     public static void main(String[] args) {
         if(Process.myUid() != 0) {
             Log.e("KsuToast", "Need root access!!!");
@@ -64,7 +66,7 @@ public class Entry {
         HiddenApiBypass.addHiddenApiExemptions("Landroid/app/ActivityThread;");
         try {
             if(Looper.getMainLooper() == null) Looper.prepareMainLooper();
-            Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
+            @SuppressLint("PrivateApi") Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
             Object activityThread = HiddenApiBypass.invoke(activityThreadClass, null, "systemMain");
             Context context = (Context) HiddenApiBypass.invoke(activityThreadClass, activityThread, "getSystemContext");
             //uid0不能弹出toast
