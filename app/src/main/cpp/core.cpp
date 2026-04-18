@@ -118,8 +118,8 @@ void pollingLogEvent(int suLogFd) {
                                                                              sizeof(EventRecordHeader));
                             if (rec->payload_len >= sizeof(SulogEventHeader) && hdr->retval == 0) {
                                 //只有这两个是来自第三方的调用 GRANT_ROOT是对管理器自动授权 不要处理
+                                //应该是所有root获取都会走ksud
                                 if (hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE) {
-                                    //应该是所有root获取都会走ksud
                                     if (std::memcmp(ksudExec, hdr->comm, sizeof(ksudExec)) == 0)
                                         processSuEvent(localJniEnv, hdr->ppid);
                                 } else if (hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT) {
@@ -137,6 +137,11 @@ void pollingLogEvent(int suLogFd) {
     done:
     close(epfd);
     close(suLogFd);
+    jmethodID modifyModuleDescriptionMethod = localJniEnv->GetStaticMethodID(globalEntryClass, "onNativeError",
+                                                                        "(Ljava/lang/String;)V");
+    jstring description = localJniEnv->NewStringUTF("Error on working,Exited");
+    localJniEnv->CallStaticVoidMethod(globalEntryClass, modifyModuleDescriptionMethod, description);
+    localJniEnv->DeleteLocalRef(description);
     jvm->DetachCurrentThread();
     LOGE("pollingLogEvent exited");
 }
@@ -168,8 +173,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     jclass entryClass = jniEnv->FindClass("com/suisho/kernelsugranttoast/Entry");
     globalEntryClass = reinterpret_cast<jclass>(jniEnv->NewGlobalRef(entryClass));
     jniEnv->DeleteLocalRef(entryClass);
-    onNewSuEventJavaMethod = jniEnv->GetStaticMethodID(globalEntryClass, "jniOnNewSuEvent",
-                                                       "(Ljava/lang/String;)V");
     return JNI_VERSION_1_6;
 }
 

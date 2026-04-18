@@ -51,7 +51,7 @@ public class Entry {
         if(args.length > 1 && args[1] != null) {
             String tempRawIgnorePackageList = args[1];
             Log.i(TAG, "Found ignore package list");
-            if(tempRawIgnorePackageList.contains(";")) {
+            if(!tempRawIgnorePackageList.isEmpty()) {
                 String[] rawSplit = tempRawIgnorePackageList.split(";");
                 for(String packageName : rawSplit) {
                     if(!packageName.isEmpty()) ignorePackageList.add(packageName);
@@ -84,7 +84,7 @@ public class Entry {
                 System.exit(1);
                 return;
             }
-            modifyModuleDescription(String.format(Locale.getDefault(),"✅Working PID:%d Ignored package(s) count:%d",Process.myPid(), ignorePackageList.size()));
+            modifyModuleDescription(String.format(Locale.getDefault(),"✅Working.PID:%d,Ignored package(s) count:%d",Process.myPid(), ignorePackageList.size()));
             //降权 不然就是java.lang.SecurityException: Package android is not owned by uid 0
             //等写入描述完成才执行 系统框架没模块目录权限
             jniSetUid(1000);
@@ -136,7 +136,10 @@ public class Entry {
     private static void onInitFailed(String errorMessage) {
         modifyModuleDescription("❌" + errorMessage);
     }
-
+    private static void onNativeError(String msg){
+        modifyModuleDescription("❌" + msg);
+        System.exit(1);
+    }
     private static void modifyModuleDescription(String descText) {
         //使用ksu特性临时更改描述
         try {
