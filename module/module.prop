@@ -1,7 +1,7 @@
 id=ksuGrantToast
 name=KernelSU Grant Toast
 author=NativeStar
-version=1.3
-versionCode=4
+version=1.4
+versionCode=5
 description=(❌Disabled)Show a root granted toast like Magisk.Require SuLog enabled.
 updateJson=https://raw.githubusercontent.com/NativeStar/KernelSUGrantToast/master/update.json
