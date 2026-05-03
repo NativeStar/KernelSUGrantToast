@@ -12,4 +12,5 @@ if ! checkSuLogEnabled; then
 fi
 customToastText="$($KSUD module config get customToastText)"
 ignoredPackages="$($KSUD module config get ignorePackageNames)"
-exec /system/bin/app_process -Djava.class.path=./daemon.apk / --nice-name=SuToaster com.suisho.kernelsugranttoast.Entry "$@" "$customToastText" "$ignoredPackages"
+customCompatModeToastText="$($KSUD module config get customCompatModeToastText)"
+exec /system/bin/app_process -Djava.class.path=./daemon.apk / --nice-name=SuToaster com.suisho.kernelsugranttoast.Entry "$@" "$customToastText" "$ignoredPackages" "$customCompatModeToastText"

@@ -54,7 +54,7 @@ void pushIgnoredProcessMap(uint32_t pid, time_t timestamp) {
     ignoredProcess[pid] = timestamp;
 }
 
-void processSuEvent(JNIEnv *threadJniEnv, uint32_t ppid) {
+void processSuEvent(JNIEnv *threadJniEnv, uint32_t ppid,bool isCompat) {
     time_t currentTime = time(nullptr);
     //限制相同ppid
     auto findPpidResult = ignoredProcess.find(ppid);
@@ -72,7 +72,7 @@ void processSuEvent(JNIEnv *threadJniEnv, uint32_t ppid) {
         }
         pushToastedApplicationMap(appInfo.realPid, currentTime);
         jstring cmd = threadJniEnv->NewStringUTF(appInfo.cmdline.c_str());
-        threadJniEnv->CallStaticVoidMethod(globalEntryClass, onNewSuEventJavaMethod, cmd);
+        threadJniEnv->CallStaticVoidMethod(globalEntryClass, onNewSuEventJavaMethod, cmd, isCompat);
         threadJniEnv->DeleteLocalRef(cmd);
     }
 }
@@ -119,9 +119,9 @@ void pollingLogEvent(int suLogFd) {
                                 //应该是所有root获取都会走ksud
                                 if (hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE) {
                                     if (std::memcmp(ksudExec, hdr->comm, sizeof(ksudExec)) == 0)
-                                        processSuEvent(localJniEnv, hdr->ppid);
+                                        processSuEvent(localJniEnv, hdr->ppid,false);
                                 } else if (hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT) {
-                                    processSuEvent(localJniEnv, hdr->ppid);
+                                    processSuEvent(localJniEnv, hdr->ppid,true);
                                 }
                             }
                         }
@@ -171,7 +171,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     jclass entryClass = jniEnv->FindClass("com/suisho/kernelsugranttoast/Entry");
     globalEntryClass = reinterpret_cast<jclass>(jniEnv->NewGlobalRef(entryClass));
     onNewSuEventJavaMethod = jniEnv->GetStaticMethodID(globalEntryClass, "jniOnNewSuEvent",
-                                                       "(Ljava/lang/String;)V");
+                                                       "(Ljava/lang/String;Z)V");
     jniEnv->DeleteLocalRef(entryClass);
     return JNI_VERSION_1_6;
 }
