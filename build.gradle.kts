@@ -45,6 +45,6 @@ val zipCopiedModule by tasks.registering(Zip::class) {
     destinationDirectory.set(exportRootDir)
     archiveFileName.set(zipName)
 }
-tasks.register("buildMudule") {
+tasks.register("buildModule") {
     dependsOn(zipCopiedModule)
 }

@@ -11,15 +11,17 @@
 <br>
 <button id="saveCustomToastText">保存提示消息</button>
 
-<input maxlength="64" type="text" id="customToastCompatModeTextInput" placeholder="%s 已被授予超级用户权限">
+<input maxlength="64" type="text" id="customToastCompatModeTextInput"
+       placeholder="%s 已被授予超级用户权限">
 <label for="customToastCompatModeTextInput">自定义兼容模式SU提示消息(须带有%s占位符用于显示应用名且长度小于64字符)</label>
 <br>
 <button id="saveCustomCompatModeToastText">保存提示消息</button>
 <br>
-<label for="ignorePackageNames">忽略提示的应用包名(以';'分隔)</label><textarea id="ignorePackageNames"
-                                                                           placeholder="示例:com.abc.test;com.def.test"
-                                                                           style="width:90%;"
-maxlength="4096"></textarea>
+<label for="ignorePackageNames">忽略提示的应用包名(以';'分隔)</label><textarea
+        id="ignorePackageNames"
+        placeholder="示例:com.abc.test;com.def.test"
+        style="width:90%;"
+        maxlength="4096"></textarea>
 <br>
 <button id="saveIgnorePackageNames">保存忽略包名</button>
 <br>
@@ -29,6 +31,9 @@ maxlength="4096"></textarea>
     let customToastTextInputElement;
     let ignorePackageNamesElement;
     let customToastCompatModeTextInputElement;
+    function shellQuote(value) {
+        return `'${String(value).replace(/'/g, `'\\''`)}'`;
+    }
     window.onLoadCustomMessageConfig=(errno,stdout,stderr)=>{
         if(errno===0){
             customToastTextInputElement.value=stdout;
@@ -66,7 +71,7 @@ maxlength="4096"></textarea>
             alert("消息无效 需带有%s占位符且长度小于64字符");
             return
         }
-        ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set customToastText "${customToastTextInputElement.value}"`);
+        ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set customToastText ${shellQuote(tempInputValue)}`);
         alert("保存成功");
     });
     document.getElementById("saveIgnorePackageNames").addEventListener("click",()=>{
@@ -81,7 +86,7 @@ maxlength="4096"></textarea>
             tempInputValue=tempInputValue.substring(0,tempInputValue.length-1);
             ignorePackageNamesElement.value=tempInputValue;
         }
-        ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set ignorePackageNames "${ignorePackageNamesElement.value}"`)
+        ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set ignorePackageNames ${shellQuote(tempInputValue)}`)
         alert("保存成功");
     });
     document.getElementById("saveCustomCompatModeToastText").addEventListener("click",()=>{
@@ -95,7 +100,7 @@ maxlength="4096"></textarea>
             alert("消息无效 需带有%s占位符且长度小于64字符");
             return
         }
-        ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set customToastCompatModeText "${customToastCompatModeTextInputElement.value}"`);
+        ksu.exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set customToastCompatModeText ${shellQuote(tempInputValue)}`);
         alert("保存成功");
     });
 </script>

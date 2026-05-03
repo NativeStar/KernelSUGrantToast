@@ -16,9 +16,7 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -31,8 +29,8 @@ public class Entry {
     private static final LruCache<String, String> appNameCache = new LruCache<>(16);
     private static String customToastText = "%s 已被授予超级用户权限";
     //默认保持一致
-    private static String customCompatModeToastText="%s 已被授予超级用户权限";
-    private static final HashSet<String> ignorePackageList=new HashSet<>();
+    private static String customCompatModeToastText = "%s 已被授予超级用户权限";
+    private static final HashSet<String> ignorePackageList = new HashSet<>();
 
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     public static void main(String[] args) {
@@ -71,7 +69,7 @@ public class Entry {
             if(tempCustomCompatModeToastText.length() < 65 && tempCustomCompatModeToastText.contains("%s")) {
                 customCompatModeToastText = tempCustomCompatModeToastText;
             } else {
-                Log.w(TAG, "Invalid custom toast text!");
+                Log.w(TAG, "Invalid custom compat mode toast text!");
             }
         } else {
             Log.i(TAG, "Use default compat mode toast text");
@@ -99,7 +97,7 @@ public class Entry {
                 System.exit(1);
                 return;
             }
-            modifyModuleDescription(String.format(Locale.getDefault(),"✅Working.PID:%d,Ignored package(s) count:%d",Process.myPid(), ignorePackageList.size()));
+            modifyModuleDescription(String.format(Locale.getDefault(), "✅Working.PID:%d,Ignored package(s) count:%d", Process.myPid(), ignorePackageList.size()));
             //降权 不然就是java.lang.SecurityException: Package android is not owned by uid 0
             //等写入描述完成才执行 系统框架没模块目录权限
             jniSetUid(1000);
@@ -117,12 +115,12 @@ public class Entry {
         }
     }
 
-    private static void showToast(String pkgName,boolean isCompat) {
+    private static void showToast(String pkgName, boolean isCompat) {
         if(handler == null) handler = new Handler(Looper.getMainLooper());
-        handler.post(() -> Toast.makeText(systemContext, String.format(Locale.getDefault(), isCompat?customCompatModeToastText:customToastText, pkgName), Toast.LENGTH_SHORT).show());
+        handler.post(() -> Toast.makeText(systemContext, String.format(Locale.getDefault(), isCompat ? customCompatModeToastText : customToastText, pkgName), Toast.LENGTH_SHORT).show());
     }
 
-    public static void jniOnNewSuEvent(String cmdline,boolean isCompat) {
+    public static void jniOnNewSuEvent(String cmdline, boolean isCompat) {
         if(packageManager == null) packageManager = systemContext.getPackageManager();
         String packageName;
         if(cmdline.contains(":")) {
@@ -136,13 +134,13 @@ public class Entry {
         try {
             String cachedAppName = appNameCache.get(packageName);
             if(cachedAppName != null) {
-                showToast(cachedAppName,isCompat);
+                showToast(cachedAppName, isCompat);
                 return;
             }
             ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
             String appName = appInfo.loadLabel(packageManager).toString();
             appNameCache.put(packageName, appName);
-            showToast(appName,isCompat);
+            showToast(appName, isCompat);
         } catch (PackageManager.NameNotFoundException e) {
             Log.w(TAG, "Failed to get app info", e);
         }
@@ -151,10 +149,12 @@ public class Entry {
     private static void onInitFailed(String errorMessage) {
         modifyModuleDescription("❌" + errorMessage);
     }
-    private static void onNativeError(String msg){
+
+    private static void onNativeError(String msg) {
         modifyModuleDescription("❌" + msg);
         System.exit(1);
     }
+
     private static void modifyModuleDescription(String descText) {
         //使用ksu特性临时更改描述
         try {
