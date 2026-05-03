@@ -44,7 +44,7 @@ public class Entry {
         if(args.length > 0 && args[0] != null) {
             String tempCustomText = args[0];
             Log.i(TAG, "Found custom toast text");
-            if(tempCustomText.length() < 64 && tempCustomText.contains("%s")) {
+            if(tempCustomText.length() < 65 && tempCustomText.contains("%s")) {
                 customToastText = tempCustomText;
             } else {
                 Log.w(TAG, "Invalid custom toast text!");
@@ -68,7 +68,7 @@ public class Entry {
         if(args.length > 2 && args[2] != null) {
             String tempCustomCompatModeToastText = args[2];
             Log.i(TAG, "Found custom compat mode toast text");
-            if(tempCustomCompatModeToastText.length() < 64 && tempCustomCompatModeToastText.contains("%s")) {
+            if(tempCustomCompatModeToastText.length() < 65 && tempCustomCompatModeToastText.contains("%s")) {
                 customCompatModeToastText = tempCustomCompatModeToastText;
             } else {
                 Log.w(TAG, "Invalid custom toast text!");
