@@ -28,8 +28,6 @@ public class Entry {
     //缓存应用名 避免每次都走PackageManager
     private static final LruCache<String, String> appNameCache = new LruCache<>(16);
     private static String customToastText = "%s 已被授予超级用户权限";
-    //默认保持一致
-    private static String customCompatModeToastText = "%s 已被授予超级用户权限";
     private static final HashSet<String> ignorePackageList = new HashSet<>();
 
     @SuppressLint("UnsafeDynamicallyLoadedCode")
@@ -62,17 +60,6 @@ public class Entry {
             } else {
                 Log.w(TAG, "Invalid ignore package list");
             }
-        }
-        if(args.length > 2 && args[2] != null) {
-            String tempCustomCompatModeToastText = args[2];
-            Log.i(TAG, "Found custom compat mode toast text");
-            if(tempCustomCompatModeToastText.length() < 65 && tempCustomCompatModeToastText.contains("%s")) {
-                customCompatModeToastText = tempCustomCompatModeToastText;
-            } else {
-                Log.w(TAG, "Invalid custom compat mode toast text!");
-            }
-        } else {
-            Log.i(TAG, "Use default compat mode toast text");
         }
         HiddenApiBypass.addHiddenApiExemptions("Landroid/app/ActivityThread;");
         try {
@@ -115,12 +102,12 @@ public class Entry {
         }
     }
 
-    private static void showToast(String pkgName, boolean isCompat) {
+    private static void showToast(String pkgName) {
         if(handler == null) handler = new Handler(Looper.getMainLooper());
-        handler.post(() -> Toast.makeText(systemContext, String.format(Locale.getDefault(), isCompat ? customCompatModeToastText : customToastText, pkgName), Toast.LENGTH_SHORT).show());
+        handler.post(() -> Toast.makeText(systemContext, String.format(Locale.getDefault(),customToastText, pkgName), Toast.LENGTH_SHORT).show());
     }
 
-    public static void jniOnNewSuEvent(String cmdline, boolean isCompat) {
+    public static void jniOnNewSuEvent(String cmdline) {
         if(packageManager == null) packageManager = systemContext.getPackageManager();
         String packageName;
         if(cmdline.contains(":")) {
@@ -134,13 +121,13 @@ public class Entry {
         try {
             String cachedAppName = appNameCache.get(packageName);
             if(cachedAppName != null) {
-                showToast(cachedAppName, isCompat);
+                showToast(cachedAppName);
                 return;
             }
             ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
             String appName = appInfo.loadLabel(packageManager).toString();
             appNameCache.put(packageName, appName);
-            showToast(appName, isCompat);
+            showToast(appName);
         } catch (PackageManager.NameNotFoundException e) {
             Log.w(TAG, "Failed to get app info", e);
         }

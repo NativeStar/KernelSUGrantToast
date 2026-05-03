@@ -15,7 +15,6 @@
 #define TASK_COMM_LEN  16
 #define KSU_EVENT_TYPE_DROPPED 0xFFFFu
 #define KSU_SULOG_EVENT_ROOT_EXECVE 1u
-#define KSU_SULOG_EVENT_SUCOMPAT 2u
 static constexpr char ksudExec[] = "ksud";
 static JavaVM *jvm = nullptr;
 static jclass globalEntryClass = nullptr;
@@ -54,7 +53,7 @@ void pushIgnoredProcessMap(uint32_t pid, time_t timestamp) {
     ignoredProcess[pid] = timestamp;
 }
 
-void processSuEvent(JNIEnv *threadJniEnv, uint32_t ppid,bool isCompat) {
+void processSuEvent(JNIEnv *threadJniEnv, uint32_t ppid) {
     time_t currentTime = time(nullptr);
     //限制相同ppid
     auto findPpidResult = ignoredProcess.find(ppid);
@@ -72,7 +71,7 @@ void processSuEvent(JNIEnv *threadJniEnv, uint32_t ppid,bool isCompat) {
         }
         pushToastedApplicationMap(appInfo.realPid, currentTime);
         jstring cmd = threadJniEnv->NewStringUTF(appInfo.cmdline.c_str());
-        threadJniEnv->CallStaticVoidMethod(globalEntryClass, onNewSuEventJavaMethod, cmd, isCompat);
+        threadJniEnv->CallStaticVoidMethod(globalEntryClass, onNewSuEventJavaMethod, cmd);
         threadJniEnv->DeleteLocalRef(cmd);
     }
 }
@@ -114,15 +113,12 @@ void pollingLogEvent(int suLogFd) {
                         if (rec->record_type != KSU_EVENT_TYPE_DROPPED) {
                             auto *hdr = reinterpret_cast<SulogEventHeader *>(buf + off +
                                                                              sizeof(EventRecordHeader));
-                            if (rec->payload_len >= sizeof(SulogEventHeader) && hdr->retval == 0) {
-                                //只有这两个是来自第三方的调用 GRANT_ROOT是对管理器自动授权 不要处理
+                            if (rec->payload_len >= sizeof(SulogEventHeader) && hdr->retval == 0 &&
+                                hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE) {
+                                //只有这个是来自第三方的调用 GRANT_ROOT是对管理器自动授权 不要处理
                                 //应该是所有root获取都会走ksud
-                                if (hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE) {
-                                    if (std::memcmp(ksudExec, hdr->comm, sizeof(ksudExec)) == 0)
-                                        processSuEvent(localJniEnv, hdr->ppid,false);
-                                } else if (hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT) {
-                                    processSuEvent(localJniEnv, hdr->ppid,true);
-                                }
+                                if (std::memcmp(ksudExec, hdr->comm, sizeof(ksudExec)) == 0)
+                                    processSuEvent(localJniEnv, hdr->ppid);
                             }
                         }
                         off += frame;
@@ -135,8 +131,9 @@ void pollingLogEvent(int suLogFd) {
     done:
     close(epfd);
     close(suLogFd);
-    jmethodID modifyModuleDescriptionMethod = localJniEnv->GetStaticMethodID(globalEntryClass, "onNativeError",
-                                                                        "(Ljava/lang/String;)V");
+    jmethodID modifyModuleDescriptionMethod = localJniEnv->GetStaticMethodID(globalEntryClass,
+                                                                             "onNativeError",
+                                                                             "(Ljava/lang/String;)V");
     jstring description = localJniEnv->NewStringUTF("Error on working,Exited");
     localJniEnv->CallStaticVoidMethod(globalEntryClass, modifyModuleDescriptionMethod, description);
     localJniEnv->DeleteLocalRef(description);
@@ -171,7 +168,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     jclass entryClass = jniEnv->FindClass("com/suisho/kernelsugranttoast/Entry");
     globalEntryClass = reinterpret_cast<jclass>(jniEnv->NewGlobalRef(entryClass));
     onNewSuEventJavaMethod = jniEnv->GetStaticMethodID(globalEntryClass, "jniOnNewSuEvent",
-                                                       "(Ljava/lang/String;Z)V");
+                                                       "(Ljava/lang/String;)V");
     jniEnv->DeleteLocalRef(entryClass);
     return JNI_VERSION_1_6;
 }
