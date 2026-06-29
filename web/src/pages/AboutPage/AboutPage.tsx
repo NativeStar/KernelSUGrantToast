@@ -13,12 +13,14 @@ import { useKsu } from "@/hooks/useKsu";
 export default function AboutPage() {
     const language = useContext(LanguageContext);
     const { getLang } = useI18n(language);
-    const { openUrl ,vibration} = useKsu();
+    const { openUrl ,vibration,getVersion} = useKsu();
+    const versionInfo=getVersion();
     return (
         <>
             <div className="flex flex-col items-center">
                 <h3 className="text-2xl text-center">KernelSU Grant Toast</h3>
                 <span>{getLang("about.description")}</span>
+                <span className="text-sm text-[gray]">{versionInfo.versionName}({versionInfo.versionCode})</span>
                 <Button className="mt-2 w-[70%]" onClick={() => {
                     vibration("CONFIRM")
                     openUrl("https://github.com/NativeStar/KernelSUGrantToast")

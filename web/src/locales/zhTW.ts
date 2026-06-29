@@ -46,7 +46,9 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "advanced.searchDepth.label": "應用程式套件搜尋深度",
     "advanced.searchDepth.save.failed.invalid": "輸入數值無效，應介於0-32之間",
     "advanced.searchDepth.description": "輸入值應介於0-32之間，預設值為1",
-    "advanced.searchDepth.description.detail": "過高會影響效能，過低可能導致某些提權資料被忽略。此設定只在遇到使用共享 UID 的應用程式（需要退回舊的檢測邏輯）時生效",
+    "advanced.searchDepth.description.detail": "過高會影響效能，過低可能導致某些提權資料被忽略。\n此設定只在遇到使用共享 UID 的應用程式（需要退回舊的檢測邏輯）時生效",
+    "advanced.experimental.hotUpdateSetting.label": "設定即時生效（實驗性）",
+    "advanced.experimental.hotUpdateSetting.detail": "使部分設定變更後即時生效，不再需要重新啟動裝置。\n此功能正在進行測試，可能存在異常。\n測試期間當設定項更新後會發出 Toast 提醒",
 
     "about.description": "像 Magisk 一樣彈出授予超級使用者權限 Toast",
     "about.button.repository": "專案倉庫",

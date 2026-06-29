@@ -47,7 +47,9 @@ const EnglishKeys: typeof BaseLang = {
   "advanced.searchDepth.label": "Package Search Depth",
   "advanced.searchDepth.save.failed.invalid": "Invalid input, should be between 0 and 32",
   "advanced.searchDepth.description": "Enter a value between 0 and 32. Default: 1",
-  "advanced.searchDepth.description.detail": "Setting this too high may hurt performance, while setting it too low may cause some privilege-escalation data to be ignored. This setting only takes effect when encountering apps with shared UIDs (which require falling back to the old detection logic).",
+  "advanced.searchDepth.description.detail": "Setting this too high may hurt performance, while setting it too low may cause some privilege-escalation data to be ignored.\nThis setting only takes effect when encountering apps with shared UIDs (which require falling back to the old detection logic).",
+  "advanced.experimental.hotUpdateSetting.label": "Apply Settings in Real Time (Experimental)",
+  "advanced.experimental.hotUpdateSetting.detail": "Makes some settings take effect in real time after changes, no longer requiring a device reboot.\nThis feature is under testing and may have issues.\nDuring testing, a Toast reminder will be shown when settings are updated.",
 
   "about.description": "Show a root granted toast like Magisk",
   "about.button.repository": "Project Repository",

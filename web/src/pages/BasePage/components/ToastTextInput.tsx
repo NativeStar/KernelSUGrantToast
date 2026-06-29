@@ -35,6 +35,7 @@ export default function ToastTextInput() {
             toast.warning(getLang("toast.save.error.invalidLength"))
             return
         }
+        //todo 添加热更新设置实验性选项
         if (!customToastText.includes("%s")) {
             toast.warning(getLang("toast.save.error.missionPlaceholder"))
             return

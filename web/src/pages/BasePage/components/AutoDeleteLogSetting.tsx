@@ -8,7 +8,6 @@ import { useKsu } from "@/hooks/useKsu";
 import { showSaveConfigSuccessToast } from "@/lib/utils";
 import { CircleQuestionMark } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-// import { toast } from "sonner";
 
 export default function AutoDeleteLogSetting() {
     const languageContext = useContext(LanguageContext);

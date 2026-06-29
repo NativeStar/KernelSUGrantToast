@@ -80,8 +80,7 @@ public class Entry {
                 System.exit(1);
                 return;
             }
-            modifyModuleDescription(String.format(Locale.getDefault(), "✅Working.PID:%d,Ignored package(s) count:%d", Process.myPid(), ignorePackageList.size()));
-            //TODO 开启实验性选项后才监听
+            modifyModuleDescription(String.format(Locale.getDefault(), "✅Working.PID:%d", Process.myPid()));
             initSettingHotUpdateIpcListener();
             //降权 不然就是java.lang.SecurityException: Package android is not owned by uid 0
             //等写入描述完成才执行 系统框架没模块目录权限

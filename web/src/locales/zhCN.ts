@@ -45,7 +45,10 @@ const SimplifiedChineseKeys = {
     "advanced.searchDepth.label":"应用包搜索深度",
     "advanced.searchDepth.save.failed.invalid":"输入数值无效 应为0-32之间",
     "advanced.searchDepth.description":"输入应为0-32之间 默认值1",
-    "advanced.searchDepth.description.detail":'过高影响性能 过低可能导致某些提权数据被忽略.该设置只在遇到使用共享UID的应用(需要回退到旧检测逻辑)时生效',
+    "advanced.searchDepth.description.detail":'过高影响性能 过低可能导致某些提权数据被忽略.\n该设置只在遇到使用共享UID的应用(需要回退到旧检测逻辑)时生效',
+    "advanced.experimental.hotUpdateSetting.label":"设置实时生效(实验性)",
+    "advanced.experimental.hotUpdateSetting.detail":"使部分设置更改后实时生效 不再需要重启设备.\n该功能正在进行测试 可能存在异常.\n测试期间当设置项更新后会发出Toast提醒",
+    
 
     "about.description":"像Magisk一样弹出授予超级用户权限Toast",
     "about.button.repository":"项目仓库",

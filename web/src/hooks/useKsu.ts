@@ -1,5 +1,6 @@
 import { shellQuote } from "@/lib/utils";
-import { exec, listPackages, getPackagesInfo, spawn } from "kernelsu"
+import type { ModuleInfo } from "@/types";
+import { exec, listPackages, getPackagesInfo, spawn , moduleInfo} from "kernelsu"
 import { useCallback } from "react"
 const VibrationType = {
     TICK: 20,
@@ -16,7 +17,6 @@ export function useKsu() {
     if (isEnabledHotUpdate === null) {
         exec("test -e /data/adb/toast_ipc").then(result => {
             result.errno === 0 ? isEnabledHotUpdate = true : isEnabledHotUpdate = false
-            console.log(isEnabledHotUpdate);
         })
     }
     const getStringConfig = useCallback(async (configKey: string) => {
@@ -97,7 +97,12 @@ export function useKsu() {
         if (mock) return
         spawn(`cmd vibrator_manager synced oneshot ${VibrationType[type]}`)
     }, []);
-    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration }
+    const getVersion = useCallback(() => {
+        if (mock) return { versionName: "6.6.6", versionCode: "666"}
+        const moduleInfoObject:ModuleInfo=JSON.parse(moduleInfo());
+        return {versionName: moduleInfoObject.version, versionCode: moduleInfoObject.versionCode};
+    }, []);
+    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration ,getVersion}
 }
 export function isEnabledHotUpdateConfig(){
     return isEnabledHotUpdate??false;
