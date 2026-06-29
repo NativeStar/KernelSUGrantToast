@@ -10,6 +10,7 @@ import AddApplicationDialog from "./components/AddApplicationDialog";
 import { useKsu } from "@/hooks/useKsu";
 import type { PackageInfo } from "@/types";
 import { toast } from "sonner";
+import { showSaveConfigSuccessToast } from "@/lib/utils";
 export default function IgnorePackagePage() {
     const languageContext = useContext(LanguageContext);
     const { getLang } = useI18n(languageContext);
@@ -40,7 +41,7 @@ export default function IgnorePackagePage() {
                 const newIgnoredPackages = [...ignorePackages, pkgInfo];
                 setIgnorePackages(newIgnoredPackages);
                 const result = await setConfig("ignorePackageNames", newIgnoredPackages.map(item => item.packageName).join(";"));
-                result ? toast.success(getLang("text.save.success"), { description: getLang("text.reboot.tip") }) : toast.error(getLang("text.save.failed"));
+                showSaveConfigSuccessToast(result, getLang);
                 setShowAddApplicationDialog(false);
             }} />
             <div className="flex flex-col h-full min-h-0 items-center text-center overflow-hidden">

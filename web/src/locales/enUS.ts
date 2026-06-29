@@ -29,6 +29,7 @@ const EnglishKeys: typeof BaseLang = {
   "toast.save.reset.success": "Default toast message restored",
   "toast.save.error.invalidLength": "Message length must be less than 64 characters",
   "toast.save.error.missionPlaceholder": "Message must contain '%s' placeholder",
+  "toast.save.error.tooManyPlaceholders": "Only one placeholder is allowed",
 
   "ignorePackage.tip": "Requests from apps in this list will not trigger a superuser toast",
   "ignorePackage.delete.confirm.title": "Confirm Removal",

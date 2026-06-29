@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button"
 import { LanguageContext } from "@/contexts/LanguageContext";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useI18n } from "@/hooks/useI18n";
-import { useKsu } from "@/hooks/useKsu";
+import { useKsu, isEnabledHotUpdateConfig } from "@/hooks/useKsu";
 import { toast } from "sonner"
+import { showSaveConfigSuccessToast } from "@/lib/utils";
 export default function ToastTextInput() {
     const languageContext = useContext(LanguageContext);
     const { getLang } = useI18n(languageContext);
-    const { getStringConfig, setConfig, deleteConfig ,vibration} = useKsu();
+    const { getStringConfig, setConfig, deleteConfig, vibration } = useKsu();
     const [customToastText, setCustomToastText] = useState<string>("");
     useEffect(() => {
         getStringConfig("customToastText").then(text => {
@@ -21,7 +22,13 @@ export default function ToastTextInput() {
         vibration("KEY")
         if (customToastText === "") {
             const result = await deleteConfig("customToastText");
-            result ? toast.success(getLang("toast.save.reset.success"), { description: getLang("text.reboot.tip") }) : toast.error(getLang("text.save.failed"))
+            if (isEnabledHotUpdateConfig()) {
+                //热重置设置
+                setConfig("customToastText", "");
+                result ? toast.success(getLang("toast.save.reset.success")) : toast.error(getLang("text.save.failed"))
+            } else {
+                result ? toast.success(getLang("toast.save.reset.success"), { description: getLang("text.reboot.tip") }) : toast.error(getLang("text.save.failed"))
+            }
             return
         }
         if (customToastText.length > 64) {
@@ -32,10 +39,12 @@ export default function ToastTextInput() {
             toast.warning(getLang("toast.save.error.missionPlaceholder"))
             return
         }
+        if (customToastText.split("%s").length>2) {
+            toast.warning(getLang("toast.save.error.tooManyPlaceholders"))
+            return
+        }
         setConfig("customToastText", customToastText).then(result => {
-            result ?
-                toast.success(getLang("text.save.success"), { description: getLang("text.reboot.tip") })
-                : toast.error(getLang("text.save.failed"))
+            showSaveConfigSuccessToast(result, getLang);
         })
     }, [customToastText, languageContext]);
     return (

@@ -6,7 +6,8 @@ import { FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import { useI18n } from "@/hooks/useI18n";
-import { useKsu } from "@/hooks/useKsu";
+import { useKsu, isEnabledHotUpdateConfig } from "@/hooks/useKsu";
+import { showSaveConfigSuccessToast } from "@/lib/utils";
 import { CircleQuestionMark } from "lucide-react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -27,7 +28,13 @@ export default function SearchDepthSetting() {
         //空值
         if (isNaN(depthValue)) {
             const result = await deleteConfig("packageSearchDepth");
-            result ? toast.success(getLang("advanced.searchDepth.reset.success"), { description: getLang("text.reboot.tip") }) : toast.error(getLang("text.save.failed"))
+            if (isEnabledHotUpdateConfig()) {
+                //热重置设置
+                setConfig("packageSearchDepth", "");
+                result ? toast.success(getLang("advanced.searchDepth.reset.success")) : toast.error(getLang("text.save.failed"))
+            } else {
+                result ? toast.success(getLang("advanced.searchDepth.reset.success"), { description: getLang("text.reboot.tip") }) : toast.error(getLang("text.save.failed"))
+            }
             return
         }
         if (depthValue < 0 || depthValue > 32) {
@@ -35,7 +42,7 @@ export default function SearchDepthSetting() {
             return
         }
         setConfig("packageSearchDepth", depthValue.toString()).then(result => {
-            result ? toast.success(getLang("text.save.success"), { description: getLang("text.reboot.tip") }) : toast.error(getLang("text.save.failed"))
+            showSaveConfigSuccessToast(result, getLang);
         })
     }, [depthValue])
     return (

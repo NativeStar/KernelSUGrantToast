@@ -6,10 +6,18 @@ const VibrationType = {
     KEY: 45,
     CONFIRM: 75
 }
+let isEnabledHotUpdate: boolean | null = null;
 export function useKsu() {
     const mock = !Reflect.has(window, "ksu");
     if (mock) {
         console.warn("ipc mocking!");
+        isEnabledHotUpdate = false;
+    }
+    if (isEnabledHotUpdate === null) {
+        exec("test -e /data/adb/toast_ipc").then(result => {
+            result.errno === 0 ? isEnabledHotUpdate = true : isEnabledHotUpdate = false
+            console.log(isEnabledHotUpdate);
+        })
     }
     const getStringConfig = useCallback(async (configKey: string) => {
         if (mock) {
@@ -31,6 +39,10 @@ export function useKsu() {
     const setConfig = useCallback(async (configKey: string, value: string) => {
         if (mock) return true
         const result = await exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set ${configKey} ${shellQuote(value)}`)
+        if (isEnabledHotUpdate && result.errno === 0 && configKey !== "autoDeleteLog") {
+            //写入热更新ipc
+            spawn(`echo '${configKey}${String.fromCharCode(0x2)} ${value}' > /data/adb/toast_ipc`)
+        }
         return result.errno === 0
     }, []);
     const deleteConfig = useCallback(async (configKey: string) => {
@@ -86,4 +98,7 @@ export function useKsu() {
         spawn(`cmd vibrator_manager synced oneshot ${VibrationType[type]}`)
     }, []);
     return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration }
+}
+export function isEnabledHotUpdateConfig(){
+    return isEnabledHotUpdate??false;
 }

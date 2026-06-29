@@ -28,6 +28,7 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "toast.save.reset.success": "已還原預設提示訊息",
     "toast.save.error.invalidLength": "訊息長度需小於64個字元",
     "toast.save.error.missionPlaceholder": "訊息需包含「%s」預留位置",
+    "toast.save.error.tooManyPlaceholders": "只允許存在一個預留位置",
 
     "ignorePackage.tip": "清單中的應用程式發起提權時將不會提醒",
     "ignorePackage.delete.confirm.title": "確認移除",

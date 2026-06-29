@@ -27,6 +27,7 @@ const SimplifiedChineseKeys = {
     "toast.save.reset.success": "已恢复默认提示消息",
     "toast.save.error.invalidLength": "消息长度需小于64字符",
     "toast.save.error.missionPlaceholder": "消息需带有'%s'占位符",
+    "toast.save.error.tooManyPlaceholders":"只允许存在一个占位符",
 
     "ignorePackage.tip":"在列表中的应用发起提权将不会提醒",
     "ignorePackage.delete.confirm.title":"确认移除",

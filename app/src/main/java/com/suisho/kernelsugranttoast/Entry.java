@@ -163,11 +163,15 @@ public class Entry {
         return new TempArguments(packageSearchDepth, autoDeleteLog);
     }
 
-    private static void showToast(String pkgName) {
+    private static void showToast(String appName) {
         if(handler == null) handler = new Handler(Looper.getMainLooper());
-        handler.post(() -> Toast.makeText(systemContext, String.format(Locale.getDefault(), customToastText, pkgName), Toast.LENGTH_SHORT).show());
+        handler.post(() -> Toast.makeText(systemContext, String.format(Locale.getDefault(), customToastText, appName), Toast.LENGTH_SHORT).show());
     }
-
+    //为调试功能而生 暂时用这个提醒
+    private static void showOriginToast(String message){
+        if(handler == null) handler = new Handler(Looper.getMainLooper());
+        handler.post(() -> Toast.makeText(systemContext, message, Toast.LENGTH_SHORT).show());
+    }
     public static void jniOnFallbackSuEvent(String cmdline) {
         if(packageManager == null) packageManager = systemContext.getPackageManager();
         String packageName;
@@ -298,19 +302,23 @@ public class Entry {
                         if(splitMessage[0].equals("customToastText") && splitMessage[1].isEmpty()) {
                             customToastText = Messages.getLocaleMessage();
                             Log.i(TAG, "Custom toast text reset");
+                            showOriginToast("Custom toast text hot reset");
                             continue;
                         } else if(splitMessage[0].equals("ignorePackageNames") && splitMessage[1].isEmpty()) {
                             ignorePackageList.clear();
                             Log.i(TAG, "Ignore package list reset");
+                            showOriginToast("Ignore package list hot reset");
                             continue;
                         }else if(splitMessage[0].equals("packageSearchDepth") && splitMessage[1].isEmpty()){
                             updatePackageSearchDepth((short) 0);
                             Log.i(TAG, "Package search depth reset");
+                            showOriginToast("Package search depth hot reset");
                             continue;
                         }
                         Log.w(TAG, "Invalid config value: " + splitMessage[1]);
                         continue;
                     }
+                    showOriginToast(String.format("Setting key '%s' hot updated", splitMessage[0]));
                     switch (splitMessage[0]) {
                         case "customToastText":
                             customToastText = splitMessage[1];

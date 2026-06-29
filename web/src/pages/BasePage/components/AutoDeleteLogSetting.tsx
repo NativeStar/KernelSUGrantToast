@@ -5,9 +5,10 @@ import { Switch } from "@/components/ui/switch";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import { useI18n } from "@/hooks/useI18n";
 import { useKsu } from "@/hooks/useKsu";
+import { showSaveConfigSuccessToast } from "@/lib/utils";
 import { CircleQuestionMark } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 export default function AutoDeleteLogSetting() {
     const languageContext = useContext(LanguageContext);
@@ -22,7 +23,7 @@ export default function AutoDeleteLogSetting() {
     function onSwitchChange() {
         vibration("TICK")
         setConfig("autoDeleteLog", String(!autoDeleteLog)).then((result) => {
-            result ? toast.success(getLang("text.save.success"), { description: getLang("text.reboot.tip") }) : toast.error(getLang("text.save.failed"));
+            showSaveConfigSuccessToast(result, getLang);
             result && setAutoDeleteLog(!autoDeleteLog);
         })
     }

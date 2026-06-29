@@ -8,8 +8,8 @@ import { useKsu } from "@/hooks/useKsu";
 import type { PackageInfo } from "@/types"
 import { Trash } from "lucide-react";
 import { useContext, useState, type Dispatch, type SetStateAction } from "react"
-import { toast } from "sonner";
 import { ApplicationView } from "./ApplicationView";
+import { showSaveConfigSuccessToast } from "@/lib/utils";
 interface IgnoredPackagesTableProps {
     ignoredPackages: PackageInfo[]
     setIgnorePackages: Dispatch<SetStateAction<PackageInfo[]>>
@@ -30,7 +30,7 @@ export default function IgnoredPackagesTable({ ignoredPackages, setIgnorePackage
                 const newIgnoredPackages = ignoredPackages.filter(item => item.packageName !== readyRemovePackage);
                 setIgnorePackages(newIgnoredPackages);
                 const result = await setConfig("ignorePackageNames", newIgnoredPackages.map(item => item.packageName).join(";"));
-                result ? toast.success(getLang("text.save.success"), { description: getLang("text.reboot.tip") }) : toast.error(getLang("text.save.failed"));
+                showSaveConfigSuccessToast(result, getLang);
                 setReadyRemovePackage(null)
             }
             } />
