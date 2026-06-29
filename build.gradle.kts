@@ -1,8 +1,3 @@
-import com.android.build.gradle.internal.services.computeMaxAapt2Daemons
-import org.gradle.api.tasks.Copy
-import org.gradle.api.tasks.Delete
-import org.gradle.api.tasks.bundling.Zip
-
 plugins {
     alias(libs.plugins.android.application) apply false
 }

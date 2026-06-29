@@ -58,6 +58,7 @@ const EnglishKeys: typeof BaseLang = {
   "about.otherProjects.description.connector.windows": "Transfer files between phone and PC over a local network, forward notifications, and more (Windows side)",
   "about.otherProjects.description.connector.android": "Transfer files and text between phone and PC over a local network, forward notifications, and more (Android side)",
   "about.otherProjects.description.ruru": "A fork of a well-known app list detector, with stronger detection and support for custom target apps",
+  "about.easterEgg":"Prose"
 
 }
 export default EnglishKeys;

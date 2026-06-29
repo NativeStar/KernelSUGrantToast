@@ -2,7 +2,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 interface AlertProps {
     open: boolean;
-    title: string;
+    title?: string;
     description: string;
     confirmText: string;
     cancelText?: string;
@@ -14,7 +14,7 @@ export function Alert({ open, title, description, confirmText, cancelText, onCon
         <AlertDialog open={open}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>{title}</AlertDialogTitle>
+                    {title && <AlertDialogTitle>{title}</AlertDialogTitle>}
                     <AlertDialogDescription className="whitespace-pre-line">{description}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

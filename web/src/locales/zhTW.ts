@@ -56,6 +56,7 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "about.otherProjects.description.kyouka": "支援修改網頁、攔截呼叫、資料匯出等功能的多功能瀏覽器擴充套件",
     "about.otherProjects.description.connector.windows": "在區域網路內讓手機和電腦互相傳輸檔案、轉發通知等（Windows 端）",
     "about.otherProjects.description.connector.android": "在區域網路內讓手機和電腦互相傳輸檔案和文字、轉發通知等（Android 端）",
-    "about.otherProjects.description.ruru": "知名應用程式清單偵測器的分支，增加偵測強度並支援自訂偵測目標應用程式"
+    "about.otherProjects.description.ruru": "知名應用程式清單偵測器的分支，增加偵測強度並支援自訂偵測目標應用程式",
+    "about.easterEgg":"傷心總是難免的"
 }
 export default TraditionalChineseKeys;

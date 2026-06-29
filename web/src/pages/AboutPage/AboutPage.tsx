@@ -5,22 +5,28 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import { useI18n } from "@/hooks/useI18n";
 import { GitBranch } from "lucide-react";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import ProjectItem from "./components/ProjectItem";
 import ProjectsList from "./projects"
 import { useKsu } from "@/hooks/useKsu";
+import { Alert } from "@/components/Alert";
 
 export default function AboutPage() {
     const language = useContext(LanguageContext);
     const { getLang } = useI18n(language);
-    const { openUrl ,vibration,getVersion} = useKsu();
-    const versionInfo=getVersion();
+    const [openEasterEggAlert, setOpenEasterEggAlert] = useState(false);
+    const { openUrl, vibration, getVersion } = useKsu();
+    const versionInfo = getVersion();
     return (
         <>
+            <Alert open={openEasterEggAlert} confirmText={getLang("text.ok")} description={getLang("about.easterEgg")} onConfirm={() => {
+                vibration("KEY")
+                setOpenEasterEggAlert(false)
+            }}/>
             <div className="flex flex-col items-center">
                 <h3 className="text-2xl text-center">KernelSU Grant Toast</h3>
                 <span>{getLang("about.description")}</span>
-                <span className="text-sm text-[gray]">{versionInfo.versionName}({versionInfo.versionCode})</span>
+                <span className="text-sm text-[gray]" onContextMenu={() => setOpenEasterEggAlert(true)}>{versionInfo.versionName}({versionInfo.versionCode})</span>
                 <Button className="mt-2 w-[70%]" onClick={() => {
                     vibration("CONFIRM")
                     openUrl("https://github.com/NativeStar/KernelSUGrantToast")

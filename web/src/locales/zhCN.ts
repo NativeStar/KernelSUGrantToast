@@ -56,6 +56,8 @@ const SimplifiedChineseKeys = {
     "about.otherProjects.description.kyouka":"支持修改网页、拦截调用、数据导出等的多功能浏览器扩展",
     "about.otherProjects.description.connector.windows":"在局域网内让手机和电脑互相传输文件、转发通知等(Windows端)",
     "about.otherProjects.description.connector.android":"在局域网内让手机和电脑互相传输文件和文本、转发通知等(Android端)",
-    "about.otherProjects.description.ruru":"知名应用列表检测器的分支, 增加检测强度并支持自定义检测目标应用"
+    "about.otherProjects.description.ruru":"知名应用列表检测器的分支, 增加检测强度并支持自定义检测目标应用",
+    //根据语言来 不用翻译
+    "about.easterEgg":"栀子花开"
 }
 export default SimplifiedChineseKeys;
