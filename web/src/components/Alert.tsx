@@ -15,7 +15,7 @@ export function Alert({ open, title, description, confirmText, cancelText, onCon
             <AlertDialogContent>
                 <AlertDialogHeader>
                     {title && <AlertDialogTitle>{title}</AlertDialogTitle>}
-                    <AlertDialogDescription className="whitespace-pre-line">{description}</AlertDialogDescription>
+                    <AlertDialogDescription className="whitespace-pre-line text-wrap">{description}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     {(cancelText && onCancel) && <AlertDialogCancel onClick={onCancel}>{cancelText}</AlertDialogCancel>}
