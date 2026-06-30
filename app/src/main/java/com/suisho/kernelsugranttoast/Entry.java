@@ -90,12 +90,12 @@ public class Entry {
             Log.i(TAG, "Init success!");
             Looper.loop();
         } catch (Throwable e) {
-            Log.e(TAG, "Failed to init!", e);
+            Log.e(TAG, "Crashed!", e);
             //重新提权 否则无法执行ksud
             if(Process.myUid() != 0) {
                 jniSetUid(0);
             }
-            onInitFailed("Init failed!");
+            onInitFailed("Crashed!");
             systemContext = null;
             System.exit(1);
         }
