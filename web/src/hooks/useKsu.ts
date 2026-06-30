@@ -39,9 +39,11 @@ export function useKsu() {
     const setConfig = useCallback(async (configKey: string, value: string) => {
         if (mock) return true
         const result = await exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set ${configKey} ${shellQuote(value)}`)
+        //autoDeleteLog只在启动后检查触发一次 没有热更新的意义
         if (isEnabledHotUpdate && result.errno === 0 && configKey !== "autoDeleteLog") {
             //写入热更新ipc
-            spawn(`echo '${configKey}${String.fromCharCode(0x2)} ${value}' > /data/adb/toast_ipc`)
+            const ipcContent = `${configKey}${String.fromCharCode(0x2)} ${value}`;
+            spawn(`echo ${shellQuote(ipcContent)} > /data/adb/toast_ipc`)
         }
         return result.errno === 0
     }, []);

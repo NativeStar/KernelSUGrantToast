@@ -208,7 +208,7 @@ public class Entry {
                 Log.i(TAG, "No package found for uid " + uid);
                 return;
             }
-            //sharedUserId处理
+            //sharedUserId处理 回退旧逻辑
             if(appsList.length > 1) {
                 //读取proc需要提权
                 jniSetUid(0);
@@ -309,7 +309,7 @@ public class Entry {
                             showOriginToast("Ignore package list hot reset");
                             continue;
                         }else if(splitMessage[0].equals("packageSearchDepth") && splitMessage[1].isEmpty()){
-                            updatePackageSearchDepth((short) 0);
+                            updatePackageSearchDepth((short) 1);
                             Log.i(TAG, "Package search depth reset");
                             showOriginToast("Package search depth hot reset");
                             continue;
