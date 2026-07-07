@@ -52,7 +52,7 @@ export function useKsu() {
         const result = await exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config delete ${configKey}`)
         return result.errno === 0 || (result.errno === 1 && result.stderr === `Error: Key '${configKey}' not found in config`)
     }, []);
-    const listAllPackages = useCallback(async () => {
+    const listAllPackages = useCallback(async (showSystemApps:boolean) => {
         if (mock) {
             const temp = [];
             for (let i = 0; i < 50; i++) {
@@ -63,7 +63,7 @@ export function useKsu() {
             }
             return temp;
         }
-        const packages = listPackages("user")
+        const packages = listPackages(showSystemApps?"all":"user")
         const packagesInfo = getPackagesInfo(packages);
         return packagesInfo.map(info => {
             return {

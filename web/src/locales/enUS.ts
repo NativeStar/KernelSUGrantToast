@@ -38,6 +38,7 @@ const EnglishKeys: typeof BaseLang = {
   "ignorePackage.add.dialog.description": "Click an app to add it",
   "ignorePackage.add.dialog.search.placeholder": "Filter by app name or package name",
   "ignorePackage.add.exist": "This application is already in the list",
+  "ignorePackage.showSystemApps.label": "Show System Applications",
 
   "autoDeleteLog.label": "Auto-delete logs",
   "autoDeleteLog.detail": "Automatically delete SuLog logs generated during startup after initialization is complete. This can prevent log files from piling up and taking up storage, but may make it harder to report issues because these log files may be useful.",
@@ -58,7 +59,7 @@ const EnglishKeys: typeof BaseLang = {
   "about.otherProjects.description.connector.windows": "Transfer files between phone and PC over a local network, forward notifications, and more (Windows side)",
   "about.otherProjects.description.connector.android": "Transfer files and text between phone and PC over a local network, forward notifications, and more (Android side)",
   "about.otherProjects.description.ruru": "A fork of a well-known app list detector, with stronger detection and support for custom target apps",
-  "about.easterEgg":"Prose"
+  "about.easterEgg": "Prose"
 
 }
 export default EnglishKeys;

@@ -37,6 +37,7 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "ignorePackage.add.dialog.description": "點選應用程式項目以新增",
     "ignorePackage.add.dialog.search.placeholder": "依應用程式名稱或套件名稱篩選",
     "ignorePackage.add.exist": "此應用程式已在清單中",
+    "ignorePackage.showSystemApps.label": "顯示系統應用程式",
 
     "autoDeleteLog.label": "自動刪除日誌",
     "autoDeleteLog.detail": "初始化完成後自動刪除啟動時產生的 SuLog 日誌，可避免日誌檔案堆積占用儲存空間，但可能不利於回報異常（這些日誌檔案可能有用）",
