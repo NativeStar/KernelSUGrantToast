@@ -24,7 +24,7 @@ if ! checkSuLogEnabled; then
   echo "警告:"
   echo "SuLog功能当前未启用"
   echo "请在重启设备前在管理器内打开SuLog功能"
-  echo "此模块依赖SuLog功能工作"
+  echo "此模块完全依赖SuLog功能工作"
   echo "Warning:"
   echo "The SuLog feature is currently disabled"
   echo "Please enable SuLog in KernelSU manager before rebooting the device"
@@ -40,7 +40,7 @@ sleep 3
 echo "警告:"
 echo "由于该模块接管了原本ksud进程的数据"
 echo "在安装后原本的SU日志将不再被记录"
-echo "也无法在管理器中查看SuLog"
+echo "也无法在管理器中查看Su日志"
 echo "这是正常现象 不必惊慌"
 echo "安装将在5秒后继续"
 echo "WARNING:"
@@ -51,12 +51,16 @@ echo "This is normal. No need to be alarmed"
 echo "Module installation will continue in 5 seconds"
 sleep 5
 echo "Extracting libraries..."
+#sleep没什么意义 但好玩
+sleep 0.3
 #so
 unzip -oj "$MODPATH/daemon.apk" 'lib/arm64-v8a/libshimizu.so' -d "$MODPATH"
 mv -f "$MODPATH/libshimizu.so" "$MODPATH/Shimizu"
 #dex
+sleep 0.1
 unzip -oj "$MODPATH/daemon.apk" 'classes.dex' -d "$MODPATH"
 mv -f "$MODPATH/classes.dex" "$MODPATH/daemon.dex"
+sleep 0.1
 set_perm "$MODPATH/Shimizu" 0 0 0755
 set_perm "$MODPATH/daemon.dex" 0 0 0755
 rm -f "$MODPATH/daemon.apk"
