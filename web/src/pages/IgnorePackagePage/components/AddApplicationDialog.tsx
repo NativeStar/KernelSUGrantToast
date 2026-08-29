@@ -9,8 +9,6 @@ import { useContext, useEffect, useState } from "react";
 import { ApplicationView } from "./ApplicationView";
 import { Input } from "@/components/ui/input";
 import { CirclePlus } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 interface AddApplicationDialogProps {
     open: boolean
     onCancel: () => void
@@ -21,10 +19,10 @@ export default function AddApplicationDialog({ open, onAddApplication, onCancel 
     const { getLang } = useI18n(languageContext);
     const [rawPackages, setRawPackages] = useState<PackageInfo[]>([]);
     const [searchShowPackages, setSearchShowPackages] = useState<PackageInfo[]>([]);
-    const { listAllPackages, vibration } = useKsu();
+    const { listAllPackages } = useKsu();
     const [searchValue, setSearchValue] = useState("");
-    const [showSystemApps, setShowSystemApps] = useState<boolean>(false);
     useEffect(() => {
+        setSearchValue("");
         listAllPackages(false).then(value => {
             setRawPackages(value);
             setSearchShowPackages(value);
@@ -37,14 +35,6 @@ export default function AddApplicationDialog({ open, onAddApplication, onCancel 
     useEffect(() => {
         setSearchValue("");
     }, [open]);
-    //当显示系统应用开关更新时 刷新列表
-    useEffect(() => {
-        setSearchValue("");
-        listAllPackages(showSystemApps).then(value => {
-            setRawPackages(value);
-            setSearchShowPackages(value);
-        });
-    }, [showSystemApps])
     return (
         <Dialog open={open}>
             <DialogContent onOpenAutoFocus={(event) => event.preventDefault()} showCloseButton={false} className="max-h-[96vh] overflow-hidden">
@@ -53,13 +43,6 @@ export default function AddApplicationDialog({ open, onAddApplication, onCancel 
                     <DialogDescription>{getLang("ignorePackage.add.dialog.description")}</DialogDescription>
                 </DialogHeader>
                 <Input className="placeholder:text-sm" placeholder={getLang("ignorePackage.add.dialog.search.placeholder")} disabled={rawPackages.length === 0} autoFocus={false} value={searchValue} onChange={e => setSearchValue(e.target.value)} />
-                <div className="flex space-x-2.5 justify-center">
-                    <Switch id="showSystemApps" checked={showSystemApps} onCheckedChange={(checked)=>{
-                        vibration("TICK");
-                        setShowSystemApps(checked);
-                    }} />
-                    <Label htmlFor="showSystemApps">{getLang("ignorePackage.showSystemApps.label")}</Label>
-                </div>
                 <div className="max-h-[55vh] overflow-y-scroll no-scrollbar overscroll-none">
                     <Table className="table-fixed w-full">
                         <TableBody>

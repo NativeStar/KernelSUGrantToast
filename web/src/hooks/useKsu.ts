@@ -1,6 +1,6 @@
 import { shellQuote } from "@/lib/utils";
 import type { ModuleInfo } from "@/types";
-import { exec, listPackages, getPackagesInfo, spawn , moduleInfo} from "kernelsu"
+import { exec, listPackages, getPackagesInfo, spawn, moduleInfo } from "kernelsu"
 import { useCallback } from "react"
 const VibrationType = {
     TICK: 20,
@@ -52,7 +52,7 @@ export function useKsu() {
         const result = await exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config delete ${configKey}`)
         return result.errno === 0 || (result.errno === 1 && result.stderr === `Error: Key '${configKey}' not found in config`)
     }, []);
-    const listAllPackages = useCallback(async (showSystemApps:boolean) => {
+    const listAllPackages = useCallback(async (showSystemApps: boolean) => {
         if (mock) {
             const temp = [];
             for (let i = 0; i < 50; i++) {
@@ -63,12 +63,15 @@ export function useKsu() {
             }
             return temp;
         }
-        const packages = listPackages(showSystemApps?"all":"user")
+        let packages = listPackages(showSystemApps ? "all" : "user");
+        if (packages.length === 0 && showSystemApps) {
+            packages = [...listPackages("user"), ...listPackages("system")];
+        }
         const packagesInfo = getPackagesInfo(packages);
         return packagesInfo.map(info => {
             return {
                 packageName: info.packageName,
-                name: info.appLabel
+                name: info?.appLabel ?? info.packageName
             }
         })
     }, []);
@@ -83,13 +86,18 @@ export function useKsu() {
             }
             return temp;
         }
-        const packagesInfo = getPackagesInfo(packages);
-        return packagesInfo.map(info => {
-            return {
-                packageName: info.packageName,
-                name: info.appLabel
-            }
-        }).filter(info => info.name !== undefined)
+        try {
+            const packagesInfo = getPackagesInfo(packages);
+            return packagesInfo.map(info => {
+                return {
+                    packageName: info.packageName,
+                    name: info.appLabel
+                }
+            }).filter(info => info.name !== undefined)
+        } catch (error) {
+//             alert(`Error on get packages info: ${error}`);
+            return [];
+        }
     }, []);
     const openUrl = useCallback((url: string) => {
         if (mock) return
@@ -100,12 +108,12 @@ export function useKsu() {
         spawn(`cmd vibrator_manager synced oneshot ${VibrationType[type]}`)
     }, []);
     const getVersion = useCallback(() => {
-        if (mock) return { versionName: "6.6.6", versionCode: "666"}
-        const moduleInfoObject:ModuleInfo=JSON.parse(moduleInfo());
-        return {versionName: moduleInfoObject.version, versionCode: moduleInfoObject.versionCode};
+        if (mock) return { versionName: "6.6.6", versionCode: "666" }
+        const moduleInfoObject: ModuleInfo = JSON.parse(moduleInfo());
+        return { versionName: moduleInfoObject.version, versionCode: moduleInfoObject.versionCode };
     }, []);
-    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration ,getVersion}
+    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration, getVersion }
 }
-export function isEnabledHotUpdateConfig(){
-    return isEnabledHotUpdate??false;
+export function isEnabledHotUpdateConfig() {
+    return isEnabledHotUpdate ?? false;
 }
