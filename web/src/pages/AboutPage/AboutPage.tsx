@@ -22,11 +22,14 @@ export default function AboutPage() {
             <Alert open={openEasterEggAlert} confirmText={getLang("text.ok")} description={getLang("about.easterEgg")} onConfirm={() => {
                 vibration("KEY")
                 setOpenEasterEggAlert(false)
-            }}/>
+            }} />
             <div className="flex flex-col items-center">
                 <h3 className="text-2xl text-center">KernelSU Grant Toast</h3>
                 <span>{getLang("about.description")}</span>
-                <span className="text-sm text-[gray]" onContextMenu={() => setOpenEasterEggAlert(true)}>{versionInfo.versionName}({versionInfo.versionCode})</span>
+                <span className="text-sm text-[gray]" onContextMenu={e => {
+                    e.preventDefault();
+                    setOpenEasterEggAlert(true)
+                }}>{versionInfo.versionName}({versionInfo.versionCode})</span>
                 <Button className="mt-2 w-[70%]" onClick={() => {
                     vibration("CONFIRM")
                     openUrl("https://github.com/NativeStar/KernelSUGrantToast")

@@ -9,6 +9,7 @@ const EnglishKeys: typeof BaseLang = {
   "text.detail": "Details",
   "text.followSystem": "Follow System",
 
+  "error.title": "An Exception Occurred",
 
   "tabs.advanced": "Advanced",
   "tabs.ignorePackage": "Ignore List",

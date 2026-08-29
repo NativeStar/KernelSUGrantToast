@@ -9,6 +9,8 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "text.detail": "詳細資訊",
     "text.followSystem": "跟隨系統",
 
+    "error.title": "發生異常",
+
     "tabs.base": "基本",
     "tabs.ignorePackage": "忽略清單",
     "tabs.advanced": "進階",

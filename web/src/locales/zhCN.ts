@@ -8,6 +8,8 @@ const SimplifiedChineseKeys = {
     "text.detail":"详情",
     "text.followSystem": "跟随系统",
 
+    "error.title":"发生异常",
+
     "tabs.base": "基础",
     "tabs.ignorePackage": "忽略列表",
     "tabs.advanced": "高级",
