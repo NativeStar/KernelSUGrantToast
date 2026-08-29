@@ -33,6 +33,9 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "toast.save.error.tooManyPlaceholders": "只允許存在一個預留位置",
 
     "ignorePackage.tip": "清單中的應用程式發起提權時將不會提醒",
+    "ignorePackage.tip.longPress": "長按按鈕新增自訂套件名稱",
+    "ignorePackage.add.dialog.custom.description": "輸入應用程式套件名稱以新增",
+    "ignorePackage.add.dialog.customPackageName.placeholder": "輸入應用程式套件名稱",
     "ignorePackage.delete.confirm.title": "確認移除",
     "ignorePackage.delete.confirm.description": "確定要將此應用程式從忽略清單中移除嗎？",
     "ignorePackage.add": "新增應用程式",

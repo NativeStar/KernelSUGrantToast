@@ -32,6 +32,9 @@ const SimplifiedChineseKeys = {
     "toast.save.error.tooManyPlaceholders":"只允许存在一个占位符",
 
     "ignorePackage.tip":"在列表中的应用发起提权将不会提醒",
+    "ignorePackage.tip.longPress":"长按按钮添加自定义包名",
+    "ignorePackage.add.dialog.custom.description":"输入应用包名以添加",
+    "ignorePackage.add.dialog.customPackageName.placeholder":"输入应用包名",
     "ignorePackage.delete.confirm.title":"确认移除",
     "ignorePackage.delete.confirm.description":"确认将此应用从忽略列表中移除?",
     "ignorePackage.add":"添加应用",
@@ -59,7 +62,7 @@ const SimplifiedChineseKeys = {
     "about.otherProjects.description.connector.windows":"在局域网内让手机和电脑互相传输文件、转发通知等(Windows端)",
     "about.otherProjects.description.connector.android":"在局域网内让手机和电脑互相传输文件和文本、转发通知等(Android端)",
     "about.otherProjects.description.ruru":"知名应用列表检测器的分支, 增加检测强度并支持自定义检测目标应用",
-    //根据语言来 不用翻译
-    "about.easterEgg":"栀子花开"
+    //彩蛋 根据语言来 不用翻译
+    "about.easterEgg":"如果再看你一眼 是否还会有感觉"
 }
 export default SimplifiedChineseKeys;

@@ -11,11 +11,13 @@ import { useKsu } from "@/hooks/useKsu";
 import type { PackageInfo } from "@/types";
 import { toast } from "sonner";
 import { showSaveConfigSuccessToast } from "@/lib/utils";
+import AddCustomPackageDialog from "./components/AddCustomPackageDialog";
 export default function IgnorePackagePage() {
     const languageContext = useContext(LanguageContext);
     const { getLang } = useI18n(languageContext);
     const { getStringConfig, getPackageInfo, setConfig, vibration } = useKsu();
     const [showAddApplicationDialog, setShowAddApplicationDialog] = useState(false);
+    const [addCustomPackageDialogOpen, setAddCustomPackageDialogOpen] = useState(false);
     const [ignorePackages, setIgnorePackages] = useState<PackageInfo[]>([]);
 
     useEffect(() => {
@@ -44,11 +46,31 @@ export default function IgnorePackagePage() {
                 showSaveConfigSuccessToast(result, getLang);
                 setShowAddApplicationDialog(false);
             }} />
+            <AddCustomPackageDialog open={addCustomPackageDialogOpen} onCancel={() => {
+                vibration("KEY")
+                setAddCustomPackageDialogOpen(false);
+            }} onAddApplication={async (pkgInfo) => {
+                if (ignorePackages.some(pkg => pkg.packageName === pkgInfo.packageName)) {
+                    vibration("TICK")
+                    toast.warning(getLang("ignorePackage.add.exist"))
+                    return
+                }
+                vibration("CONFIRM")
+                const newIgnoredPackages = [...ignorePackages, pkgInfo];
+                setIgnorePackages(newIgnoredPackages);
+                const result = await setConfig("ignorePackageNames", newIgnoredPackages.map(item => item.packageName).join(";"));
+                showSaveConfigSuccessToast(result, getLang);
+                setAddCustomPackageDialogOpen(false);
+            }} />
             <div className="flex flex-col h-full min-h-0 items-center text-center overflow-hidden">
                 <FieldDescription className="text-center shrink-0">{getLang("ignorePackage.tip")}</FieldDescription>
+                <FieldDescription className="text-center shrink-0">{getLang("ignorePackage.tip.longPress")}</FieldDescription>
                 <Button className="w-[90%]" onClick={() => {
                     vibration("KEY")
                     setShowAddApplicationDialog(true)
+                }} onContextMenu={e => {
+                    e.preventDefault()
+                    setAddCustomPackageDialogOpen(true)
                 }}>
                     <CirclePlus />
                     {getLang("ignorePackage.add")}

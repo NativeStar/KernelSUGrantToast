@@ -91,11 +91,11 @@ export function useKsu() {
             return packagesInfo.map(info => {
                 return {
                     packageName: info.packageName,
-                    name: info.appLabel
+                    name: info.appLabel ?? info.packageName
                 }
-            }).filter(info => info.name !== undefined)
-        } catch (error) {
-//             alert(`Error on get packages info: ${error}`);
+            })
+        } catch (error: any) {
+            alert(`Error on get packages info: ${error.reason ?? error.message ?? error}`);
             return [];
         }
     }, []);

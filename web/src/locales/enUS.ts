@@ -33,6 +33,9 @@ const EnglishKeys: typeof BaseLang = {
   "toast.save.error.tooManyPlaceholders": "Only one placeholder is allowed",
 
   "ignorePackage.tip": "Requests from apps in this list will not trigger a superuser toast",
+  "ignorePackage.tip.longPress": "Long press to add custom package name",
+  "ignorePackage.add.dialog.custom.description": "Enter the application package name to add",
+  "ignorePackage.add.dialog.customPackageName.placeholder": "application package name",
   "ignorePackage.delete.confirm.title": "Confirm Removal",
   "ignorePackage.delete.confirm.description": "Are you sure you want to remove this app from the ignore list?",
   "ignorePackage.add": "Add Application",
