@@ -74,6 +74,10 @@ bool tryKillKsudProcess() {
      * 但我选择初始化时如果sulog未开启直接退出
      * */
     pid_t ksudPid = getPidByName("ksud");
+    if (ksudPid <= 1) {
+        //新版本ksud进程名改了
+        ksudPid = getPidByName("exe");
+    }
     if (ksudPid > 1) {
         kill(ksudPid, SIGKILL);
         //等待退出
@@ -145,7 +149,7 @@ AndroidAppInfo queryAndroidApplicationInfo(pid_t pid, short depth) {
     bool parentIsZygote = targetPpid == zygotePid || targetPpid == zygote64Pid;
     //尝试深度搜索
     if (!parentIsZygote && depth > 0) {
-        pid_t currentProcessPpid=targetPpid;
+        pid_t currentProcessPpid = targetPpid;
         pid_t newTargetPpid = targetPpid;
         bool parentPpidIsZygote = parentIsZygote;
         for (short i = 0; i < depth; ++i) {

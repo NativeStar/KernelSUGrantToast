@@ -10,6 +10,14 @@ if ! checkSuLogEnabled; then
   "$KSUD" module config set --temp override.description "[❌Please enable SuLog and reboot!]Show a root granted toast like Magisk.Require SuLog enabled."
   exit 1
 fi
+#接管功能
+"$KSUD" module config set manage.sulog true
+#杀死旧进程 修复软重启后崩溃
+oldProcessPid=$(pidof SuToaster)
+if [ "$oldProcessPid" ]; then
+  echo "Maybe use soft reboot.Killing old process..."
+  kill -9 "$oldProcessPid"
+fi
 customToastText="$($KSUD module config get customToastText)"
 ignoredPackages="$($KSUD module config get ignorePackageNames)"
 packageSearchDepth="$($KSUD module config get packageSearchDepth)"
