@@ -20,7 +20,7 @@
 
 Download the module package from the Releases page, then select and install it in KernelSU.
 
-After installation, reboot the device for the module to take effect. Before rebooting, make sure the Su logging feature is enabled.
+After installation, reboot the device for the module to take effect.
 
 This module does not depend on Zygisk or MetaModule.
 

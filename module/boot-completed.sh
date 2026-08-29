@@ -1,16 +1,13 @@
 #!/system/bin/sh
 KSUD=/data/adb/ksud
 export KSU_MODULE=ksuGrantToast
-checkSuLogEnabled() {
-    v="$($KSUD feature get sulog 2>/dev/null | awk -F': *' '/^Value:/ {print $2; exit}')"
-    [ "$v" = "1" ]
-}
-#必须启用SuLog
-if ! checkSuLogEnabled; then
-  "$KSUD" module config set --temp override.description "[❌Please enable SuLog and reboot!]Show a root granted toast like Magisk.Require SuLog enabled."
-  exit 1
-fi
 #接管功能
+#一直接管会导致功能被彻底关闭 日志数据也随之消失
+# 临时释放一下让他能启动 后续恢复管理阻止改设置
+"$KSUD" module config delete manage.sulog
+sleep 1
+"$KSUD" feature set sulog 1
+sleep 1
 "$KSUD" module config set manage.sulog true
 #杀死旧进程 修复软重启后崩溃
 oldProcessPid=$(pidof SuToaster)

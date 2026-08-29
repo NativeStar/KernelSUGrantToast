@@ -1,3 +1,25 @@
+### 2.1
+修复在最新KernelSU Release(32601)上无法工作
+
+修复设备软重启后模块进程崩溃
+
+长按添加应用按钮时支持通过手动输入包名添加应用(适用于将普通应用转系统应用后)
+
+卸载后清理残留的部分内容
+
+使用KernelSU的特性注册接管Su日志 后续使用时不再需要保持SU日志功能打开
+
+Fixed an issue that prevented the module from working on the latest KernelSU Release (32601).
+
+Fixed a crash of the module process after a soft reboot.
+
+When the Add App button is long-pressed, apps can be added by manually entering their package names (useful after converting a regular app into a system app).
+
+Residual files and data are cleaned up after uninstallation.
+
+Uses KernelSU's built-in feature to register and take over Su logs; the Su logging feature no longer needs to remain enabled.
+
+
 ### 2.0
 由于工作方式优化 不再支持设置是否检查SuCompat事件
 
