@@ -12,7 +12,7 @@ typedef struct AndroidAppInfo {
 
 bool utilInit();
 
-bool tryKillKsudProcess();
+bool tryKillFdOwnerProcess();
 
 int getKernelSuDriver();
 

@@ -9,12 +9,14 @@ using namespace std;
 #define KSU_INSTALL_MAGIC1 0xDEADBEEFu
 #define KSU_INSTALL_MAGIC2 0xCAFEBABEu
 #define KSU_IOCTL_GET_SULOG_FD 0x40044B14u
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "KsuToast", __VA_ARGS__)
-#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, "KsuToast", __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "KsuToast", __VA_ARGS__)
+#define SULOG_FD_LINK "anon_inode:[ksu_sulog]"
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "KernelSuGrantToast", __VA_ARGS__)
+#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, "KernelSuGrantToast", __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "KernelSuGrantToast", __VA_ARGS__)
 static int zygotePid = -886;
 static int zygote64Pid = -996;
 
+//TODO 检查设备abi是否为64位
 bool readProcFile(const std::string &path, std::string &out) {
 
     int fd = open(path.c_str(), O_RDONLY | O_CLOEXEC);
@@ -34,6 +36,56 @@ bool readProcFile(const std::string &path, std::string &out) {
     }
     out.assign(tmpString.data(), readLength);
     return true;
+}
+
+bool isNumeric(const char *name) {
+    if (!name || *name == '\0') return false;
+    for (const char *p = name; *p; ++p) {
+        if (*p < '0' || *p > '9') return false;
+    }
+    return true;
+}
+
+pid_t findSulogFdOwnerPid() {
+    DIR *procDir = opendir("/proc");
+    if (!procDir) {
+        return -1;
+    }
+    while (dirent *procEntry = readdir(procDir)) {
+        if (procEntry->d_type != DT_DIR || !isNumeric(procEntry->d_name)) {
+            continue;
+        }
+        string fdListPath = "/proc/" + string(procEntry->d_name) + "/fd";
+        DIR *fdDir = opendir(fdListPath.c_str());
+        if (!fdDir) {
+            continue;
+        }
+        while (dirent *fdEntry = readdir(fdDir)) {
+            string currentFdPath = fdListPath + string("/") + string(fdEntry->d_name);
+            char fdLinkString[1024];
+            ssize_t readLength = readlink(currentFdPath.c_str(), fdLinkString,
+                                          sizeof(fdLinkString));
+            if (readLength < 0) {
+                continue;
+            }
+            fdLinkString[readLength] = '\0';
+            if (std::strcmp(fdLinkString, SULOG_FD_LINK) == 0) {
+                LOGI("Found su log fd owner pid:%s", procEntry->d_name);
+                auto pid = static_cast<pid_t>(strtol(procEntry->d_name, nullptr, 10));
+                if (pid == 0) {
+                    LOGE("Failed to get pid from proc entry name!");
+                    continue;
+                }
+                closedir(fdDir);
+                closedir(procDir);
+                LOGI("Return su log fd owner pid");
+                return pid;
+            }
+        }
+        closedir(fdDir);
+    }
+    closedir(procDir);
+    return -1;
 }
 
 inline string getProcessCmdline(pid_t pid) {
@@ -67,22 +119,23 @@ bool utilInit() {
     return zygotePid > 1 || zygote64Pid > 1;
 }
 
-bool tryKillKsudProcess() {
+bool tryKillFdOwnerProcess() {
     /*
      * 开启sulog后启动的ksud进程名
      * 如果是启动后才开启该功能 进程名会不同
      * 但我选择初始化时如果sulog未开启直接退出
      * */
-    pid_t ksudPid = getPidByName("ksud");
-    if (ksudPid <= 1) {
-        //新版本ksud进程名改了
-        ksudPid = getPidByName("exe");
+    pid_t fdOwnerPid = findSulogFdOwnerPid();
+    if (fdOwnerPid < 0) {
+        LOGE("Failed to find su log fd owner pid");
+        return false;
     }
-    if (ksudPid > 1) {
-        kill(ksudPid, SIGKILL);
+    LOGI("Sulog fd owner pid:%d", fdOwnerPid);
+    if (fdOwnerPid > 1) {
+        kill(fdOwnerPid, SIGKILL);
         //等待退出
         for (int i = 0; i < 25; ++i) { // 500ms
-            if (kill(ksudPid, 0) == -1 && errno == ESRCH) break;
+            if (kill(fdOwnerPid, 0) == -1 && errno == ESRCH) break;
             usleep(20000);
         }
         return true;
@@ -103,18 +156,17 @@ int getSuLogFd(int driverFd) {
     int fd = ioctl(driverFd, KSU_IOCTL_GET_SULOG_FD, &suLog_cmd);
     //被抢了也可能是-1
     if (fd < 0) {
-        int err = errno;
-        if (err == EBUSY) {
-            LOGW("Get su log fd failed,trying kill ksud process...");
-            if (tryKillKsudProcess()) {
-                LOGI("Ksud process killed.Try get su log fd again");
+        if (errno == EBUSY) {
+            LOGW("Get su log fd failed,trying kill fd owner process...");
+            if (tryKillFdOwnerProcess()) {
+                LOGI("Process killed.Try get su log fd again");
                 //再次尝试获取
                 fd = ioctl(driverFd, KSU_IOCTL_GET_SULOG_FD, &suLog_cmd);
             }
         }
         //获取之后重新判断
         if (fd < 0) {
-            LOGE("Get su log fd failed,errno:%d", err);
+            LOGE("Get su log fd failed,errno:%d", errno);
         }
     }
     return fd;
