@@ -2,7 +2,8 @@
 <project version="4">
   <component name="CidrRootsConfiguration">
     <excludeRoots>
-      <file path="$PROJECT_DIR$/tempSmail" />
+      <file path="$PROJECT_DIR$/tempLog" />
+      <file path="$PROJECT_DIR$/tempSmali" />
       <file path="$PROJECT_DIR$/web" />
       <file path="$PROJECT_DIR$/web/node_modules" />
     </excludeRoots>

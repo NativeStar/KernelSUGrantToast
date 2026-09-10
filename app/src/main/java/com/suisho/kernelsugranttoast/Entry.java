@@ -166,11 +166,13 @@ public class Entry {
         if(handler == null) handler = new Handler(Looper.getMainLooper());
         handler.post(() -> Toast.makeText(systemContext, String.format(Locale.getDefault(), customToastText, appName), Toast.LENGTH_SHORT).show());
     }
+
     //为调试功能而生 暂时用这个提醒
-    private static void showOriginToast(String message){
+    private static void showOriginToast(String message) {
         if(handler == null) handler = new Handler(Looper.getMainLooper());
         handler.post(() -> Toast.makeText(systemContext, message, Toast.LENGTH_SHORT).show());
     }
+
     public static void jniOnFallbackSuEvent(String cmdline) {
         if(packageManager == null) packageManager = systemContext.getPackageManager();
         String packageName;
@@ -287,7 +289,15 @@ public class Entry {
                 Log.i(TAG, "Start ipc polling");
                 while ((line = reader.readLine()) != null) {
                     Log.i(TAG, "Received IPC message: " + line);
-                    String[] splitMessage = line.split((char) 0x2 +" ", 2);
+                    //debug toast显示
+                    if(line.equals("showDebugToast") || line.equals("showDebugToastLong")) {
+                        if(handler == null) handler = new Handler(Looper.getMainLooper());
+                        //TODO 支持设置使用更长时间的Toast(虽然不一定有影响就是了)
+                        String finalLine = line;
+                        handler.post(() -> Toast.makeText(systemContext, "If you can see this toast,the test will passed!", finalLine.equals("showDebugToastLong") ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT).show());
+                        continue;
+                    }
+                    String[] splitMessage = line.split((char) 0x2 + " ", 2);
                     if(splitMessage.length != 2) {
                         Log.w(TAG, "Invalid IPC message format");
                         continue;
@@ -308,7 +318,7 @@ public class Entry {
                             Log.i(TAG, "Ignore package list reset");
                             showOriginToast("Ignore package list hot reset");
                             continue;
-                        }else if(splitMessage[0].equals("packageSearchDepth") && splitMessage[1].isEmpty()){
+                        } else if(splitMessage[0].equals("packageSearchDepth") && splitMessage[1].isEmpty()) {
                             updatePackageSearchDepth((short) 1);
                             Log.i(TAG, "Package search depth reset");
                             showOriginToast("Package search depth hot reset");

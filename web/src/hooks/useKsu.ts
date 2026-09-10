@@ -112,7 +112,11 @@ export function useKsu() {
         const moduleInfoObject: ModuleInfo = JSON.parse(moduleInfo());
         return { versionName: moduleInfoObject.version, versionCode: moduleInfoObject.versionCode };
     }, []);
-    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration, getVersion }
+    const showDebugToast = useCallback((isLongTimeToast: boolean) => {
+        if (mock) return
+        spawn(`echo ${isLongTimeToast ? "showDebugToastLong" : "showDebugToast"} > /data/adb/toast_ipc`)
+    }, [])
+    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration, getVersion, showDebugToast }
 }
 export function isEnabledHotUpdateConfig() {
     return isEnabledHotUpdate ?? false;

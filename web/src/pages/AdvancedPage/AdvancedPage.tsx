@@ -5,6 +5,7 @@ import { LanguageContext } from "@/contexts/LanguageContext";
 import { useContext } from "react";
 import { useI18n } from "@/hooks/useI18n";
 import ExperimentalSettingHotUpdateSetting from "./components/ExperimentalSettingHotUpdateSetting";
+import TestShowToastButton from "./components/TestShowToastButton";
 
 
 export default function AdvancedPage() {
@@ -17,6 +18,7 @@ export default function AdvancedPage() {
             <SearchDepthSetting />
             <Separator className="mt-2" />
             <ExperimentalSettingHotUpdateSetting />
+            <TestShowToastButton />
         </div>
     )
 }

@@ -12,6 +12,7 @@
 /captures
 .externalNativeBuild
 .cxx
+*.log
 local.properties
 
 # Project exclude paths
@@ -23,3 +24,6 @@ app/release/output-metadata.json
 .idea/deploymentTargetSelector.xml
 .idea/deploymentTargetSelector.xml
 /.idea/deploymentTargetSelector.xml
+/dmesg.log
+tempSmali/
+tempLog/
