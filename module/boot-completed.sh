@@ -22,6 +22,7 @@ ignoredPackages="$($KSUD module config get ignorePackageNames)"
 packageSearchDepth="$($KSUD module config get packageSearchDepth)"
 autoDeleteLog="$($KSUD module config get autoDeleteLog)"
 experimentalSettingHotUpdate="$($KSUD module config get experimentalSettingHotUpdate)"
+enableDebugLog="$($KSUD module config get enableDebugLog)"
 #TODO 现在的初始化逻辑有点耗时了 要么优化性能 要么添加Loading提示文本
 #根据设置创建ipc管道
 if [ "$experimentalSettingHotUpdate" = "true" ]; then
@@ -30,4 +31,4 @@ if [ "$experimentalSettingHotUpdate" = "true" ]; then
 else
   rm  -f /data/adb/toast_ipc
 fi
-exec /system/bin/app_process -Djava.class.path=./daemon.dex / --nice-name=SuToaster com.suisho.kernelsugranttoast.Entry "$customToastText" "$ignoredPackages" "$packageSearchDepth" "$autoDeleteLog"
+exec /system/bin/app_process -Djava.class.path=./daemon.dex / --nice-name=SuToaster com.suisho.kernelsugranttoast.Entry "$customToastText" "$ignoredPackages" "$packageSearchDepth" "$autoDeleteLog" "$enableDebugLog"

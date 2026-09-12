@@ -11,6 +11,8 @@ import android.util.Log;
 import android.util.LruCache;
 import android.widget.Toast;
 
+import com.suisho.kernelsugranttoast.object.SettingArguments;
+
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
 import java.io.BufferedReader;
@@ -40,16 +42,6 @@ public class Entry {
     private static String customToastText = Messages.getLocaleMessage();
     private static final HashSet<String> ignorePackageList = new HashSet<>();
 
-    private static class TempArguments {
-        public final short packageSearchDepth;
-        public final boolean autoDeleteLog;
-
-        public TempArguments(short packageSearchDepth, boolean autoDeleteLog) {
-            this.packageSearchDepth = packageSearchDepth;
-            this.autoDeleteLog = autoDeleteLog;
-        }
-    }
-
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     public static void main(String[] args) {
         if(Process.myUid() != 0) {
@@ -57,7 +49,8 @@ public class Entry {
             return;
         }
         try {
-            var tmpArgs = parseArguments(args);
+            SettingArguments tmpArgs = SettingArguments.parseArguments(args, ignorePackageList);
+            customToastText = tmpArgs.customToastText;
             HiddenApiBypass.addHiddenApiExemptions("Landroid/app/ActivityThread;");
             if(Looper.getMainLooper() == null) Looper.prepareMainLooper();
             @SuppressLint("PrivateApi") Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
@@ -75,7 +68,7 @@ public class Entry {
             //确定没有崩掉再加载
             //app_process没法加载内置so
             System.load(libraryFile.getAbsolutePath());
-            if(!jniInit(tmpArgs.packageSearchDepth, tmpArgs.autoDeleteLog)) {
+            if(!jniInit(tmpArgs.packageSearchDepth, tmpArgs.autoDeleteLog, tmpArgs.enableDebugLogs)) {
                 onInitFailed("Native init failed!");
                 System.exit(1);
                 return;
@@ -99,67 +92,6 @@ public class Entry {
             systemContext = null;
             System.exit(1);
         }
-    }
-
-    private static TempArguments parseArguments(String[] args) {
-        short packageSearchDepth = 1;
-        boolean autoDeleteLog = false;
-        //自定义提示文本
-        if(args.length > 0 && args[0] != null) {
-            String tempCustomText = args[0];
-            Log.i(TAG, "Found custom toast text");
-            if(Util.checkConfigConfigValueValid("customToastText", tempCustomText)) {
-                customToastText = tempCustomText;
-            } else {
-                Log.w(TAG, "Invalid custom toast text!");
-            }
-        } else {
-            Log.i(TAG, "Use default toast text");
-        }
-        //忽略包列表
-        if(args.length > 1 && args[1] != null) {
-            String tempRawIgnorePackageList = args[1];
-            Log.i(TAG, "Found ignore package list");
-            if(!tempRawIgnorePackageList.isEmpty()) {
-                String[] rawSplit = tempRawIgnorePackageList.split(";");
-                for(String packageName : rawSplit) {
-                    if(!packageName.isEmpty()) ignorePackageList.add(packageName);
-                }
-                Log.i(TAG, "Added all ignore package");
-            } else {
-                Log.w(TAG, "Invalid ignore package list");
-            }
-        }
-        //搜索深度
-        if(args.length > 2 && args[2] != null) {
-            try {
-                if(Util.checkConfigConfigValueValid("packageSearchDepth", args[2])) {
-                    short tempSearchDepth = Short.parseShort(args[2]);
-                    Log.i(TAG, "Found custom package search depth");
-                    if(tempSearchDepth >= 0 && tempSearchDepth < 33) {
-                        packageSearchDepth = tempSearchDepth;
-                        Log.i(TAG, "Set package search depth to " + tempSearchDepth);
-                    } else {
-                        Log.w(TAG, "Invalid package search depth!");
-                    }
-                }
-            } catch (NumberFormatException numberFormatException) {
-                Log.e(TAG, "Invalid package search depth!", numberFormatException);
-            }
-        }
-        //自动移除log
-        if(args.length > 3 && args[3] != null) {
-            try {
-                if(Util.checkConfigConfigValueValid("autoDeleteLog", args[3])) {
-                    Log.i(TAG, "Found auto delete log setting");
-                    autoDeleteLog = Boolean.parseBoolean(args[3]);
-                    Log.i(TAG, "Set auto delete log to " + autoDeleteLog);
-                }
-            } catch (NumberFormatException numberFormatException) {
-                Log.e(TAG, "Invalid auto delete log setting!", numberFormatException);
-            }
-        }
-        return new TempArguments(packageSearchDepth, autoDeleteLog);
     }
 
     private static void showToast(String appName) {
@@ -356,7 +288,7 @@ public class Entry {
         }, "Setting IPC thread").start();
     }
 
-    private static native boolean jniInit(short packageSearchDepth, boolean autoDeleteLog);
+    private static native boolean jniInit(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLog);
 
     private static native void jniSetUid(int uid);
 

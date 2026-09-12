@@ -10,7 +10,7 @@ typedef struct AndroidAppInfo {
     std::string cmdline;
 } AndroidAppInfo;
 
-bool utilInit();
+bool utilInit(bool enableDebugLog);
 
 bool tryKillFdOwnerProcess();
 

@@ -15,7 +15,9 @@ public class Util {
                 } catch (NumberFormatException numberFormatException) {
                     yield false;
                 }
+            //boolean系列
             case "autoDeleteLog":
+            case "enableDebugLog":
                 yield value.equals("true") || value.equals("false");
             default:
                 yield false;

@@ -119,8 +119,7 @@ void processSuEventWithPpid(pid_t ppid) {
         threadJniEnv->CallStaticVoidMethod(globalEntryClass, onFallbackSuEventJavaMethod, cmd);
         threadJniEnv->DeleteLocalRef(cmd);
     } else {
-        appendLog("new shared uid application event, not android app:" +
-                  std::to_string(appInfo.realPid));
+        appendLog("new shared uid application event, not android app:" + std::to_string(appInfo.realPid));
     }
     setresuid(1000, 1000, 0);
 }
@@ -167,24 +166,19 @@ void pollingLogEvent(int suLogFd) {
                             break;
                         }
                         if (rec->record_type != KSU_EVENT_TYPE_DROPPED) {
-                            auto *hdr = reinterpret_cast<SulogEventHeader *>(buf + off +
-                                                                             sizeof(EventRecordHeader));
-                            if (rec->payload_len >= sizeof(SulogEventHeader) &&
-                                hdr->retval == 0) {
+                            auto *hdr = reinterpret_cast<SulogEventHeader *>(buf + off + sizeof(EventRecordHeader));
+                            if (rec->payload_len >= sizeof(SulogEventHeader) && hdr->retval == 0) {
                                 appendLog("new su event: " + std::to_string(hdr->event_type));
 //                              //只有这两个是来自第三方的调用 GRANT_ROOT是对管理器自动授权 不要处理
-                                if ((hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE ||
-                                     hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT) &&
-                                    hdr->uid != 0) {
+                                if ((hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE || hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT) && hdr->uid != 0) {
                                     appendLog("process su event:ROOT_EXECVE");
                                     processSuEvent(localJniEnv, hdr->uid, hdr->ppid);
 //                                if (hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE ||
 //                                    hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT) {
 //                                    appendLog("process su event");
 //                                    processSuEvent(localJniEnv, hdr->uid, hdr->ppid);
-                                //兼容ReSukiSU的部分hook分支(实际上就是回滚到老逻辑)
-                                } else if (hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT &&
-                                           hdr->uid == 0) {
+                                    //兼容ReSukiSU的部分hook分支(实际上就是回滚到老逻辑)
+                                } else if (hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT && hdr->uid == 0) {
                                     appendLog("process su event:SU_COMPAT");
                                     processSuEventWithPpid(static_cast<pid_t>(hdr->ppid));
                                 } else {
@@ -206,9 +200,7 @@ void pollingLogEvent(int suLogFd) {
     done:
     close(epfd);
     close(suLogFd);
-    jmethodID modifyModuleDescriptionMethod = localJniEnv->GetStaticMethodID(globalEntryClass,
-                                                                             "onFatalException",
-                                                                             "(Ljava/lang/String;)V");
+    jmethodID modifyModuleDescriptionMethod = localJniEnv->GetStaticMethodID(globalEntryClass, "onFatalException", "(Ljava/lang/String;)V");
     jstring description = localJniEnv->NewStringUTF("Error on working,Exited");
     localJniEnv->CallStaticVoidMethod(globalEntryClass, modifyModuleDescriptionMethod, description);
     localJniEnv->DeleteLocalRef(description);
@@ -244,22 +236,18 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     vm->GetEnv(reinterpret_cast<void **>(&jniEnv), JNI_VERSION_1_6);
     jclass entryClass = jniEnv->FindClass("com/suisho/kernelsugranttoast/Entry");
     globalEntryClass = reinterpret_cast<jclass>(jniEnv->NewGlobalRef(entryClass));
-    onFallbackSuEventJavaMethod = jniEnv->GetStaticMethodID(globalEntryClass,
-                                                            "jniOnFallbackSuEvent",
-                                                            "(Ljava/lang/String;)V");
-    onNewSuEventJavaMethod = jniEnv->GetStaticMethodID(globalEntryClass, "jniOnNewSuEvent",
-                                                       "(II)V");
+    onFallbackSuEventJavaMethod = jniEnv->GetStaticMethodID(globalEntryClass, "jniOnFallbackSuEvent", "(Ljava/lang/String;)V");
+    onNewSuEventJavaMethod = jniEnv->GetStaticMethodID(globalEntryClass, "jniOnNewSuEvent", "(II)V");
     jniEnv->DeleteLocalRef(entryClass);
     return JNI_VERSION_1_6;
 }
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_suisho_kernelsugranttoast_Entry_jniInit(JNIEnv *env, jclass clazz, jshort searchDepth,
-                                                 jboolean deleteLog) {
+Java_com_suisho_kernelsugranttoast_Entry_jniInit(JNIEnv *env, jclass clazz, jshort searchDepth, jboolean deleteLog,jboolean enableDebugLog) {
     packageSearchDepth = searchDepth;
     autoDeleteLog = deleteLog;
-    if (!utilInit()) return false;
+    if (!utilInit(enableDebugLog)) return false;
     if (!handleSuLog()) return false;
     LOGI("JNI utilInit successful");
     appendLog("JNI utilInit successful");
@@ -273,14 +261,11 @@ Java_com_suisho_kernelsugranttoast_Entry_jniSetUid(JNIEnv *env, jclass clazz, ji
 }
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_suisho_kernelsugranttoast_Entry_jniProcessSharedUidApplication(JNIEnv *threadJniEnv,
-                                                                        jclass clazz,
-                                                                        jint ppid) {
+Java_com_suisho_kernelsugranttoast_Entry_jniProcessSharedUidApplication(JNIEnv *threadJniEnv, jclass clazz, jint ppid) {
     processSuEventWithPpid(static_cast<pid_t>(ppid));
 }
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_suisho_kernelsugranttoast_Entry_updatePackageSearchDepth(JNIEnv *env, jclass clazz,
-                                                                  jshort value) {
+Java_com_suisho_kernelsugranttoast_Entry_updatePackageSearchDepth(JNIEnv *env, jclass clazz, jshort value) {
     packageSearchDepth = value;
 }

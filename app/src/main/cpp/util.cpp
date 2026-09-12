@@ -15,7 +15,9 @@ using namespace std;
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "KernelSuGrantToast", __VA_ARGS__)
 static int zygotePid = -886;
 static int zygote64Pid = -996;
-FILE *logFile = fopen("/data/local/SuToaster.log", "w+");
+FILE *logFile;
+static uint8_t writeLogLineCount = 0;
+static bool enableDebugLog = false;
 
 //TODO 检查设备abi是否为64位
 bool readProcFile(const std::string &path, std::string &out) {
@@ -48,9 +50,11 @@ bool isNumeric(const char *name) {
 }
 
 void appendLog(const std::string &log) {
-    //TODO 写完重做或删掉这个 太吃性能了
+    if (logFile == nullptr || !enableDebugLog) return;
     fprintf(logFile, "%s\n", log.c_str());
-    fflush(logFile);
+    if (++writeLogLineCount % 5 == 0) {
+        fflush(logFile);
+    }
 }
 
 pid_t findSulogFdOwnerPid() {
@@ -70,8 +74,7 @@ pid_t findSulogFdOwnerPid() {
         while (dirent *fdEntry = readdir(fdDir)) {
             string currentFdPath = fdListPath + string("/") + string(fdEntry->d_name);
             char fdLinkString[1024];
-            ssize_t readLength = readlink(currentFdPath.c_str(), fdLinkString,
-                                          sizeof(fdLinkString));
+            ssize_t readLength = readlink(currentFdPath.c_str(), fdLinkString, sizeof(fdLinkString));
             if (readLength < 0) {
                 continue;
             }
@@ -120,7 +123,14 @@ inline pid_t getPidByName(const string &name) {
     return static_cast<pid_t>(strtol(buf, nullptr, 10));
 }
 
-bool utilInit() {
+bool utilInit(bool useDebugLog) {
+    if (useDebugLog) {
+        enableDebugLog = useDebugLog;
+        logFile = fopen("/data/local/SuToaster.log", "w");
+        if (logFile == nullptr) {
+            LOGW("Failed to open module log file");
+        }
+    }
     zygotePid = getPidByName("zygote");
     zygote64Pid = getPidByName("zygote64");
     appendLog("Zygote pid:" + to_string(zygotePid) + " zygote64 pid:" + to_string(zygote64Pid));
@@ -191,9 +201,7 @@ pid_t getPpid(pid_t pid) {
         if (stateEnd == string::npos) return -1;
         size_t ppidStart = stateEnd + 1;
         size_t ppidEnd = line.find(' ', ppidStart);
-        string ppidStr = (ppidEnd == string::npos)
-                         ? line.substr(ppidStart)
-                         : line.substr(ppidStart, ppidEnd - ppidStart);
+        string ppidStr = (ppidEnd == string::npos) ? line.substr(ppidStart) : line.substr(ppidStart, ppidEnd - ppidStart);
         char *end = nullptr;
         long v = strtol(ppidStr.c_str(), &end, 10);
         if (end == ppidStr.c_str() || *end != '\0') return -1;
@@ -226,8 +234,7 @@ AndroidAppInfo queryAndroidApplicationInfo(pid_t pid, short depth) {
         appendLog("Found android app info with depth:" + to_string(depth) +
                   " ppid:" + to_string(currentProcessPpid) +
                   " cmdline:" + getProcessCmdline(currentProcessPpid));
-        return {parentPpidIsZygote, currentProcessPpid,
-                parentPpidIsZygote ? getProcessCmdline(currentProcessPpid) : ""};
+        return {parentPpidIsZygote, currentProcessPpid, parentPpidIsZygote ? getProcessCmdline(currentProcessPpid) : ""};
     }
     //是android应用了 再加个包名
     appendLog("Found android app info without depth ppid:" + to_string(pid) +
