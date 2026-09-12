@@ -10,6 +10,7 @@ const EnglishKeys: typeof BaseLang = {
   "text.followSystem": "Follow System",
 
   "error.title": "An Exception Occurred",
+  "error.missingProcess": "Module process has exited. Please restart the device.\nYou can still close this dialog to adjust settings",
 
   "tabs.advanced": "Advanced",
   "tabs.ignorePackage": "Ignore List",

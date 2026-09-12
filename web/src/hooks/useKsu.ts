@@ -116,8 +116,13 @@ export function useKsu() {
     const showDebugToast = useCallback((isLongTimeToast: boolean) => {
         if (mock) return
         spawn(`echo ${isLongTimeToast ? "showDebugToastLong" : "showDebugToast"} > /data/adb/toast_ipc`)
-    }, [])
-    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration, getVersion, showDebugToast }
+    }, []);
+    const isModuleProcessAvailable = useCallback(async () => {
+        if (mock) return true
+        const result = await exec(`pidof SuToaster`)
+        return result.errno === 0;
+    }, []);
+    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration, getVersion, showDebugToast, isModuleProcessAvailable }
 }
 export function isEnabledHotUpdateConfig() {
     return isEnabledHotUpdate ?? false;

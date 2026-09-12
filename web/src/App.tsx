@@ -8,8 +8,9 @@ import { Alert } from "@/components/Alert";
 import { useKsu } from "@/hooks/useKsu";
 export function App() {
   const [language, setLanguage] = useState<keyof typeof SupportedLangs>("en-US");
-  const { vibration } = useKsu();
+  const { vibration, isModuleProcessAvailable } = useKsu();
   const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [showDeadProcessAlert, setShowDeadProcessAlert] = useState(false);
   const [errorStack, setErrorStack] = useState("");
   //尽早初始化
   const { getLang } = useI18n(language, setLanguage);
@@ -29,7 +30,15 @@ export function App() {
       window.removeEventListener("error", onError);
       window.removeEventListener("unhandledrejection", onError);
     }
-  }, [])
+  }, []);
+  // 检查进程是否还活着
+  useEffect(() => {
+    isModuleProcessAvailable().then(res => {
+      if (!res) {
+        setShowDeadProcessAlert(true)
+      }
+    })
+  }, []);
   return (
     <>
       <LanguageContext.Provider value={language}>
@@ -38,6 +47,10 @@ export function App() {
         <Alert open={showErrorAlert} confirmText={getLang("text.ok")} title={getLang("error.title")} description={errorStack} onConfirm={() => {
           vibration("KEY")
           setShowErrorAlert(false)
+        }} />
+        <Alert open={showDeadProcessAlert} confirmText={getLang("text.ok")} title={getLang("error.title")} description={getLang("error.missingProcess")} onConfirm={() => {
+          vibration("KEY")
+          setShowDeadProcessAlert(false)
         }} />
       </LanguageContext.Provider>
     </>

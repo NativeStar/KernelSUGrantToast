@@ -10,6 +10,7 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "text.followSystem": "跟隨系統",
 
     "error.title": "發生異常",
+    "error.missingProcess": "模組進程已退出，請嘗試重新啟動裝置。\n您仍然可以關閉此對話框以調整設定",
 
     "tabs.base": "基本",
     "tabs.ignorePackage": "忽略清單",
