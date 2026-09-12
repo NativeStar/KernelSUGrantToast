@@ -58,4 +58,3 @@ val zipCopiedModule by tasks.registering(Zip::class) {
 tasks.register("buildModule") {
     dependsOn(zipCopiedModule)
 }
-//TODO 上调版本号 写更新日志 别特么直接发版了
