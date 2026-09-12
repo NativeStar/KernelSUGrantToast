@@ -1,3 +1,19 @@
+### 2.2
+修复在ReSukiSU上无法工作
+
+在WebUI中添加了一些调试用功能
+
+阻止非arm64架构的设备进行安装(不必惊慌 因为在此之前该模块就只支持arm64的设备)
+
+如果模块未正常运行 会在打开WebUI时进行提示
+
+Fixed an issue that prevented the module from working on ReSukiSU.
+
+Added several debugging features to the WebUI.
+
+Prevented installation on devices with architectures other than arm64 (there is no need to worry, as the module has only ever supported arm64 devices).
+
+Displays a notification when opening the WebUI if the module is not running properly.
 ### 2.1
 修复在最新KernelSU Release(32601)上无法工作
 
