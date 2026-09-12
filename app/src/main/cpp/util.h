@@ -20,6 +20,7 @@ int getSuLogFd(int driverFd);
 
 void deleteSuLogFile();
 
+void appendLog(const std::string& log);
 AndroidAppInfo queryAndroidApplicationInfo(pid_t pid,short depth);
 
 #endif //KERNELSUGRANTTOAST_UTIL_H

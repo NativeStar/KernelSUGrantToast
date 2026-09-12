@@ -66,14 +66,63 @@ void pushIgnoredUidMap(uint32_t pid, time_t timestamp) {
 
 //对于有sharedUserId的应用 靠uid判断具体提权是不稳定的 需要回退到老逻辑
 void processSuEvent(JNIEnv *threadJniEnv, uint32_t uid, uint32_t ppid) {
-    time_t currentTime = time(nullptr);
-    auto findUidResult = ignoredUid.find(uid);
-    if (findUidResult != ignoredUid.end()) {
-        if (currentTime - findUidResult->second <= 3) return;
+    appendLog("process su event uid: " + std::to_string(uid));
+    if (uid != 0) {
+        time_t currentTime = time(nullptr);
+        auto findUidResult = ignoredUid.find(uid);
+        if (findUidResult != ignoredUid.end()) {
+            if (currentTime - findUidResult->second <= 3) return;
+        }
+        pushIgnoredUidMap(uid, currentTime);
     }
-    pushIgnoredUidMap(uid, currentTime);
+    appendLog("call onNewSuEventJavaMethod uid: " + std::to_string(uid));
     threadJniEnv->CallStaticVoidMethod(globalEntryClass, onNewSuEventJavaMethod,
                                        static_cast<int>(uid), static_cast<int>(ppid));
+}
+
+void processSuEventWithPpid(pid_t ppid) {
+    appendLog("new shared uid application event");
+    time_t currentTime = time(nullptr);
+    //限制相同ppid
+    auto findPpidResult = ignoredProcess.find(ppid);
+    if (findPpidResult != ignoredProcess.end()) {
+        appendLog("new shared uid application event, same ppid:" + std::to_string(ppid));
+        //相同ppid的请求每3秒最多处理一个
+        if (currentTime - findPpidResult->second <= 3) {
+            //避免toast无法显示
+            appendLog("new shared uid application event, same ppid, avoid toast:" +
+                      std::to_string(ppid));
+            return;
+        }
+    }
+    pushIgnoredProcessMap(ppid, currentTime);
+    setresuid(0, 0, 0);
+    AndroidAppInfo appInfo = queryAndroidApplicationInfo(static_cast<pid_t>(ppid),
+                                                         packageSearchDepth);
+    if (appInfo.isAndroidApp && !appInfo.cmdline.empty()) {
+        auto findToastedApplicationResult = toastedApplication.find(appInfo.realPid);
+        if (findToastedApplicationResult != toastedApplication.end()) {
+            //是Android应用且拥有相同pid 提醒至少间隔5秒
+            if (currentTime - findToastedApplicationResult->second <= 5) {
+                appendLog("new shared uid application event, same pid, avoid toast:" +
+                          std::to_string(appInfo.realPid));
+                setresuid(1000, 1000, 0);
+                return;
+            }
+        }
+        pushToastedApplicationMap(appInfo.realPid, currentTime);
+        JNIEnv *threadJniEnv;
+        jvm->AttachCurrentThread(&threadJniEnv, nullptr);
+        jstring cmd = threadJniEnv->NewStringUTF(appInfo.cmdline.c_str());
+        appendLog("call fallback toast jni method:" + std::to_string(appInfo.realPid));
+        setresuid(1000, 1000, 0);
+        threadJniEnv->CallStaticVoidMethod(globalEntryClass, onFallbackSuEventJavaMethod, cmd);
+        threadJniEnv->DeleteLocalRef(cmd);
+    } else {
+        appendLog("new shared uid application event, not android app:" +
+                  std::to_string(appInfo.realPid));
+    }
+    setresuid(1000, 1000, 0);
 }
 
 void pollingLogEvent(int suLogFd) {
@@ -90,9 +139,11 @@ void pollingLogEvent(int suLogFd) {
     epoll_ctl(epfd, EPOLL_CTL_ADD, suLogFd, &ev);
     static uint8_t buf[8192];
     epoll_event events[4];
+    appendLog("into polling");
     while (true) {
         int ready = epoll_wait(epfd, events, 4, -1);
         if (ready < 0) {
+            appendLog("epoll ready failed");
             if (errno == EINTR) continue;
             break;
         }
@@ -102,29 +153,52 @@ void pollingLogEvent(int suLogFd) {
                 for (;;) {
                     ssize_t n = read(suLogFd, buf, sizeof(buf));
                     if (n <= 0) {
+                        appendLog("read log fd buffer failed");
                         if (n < 0 && (errno == EINTR)) continue;
                         if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) break;
+                        appendLog("goto done");
                         goto done;
                     }
                     for (size_t off = 0; off + sizeof(EventRecordHeader) <= (size_t) n;) {
                         auto *rec = reinterpret_cast<EventRecordHeader *>(buf + off);
                         size_t frame = sizeof(EventRecordHeader) + rec->payload_len;
-                        if (off + frame > (size_t) n) break;
+                        if (off + frame > (size_t) n) {
+                            appendLog("buffer frame overflow");
+                            break;
+                        }
                         if (rec->record_type != KSU_EVENT_TYPE_DROPPED) {
                             auto *hdr = reinterpret_cast<SulogEventHeader *>(buf + off +
                                                                              sizeof(EventRecordHeader));
-                            if (rec->payload_len >= sizeof(SulogEventHeader) && hdr->uid != 0 &&
+                            if (rec->payload_len >= sizeof(SulogEventHeader) &&
                                 hdr->retval == 0) {
+                                appendLog("new su event: " + std::to_string(hdr->event_type));
 //                              //只有这两个是来自第三方的调用 GRANT_ROOT是对管理器自动授权 不要处理
-                                if (hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE ||
-                                    hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT) {
+                                if ((hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE ||
+                                     hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT) &&
+                                    hdr->uid != 0) {
+                                    appendLog("process su event:ROOT_EXECVE");
                                     processSuEvent(localJniEnv, hdr->uid, hdr->ppid);
+//                                if (hdr->event_type == KSU_SULOG_EVENT_ROOT_EXECVE ||
+//                                    hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT) {
+//                                    appendLog("process su event");
+//                                    processSuEvent(localJniEnv, hdr->uid, hdr->ppid);
+                                //兼容ReSukiSU的部分hook分支(实际上就是回滚到老逻辑)
+                                } else if (hdr->event_type == KSU_SULOG_EVENT_SUCOMPAT &&
+                                           hdr->uid == 0) {
+                                    appendLog("process su event:SU_COMPAT");
+                                    processSuEventWithPpid(static_cast<pid_t>(hdr->ppid));
+                                } else {
+                                    appendLog("skip process su event");
                                 }
                             }
+                        } else {
+                            appendLog("dropped broken event");
                         }
                         off += frame;
                     }
                 }
+            } else {
+                appendLog("epoll event mask: " + std::to_string(mask));
             }
             if (mask & (EPOLLERR | EPOLLHUP)) goto done;
         }
@@ -154,6 +228,7 @@ bool handleSuLog() {
         LOGE("Failed to get Su log fd");
         return false;
     }
+    appendLog("start event polling");
     std::thread pollingThread(pollingLogEvent, suLogFd);
     pollingThread.detach();
     if (autoDeleteLog) deleteSuLogFile();
@@ -180,53 +255,28 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_suisho_kernelsugranttoast_Entry_jniInit(JNIEnv *env, jclass clazz, short searchDepth,jboolean deleteLog) {
+Java_com_suisho_kernelsugranttoast_Entry_jniInit(JNIEnv *env, jclass clazz, jshort searchDepth,
+                                                 jboolean deleteLog) {
     packageSearchDepth = searchDepth;
     autoDeleteLog = deleteLog;
     if (!utilInit()) return false;
     if (!handleSuLog()) return false;
     LOGI("JNI utilInit successful");
+    appendLog("JNI utilInit successful");
     return true;
 }
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_suisho_kernelsugranttoast_Entry_jniSetUid(JNIEnv *env, jclass clazz, jint uid) {
     setresuid(uid, uid, 0);
+    appendLog("Set uid to " + std::to_string(uid));
 }
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_suisho_kernelsugranttoast_Entry_jniProcessSharedUidApplication(JNIEnv *threadJniEnv,
                                                                         jclass clazz,
                                                                         jint ppid) {
-    time_t currentTime = time(nullptr);
-    //限制相同ppid
-    auto findPpidResult = ignoredProcess.find(ppid);
-    if (findPpidResult != ignoredProcess.end()) {
-        //相同ppid的请求每3秒最多处理一个
-        if (currentTime - findPpidResult->second <= 3) {
-            //避免toast无法显示
-            setresuid(1000, 1000, 0);
-            return;
-        }
-    }
-    pushIgnoredProcessMap(ppid, currentTime);
-    AndroidAppInfo appInfo = queryAndroidApplicationInfo(static_cast<pid_t>(ppid),
-                                                         packageSearchDepth);
-    if (appInfo.isAndroidApp && !appInfo.cmdline.empty()) {
-        auto findToastedApplicationResult = toastedApplication.find(appInfo.realPid);
-        if (findToastedApplicationResult != toastedApplication.end()) {
-            //是Android应用且拥有相同pid 提醒至少间隔5秒
-            if (currentTime - findToastedApplicationResult->second <= 5) {
-                setresuid(1000, 1000, 0);
-                return;
-            }
-        }
-        pushToastedApplicationMap(appInfo.realPid, currentTime);
-        jstring cmd = threadJniEnv->NewStringUTF(appInfo.cmdline.c_str());
-        threadJniEnv->CallStaticVoidMethod(globalEntryClass, onFallbackSuEventJavaMethod, cmd);
-        threadJniEnv->DeleteLocalRef(cmd);
-    }
-    setresuid(1000, 1000, 0);
+    processSuEventWithPpid(static_cast<pid_t>(ppid));
 }
 extern "C"
 JNIEXPORT void JNICALL

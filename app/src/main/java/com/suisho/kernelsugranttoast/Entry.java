@@ -212,8 +212,6 @@ public class Entry {
             }
             //sharedUserId处理 回退旧逻辑
             if(appsList.length > 1) {
-                //读取proc需要提权
-                jniSetUid(0);
                 jniProcessSharedUidApplication(ppid);
                 return;
             }

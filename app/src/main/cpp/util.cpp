@@ -15,6 +15,7 @@ using namespace std;
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "KernelSuGrantToast", __VA_ARGS__)
 static int zygotePid = -886;
 static int zygote64Pid = -996;
+FILE *logFile = fopen("/data/local/SuToaster.log", "w+");
 
 //TODO 检查设备abi是否为64位
 bool readProcFile(const std::string &path, std::string &out) {
@@ -44,6 +45,12 @@ bool isNumeric(const char *name) {
         if (*p < '0' || *p > '9') return false;
     }
     return true;
+}
+
+void appendLog(const std::string &log) {
+    //TODO 写完重做或删掉这个 太吃性能了
+    fprintf(logFile, "%s\n", log.c_str());
+    fflush(logFile);
 }
 
 pid_t findSulogFdOwnerPid() {
@@ -116,6 +123,7 @@ inline pid_t getPidByName(const string &name) {
 bool utilInit() {
     zygotePid = getPidByName("zygote");
     zygote64Pid = getPidByName("zygote64");
+    appendLog("Zygote pid:" + to_string(zygotePid) + " zygote64 pid:" + to_string(zygote64Pid));
     return zygotePid > 1 || zygote64Pid > 1;
 }
 
@@ -195,12 +203,17 @@ pid_t getPpid(pid_t pid) {
 }
 
 AndroidAppInfo queryAndroidApplicationInfo(pid_t pid, short depth) {
+    appendLog("Querying android app info for pid:" + to_string(pid));
     pid_t targetPpid = getPpid(pid);
     //不可能有Android应用pid小于100
-    if (targetPpid < 100) return {false, pid, ""};
+    if (targetPpid < 100) {
+        appendLog("Target pid less than 100,not an android app");
+        return {false, pid, ""};
+    }
     bool parentIsZygote = targetPpid == zygotePid || targetPpid == zygote64Pid;
     //尝试深度搜索
     if (!parentIsZygote && depth > 0) {
+        appendLog("Trying to find android app info with depth:" + to_string(depth));
         pid_t currentProcessPpid = targetPpid;
         pid_t newTargetPpid = targetPpid;
         bool parentPpidIsZygote = parentIsZygote;
@@ -210,10 +223,15 @@ AndroidAppInfo queryAndroidApplicationInfo(pid_t pid, short depth) {
             parentPpidIsZygote = newTargetPpid == zygotePid || newTargetPpid == zygote64Pid;
             if (parentPpidIsZygote || newTargetPpid < 100) break;
         }
+        appendLog("Found android app info with depth:" + to_string(depth) +
+                  " ppid:" + to_string(currentProcessPpid) +
+                  " cmdline:" + getProcessCmdline(currentProcessPpid));
         return {parentPpidIsZygote, currentProcessPpid,
                 parentPpidIsZygote ? getProcessCmdline(currentProcessPpid) : ""};
     }
     //是android应用了 再加个包名
+    appendLog("Found android app info without depth ppid:" + to_string(pid) +
+              " cmdline:" + getProcessCmdline(pid));
     return {parentIsZygote, pid, parentIsZygote ? getProcessCmdline(pid) : ""};
 }
 

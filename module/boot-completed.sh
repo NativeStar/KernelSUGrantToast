@@ -8,7 +8,9 @@ export KSU_MODULE=ksuGrantToast
 sleep 1
 "$KSUD" feature set sulog 1
 sleep 1
-"$KSUD" module config set manage.sulog true
+
+#debug 暂时停止执行接管 调试ReSukiSU
+#"$KSUD" module config set manage.sulog true
 #杀死旧进程 修复软重启后崩溃
 oldProcessPid=$(pidof SuToaster)
 if [ "$oldProcessPid" ]; then
@@ -20,6 +22,7 @@ ignoredPackages="$($KSUD module config get ignorePackageNames)"
 packageSearchDepth="$($KSUD module config get packageSearchDepth)"
 autoDeleteLog="$($KSUD module config get autoDeleteLog)"
 experimentalSettingHotUpdate="$($KSUD module config get experimentalSettingHotUpdate)"
+#TODO 现在的初始化逻辑有点耗时了 要么优化性能 要么添加Loading提示文本
 #根据设置创建ipc管道
 if [ "$experimentalSettingHotUpdate" = "true" ]; then
   rm  -f /data/adb/toast_ipc
