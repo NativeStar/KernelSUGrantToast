@@ -6,6 +6,9 @@ echo "Welcome"
 if [ ! "$KSU" ]; then
   abort "This module only support KernelSU!"
 fi
+if [ "$ARCH" != "arm64" ]; then
+  abort "This module only support arm64 device!"
+fi
 if [ "$KSU_KERNEL_VER_CODE" -lt 32457 ]; then
   abort "Please update KernelSU!(Minimum version required 32457)"
 fi

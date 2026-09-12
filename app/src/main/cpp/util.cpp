@@ -19,7 +19,6 @@ FILE *logFile;
 static uint8_t writeLogLineCount = 0;
 static bool enableDebugLog = false;
 
-//TODO 检查设备abi是否为64位
 bool readProcFile(const std::string &path, std::string &out) {
 
     int fd = open(path.c_str(), O_RDONLY | O_CLOEXEC);
