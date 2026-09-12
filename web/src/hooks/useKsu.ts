@@ -7,6 +7,7 @@ const VibrationType = {
     KEY: 45,
     CONFIRM: 75
 }
+const NotHotUpdateConfigKeys = ["experimentalSettingHotUpdate", "autoDeleteLog", "enableDebugLog"];
 let isEnabledHotUpdate: boolean | null = null;
 export function useKsu() {
     const mock = !Reflect.has(window, "ksu");
@@ -40,7 +41,7 @@ export function useKsu() {
         if (mock) return true
         const result = await exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set ${configKey} ${shellQuote(value)}`)
         //autoDeleteLog只在启动后检查触发一次 没有热更新的意义
-        if (isEnabledHotUpdate && result.errno === 0 && configKey !== "autoDeleteLog") {
+        if (isEnabledHotUpdate && result.errno === 0 && !NotHotUpdateConfigKeys.includes(configKey)) {
             //写入热更新ipc
             const ipcContent = `${configKey}${String.fromCharCode(0x2)} ${value}`;
             spawn(`echo ${shellQuote(ipcContent)} > /data/adb/toast_ipc`)

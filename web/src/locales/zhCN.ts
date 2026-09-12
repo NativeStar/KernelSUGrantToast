@@ -54,6 +54,10 @@ const SimplifiedChineseKeys = {
     "advanced.searchDepth.description.detail":'过高影响性能 过低可能导致某些提权数据被忽略.\n该设置只在遇到使用共享UID的应用(需要回退到旧检测逻辑)时生效',
     "advanced.experimental.hotUpdateSetting.label":"设置实时生效(实验性)",
     "advanced.experimental.hotUpdateSetting.detail":"使部分设置更改后实时生效 不再需要重启设备.\n该功能正在进行测试 可能存在异常.\n测试期间当设置项更新后会发出Toast提醒",
+    "advanced.enableDebugLog.label":"启用调试日志",
+    "advanced.enableDebugLog.detail":"开启后会写入'/data/local/SuToaster.log'日志文件 需重启后生效\n开启后会有一定的性能影响 请仅在需要发送日志时启用!",
+    "advanced.test.showDebugToastButton":"显示测试Toast",
+    "advanced.test.showDebugToastButton.description":"点击后弹出一个测试Toast 仅用作发生异常时的排查(长按按钮显示更长时间的Toast)",
 
     "about.description":"像Magisk一样弹出授予超级用户权限Toast",
     "about.button.repository":"项目仓库",

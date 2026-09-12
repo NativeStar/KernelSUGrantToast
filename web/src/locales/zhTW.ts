@@ -55,6 +55,10 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "advanced.searchDepth.description.detail": "過高會影響效能，過低可能導致某些提權資料被忽略。\n此設定只在遇到使用共享 UID 的應用程式（需要退回舊的檢測邏輯）時生效",
     "advanced.experimental.hotUpdateSetting.label": "設定即時生效（實驗性）",
     "advanced.experimental.hotUpdateSetting.detail": "使部分設定變更後即時生效，不再需要重新啟動裝置。\n此功能正在進行測試，可能存在異常。\n測試期間當設定項更新後會發出 Toast 提醒",
+    "advanced.enableDebugLog.label": "啟用除錯日誌",
+    "advanced.enableDebugLog.detail": "啟用後會寫入 '/data/local/SuToaster.log' 日誌檔案，需重新啟動後生效。\n啟用後會有一定的效能影響，請僅在需要傳送日誌時啟用！",
+    "advanced.test.showDebugToastButton": "顯示測試 Toast",
+    "advanced.test.showDebugToastButton.description": "點擊後會彈出一個測試 Toast，僅用於發生異常時的排查（長按按鈕會顯示更長時間的 Toast）",
 
     "about.description": "像 Magisk 一樣彈出授予超級使用者權限 Toast",
     "about.button.repository": "專案倉庫",

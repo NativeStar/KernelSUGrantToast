@@ -55,6 +55,10 @@ const EnglishKeys: typeof BaseLang = {
   "advanced.searchDepth.description.detail": "Setting this too high may hurt performance, while setting it too low may cause some privilege-escalation data to be ignored.\nThis setting only takes effect when encountering apps with shared UIDs (which require falling back to the old detection logic).",
   "advanced.experimental.hotUpdateSetting.label": "Apply Settings in Real Time (Experimental)",
   "advanced.experimental.hotUpdateSetting.detail": "Makes some settings take effect in real time after changes, no longer requiring a device reboot.\nThis feature is under testing and may have issues.\nDuring testing, a Toast reminder will be shown when settings are updated.",
+  "advanced.enableDebugLog.label": "Enable Debug Logs",
+  "advanced.enableDebugLog.detail": "Enabling this will write logs to '/data/local/SuToaster.log'. It will be automatically deleted after initialization is complete.\nEnabling this will have a certain performance impact. Please only enable it when you need to send logs.",
+  "advanced.test.showDebugToastButton": "Show Test Toast",
+  "advanced.test.showDebugToastButton.description": "Click to show a test toast. It will remain on the screen for a long time. (Long press to show a longer-lasting toast)",
 
   "about.description": "Show a root granted toast like Magisk",
   "about.button.repository": "Project Repository",
