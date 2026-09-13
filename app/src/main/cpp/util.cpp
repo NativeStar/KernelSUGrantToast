@@ -61,6 +61,7 @@ pid_t findSulogFdOwnerPid() {
     if (!procDir) {
         return -1;
     }
+    const size_t str_len_size = sizeof(SULOG_FD_LINK) - 1;
     while (dirent *procEntry = readdir(procDir)) {
         if (procEntry->d_type != DT_DIR || !isNumeric(procEntry->d_name)) {
             continue;
@@ -71,14 +72,10 @@ pid_t findSulogFdOwnerPid() {
             continue;
         }
         while (dirent *fdEntry = readdir(fdDir)) {
-            string currentFdPath = fdListPath + string("/") + string(fdEntry->d_name);
-            char fdLinkString[1024];
-            ssize_t readLength = readlink(currentFdPath.c_str(), fdLinkString, sizeof(fdLinkString));
-            if (readLength < 0) {
-                continue;
-            }
-            fdLinkString[readLength] = '\0';
-            if (std::strcmp(fdLinkString, SULOG_FD_LINK) == 0) {
+            if (!isNumeric(fdEntry->d_name)) continue;
+            char link[str_len_size];
+            ssize_t readLength = readlinkat(dirfd(fdDir), fdEntry->d_name, link, str_len_size);
+            if (readLength == str_len_size && memcmp(link, SULOG_FD_LINK, str_len_size) == 0) {
                 LOGI("Found su log fd owner pid:%s", procEntry->d_name);
                 auto pid = static_cast<pid_t>(strtol(procEntry->d_name, nullptr, 10));
                 if (pid == 0) {
