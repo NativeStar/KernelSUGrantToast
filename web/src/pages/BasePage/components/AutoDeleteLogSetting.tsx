@@ -22,7 +22,7 @@ export default function AutoDeleteLogSetting() {
     function onSwitchChange() {
         vibration("TICK")
         setConfig("autoDeleteLog", String(!autoDeleteLog)).then((result) => {
-            showSaveConfigSuccessToast(result, getLang);
+            showSaveConfigSuccessToast(result, getLang, false);
             result && setAutoDeleteLog(!autoDeleteLog);
         })
     }

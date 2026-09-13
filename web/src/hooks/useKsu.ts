@@ -2,12 +2,12 @@ import { shellQuote } from "@/lib/utils";
 import type { ModuleInfo } from "@/types";
 import { exec, listPackages, getPackagesInfo, spawn, moduleInfo } from "kernelsu"
 import { useCallback } from "react"
+import { NotHotUpdateConfigKeys } from "@/const/NotHotUpdateConfigKeys";
 const VibrationType = {
     TICK: 20,
     KEY: 45,
     CONFIRM: 75
 }
-const NotHotUpdateConfigKeys = ["experimentalSettingHotUpdate", "autoDeleteLog", "enableDebugLog"];
 let isEnabledHotUpdate: boolean | null = null;
 export function useKsu() {
     const mock = !Reflect.has(window, "ksu");
@@ -16,8 +16,8 @@ export function useKsu() {
         isEnabledHotUpdate = false;
     }
     if (isEnabledHotUpdate === null) {
-        exec("test -e /data/adb/toast_ipc").then(result => {
-            result.errno === 0 ? isEnabledHotUpdate = true : isEnabledHotUpdate = false
+        exec("test -e /data/adb/toast_ipc && pidof SuToaster >/dev/null").then(result => {
+            isEnabledHotUpdate = result.errno === 0;
         })
     }
     const getStringConfig = useCallback(async (configKey: string) => {

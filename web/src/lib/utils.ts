@@ -11,8 +11,8 @@ export function cn(...inputs: ClassValue[]) {
 export function shellQuote(value: string) {
   return `'${String(value).replace(/'/g, `'\\''`)}'`;
 }
-export function showSaveConfigSuccessToast(result: boolean, getLang: GetLangFunctionType) {
-  if (isEnabledHotUpdateConfig()) {
+export function showSaveConfigSuccessToast(result: boolean, getLang: GetLangFunctionType, allowHotUpdate = true) {
+  if (isEnabledHotUpdateConfig() && allowHotUpdate) {
     result ? toast.success(getLang("text.save.success")) : toast.error(getLang("text.save.failed"))
   } else {
     result ? toast.success(getLang("text.save.success"), { description: getLang("text.reboot.tip") }) : toast.error(getLang("text.save.failed"))

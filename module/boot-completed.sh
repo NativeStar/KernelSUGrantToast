@@ -19,14 +19,9 @@ customToastText="$($KSUD module config get customToastText)"
 ignoredPackages="$($KSUD module config get ignorePackageNames)"
 packageSearchDepth="$($KSUD module config get packageSearchDepth)"
 autoDeleteLog="$($KSUD module config get autoDeleteLog)"
-experimentalSettingHotUpdate="$($KSUD module config get experimentalSettingHotUpdate)"
 enableDebugLog="$($KSUD module config get enableDebugLog)"
-#根据设置创建ipc管道
-if [ "$experimentalSettingHotUpdate" = "true" ]; then
-  rm  -f /data/adb/toast_ipc
-  mkfifo /data/adb/toast_ipc
-else
-  rm  -f /data/adb/toast_ipc
-fi
+#创建ipc管道
+rm  -f /data/adb/toast_ipc
+mkfifo /data/adb/toast_ipc
 "$KSUD" module config set --temp override.description "[Booting...]Show a root granted toast like Magisk.Require SuLog enabled."
 exec /system/bin/app_process -Djava.class.path=./daemon.dex / --nice-name=SuToaster com.suisho.kernelsugranttoast.Entry "$customToastText" "$ignoredPackages" "$packageSearchDepth" "$autoDeleteLog" "$enableDebugLog"

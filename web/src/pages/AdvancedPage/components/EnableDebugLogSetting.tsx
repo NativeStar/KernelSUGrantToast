@@ -22,7 +22,7 @@ export default function EnableDebugLogSetting() {
     function onSwitchChange() {
         vibration("TICK")
         setConfig("enableDebugLog", String(!enableDebugLog)).then((result) => {
-            showSaveConfigSuccessToast(result, getLang);
+            showSaveConfigSuccessToast(result, getLang,false);
             result && setEnableDebugLog(!enableDebugLog);
         })
     }
