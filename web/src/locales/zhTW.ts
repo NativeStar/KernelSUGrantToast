@@ -8,6 +8,7 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "text.cancel": "取消",
     "text.detail": "詳細資訊",
     "text.followSystem": "跟隨系統",
+    "text.reset.success": "已還原預設值",
 
     "error.title": "發生異常",
     "error.missingProcess": "模組進程已退出，請嘗試重新啟動裝置。\n您仍然可以關閉此對話框以調整設定",
@@ -51,7 +52,6 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "longTimeToast.detail": "使彈出的提示 Toast 存在更長時間 在部分系統上可能無效 因爲 Android 限制 此時間不支持細調",
 
     "advanced.warning": "此頁面的設定若調整不當，可能影響效能或導致運作異常",
-    "advanced.searchDepth.reset.success": "已還原預設值",
     "advanced.searchDepth.label": "應用程式套件搜尋深度",
     "advanced.searchDepth.save.failed.invalid": "輸入數值無效，應介於0-32之間",
     "advanced.searchDepth.description": "輸入值應介於0-32之間，預設值為1",
@@ -60,6 +60,10 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "advanced.enableDebugLog.detail": "啟用後會寫入 '/data/local/SuToaster.log' 日誌檔案，需重新啟動後生效。\n啟用後會有一定的效能影響，請僅在需要傳送日誌時啟用！",
     "advanced.test.showDebugToastButton": "顯示測試 Toast",
     "advanced.test.showDebugToastButton.description": "點擊後會彈出一個測試 Toast，僅用於發生異常時的排查（長按按鈕會顯示更長時間的 Toast）",
+    "advanced.internalCooldown.label": "提示冷卻時間",
+    "advanced.internalCooldown.description":"輸入應為0-10之間，預設值為3，單位秒",
+    "advanced.internalCooldown.description.detail": "當收到指定應用程式提權事件後 多长时间內忽略此應用提權事件\n時間過短可能導致連續彈出大量 Toast",
+    "advanced.internalCooldown.save.failed.invalid":"輸入數值無效，應介於0-10之間",
 
     "about.description": "像 Magisk 一樣彈出授予超級使用者權限 Toast",
     "about.button.repository": "專案倉庫",

@@ -24,6 +24,7 @@ static std::map<uint32_t, time_t> toastedApplication;
 static std::map<uint32_t, time_t> ignoredProcess;
 static std::map<uint32_t, time_t> ignoredUid;
 static short packageSearchDepth = 1;
+static short internalToastCooldown = 3;
 static bool autoDeleteLog = false;
 
 struct __attribute__((packed)) EventRecordHeader {
@@ -71,7 +72,7 @@ void processSuEvent(JNIEnv *threadJniEnv, uint32_t uid, uint32_t ppid) {
         time_t currentTime = time(nullptr);
         auto findUidResult = ignoredUid.find(uid);
         if (findUidResult != ignoredUid.end()) {
-            if (currentTime - findUidResult->second <= 3) return;
+            if (currentTime - findUidResult->second < internalToastCooldown) return;
         }
         pushIgnoredUidMap(uid, currentTime);
     }
@@ -88,7 +89,7 @@ void processSuEventWithPpid(pid_t ppid) {
     if (findPpidResult != ignoredProcess.end()) {
         appendLog("new shared uid application event, same ppid:" + std::to_string(ppid));
         //相同ppid的请求每3秒最多处理一个
-        if (currentTime - findPpidResult->second <= 3) {
+        if (currentTime - findPpidResult->second < internalToastCooldown) {
             //避免toast无法显示
             appendLog("new shared uid application event, same ppid, avoid toast:" +
                       std::to_string(ppid));
@@ -102,8 +103,8 @@ void processSuEventWithPpid(pid_t ppid) {
     if (appInfo.isAndroidApp && !appInfo.cmdline.empty()) {
         auto findToastedApplicationResult = toastedApplication.find(appInfo.realPid);
         if (findToastedApplicationResult != toastedApplication.end()) {
-            //是Android应用且拥有相同pid 提醒至少间隔5秒
-            if (currentTime - findToastedApplicationResult->second <= 5) {
+            //是Android应用且拥有相同pid 需要有提醒间隔
+            if (currentTime - findToastedApplicationResult->second < internalToastCooldown) {
                 appendLog("new shared uid application event, same pid, avoid toast:" +
                           std::to_string(appInfo.realPid));
                 setresuid(1000, 1000, 0);
@@ -244,9 +245,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_com_suisho_kernelsugranttoast_Entry_jniInit(JNIEnv *env, jclass clazz, jshort searchDepth, jboolean deleteLog,jboolean enableDebugLog) {
+Java_com_suisho_kernelsugranttoast_Entry_jniInit(JNIEnv *env, jclass clazz, jshort searchDepth, jboolean deleteLog, jboolean enableDebugLog,jshort toastCooldownTime) {
     packageSearchDepth = searchDepth;
     autoDeleteLog = deleteLog;
+    internalToastCooldown = toastCooldownTime;
     if (!utilInit(enableDebugLog)) return false;
     if (!handleSuLog()) return false;
     LOGI("JNI utilInit successful");
@@ -268,4 +270,9 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_suisho_kernelsugranttoast_Entry_updatePackageSearchDepth(JNIEnv *env, jclass clazz, jshort value) {
     packageSearchDepth = value;
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_suisho_kernelsugranttoast_Entry_updateInternalToastCooldown(JNIEnv *env, jclass clazz, jshort value) {
+    internalToastCooldown = value;
 }

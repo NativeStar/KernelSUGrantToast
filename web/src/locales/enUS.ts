@@ -16,7 +16,8 @@ const EnglishKeys: typeof BaseLang = {
   "tabs.ignorePackage": "Ignore List",
   "tabs.base": "Basic",
   "tabs.about": "About",
-
+  "text.reset.success": "Reset to default",
+  
   "language.label": "Language",
   "language.select": "Select Language",
 
@@ -51,7 +52,6 @@ const EnglishKeys: typeof BaseLang = {
   "longTimeToast.detail": "Make the toast message stay on the screen longer. This may not work on some systems. Due to Android limitations, this duration cannot be finely adjusted.",
 
   "advanced.warning": "Improper settings on this page may affect performance or cause malfunctions",
-  "advanced.searchDepth.reset.success": "Reset to default",
   "advanced.searchDepth.label": "Package Search Depth",
   "advanced.searchDepth.save.failed.invalid": "Invalid input, should be between 0 and 32",
   "advanced.searchDepth.description": "Enter a value between 0 and 32. Default: 1",
@@ -60,6 +60,10 @@ const EnglishKeys: typeof BaseLang = {
   "advanced.enableDebugLog.detail": "Enabling this will write logs to '/data/local/SuToaster.log'. It will be automatically deleted after initialization is complete.\nEnabling this will have a certain performance impact. Please only enable it when you need to send logs.",
   "advanced.test.showDebugToastButton": "Show Test Toast",
   "advanced.test.showDebugToastButton.description": "Click to show a test toast. It will remain on the screen for a long time. (Long press to show a longer-lasting toast)",
+  "advanced.internalCooldown.label": "Toast Cooldown",
+  "advanced.internalCooldown.description": "Input should be between 0 and 10. Default: 3 ,unit: seconds",
+  "advanced.internalCooldown.description.detail": "When receiving a specified application's superuser event, ignore this application's superuser event for a certain period of time.\nA short time may cause multiple pop-ups.",
+  "advanced.internalCooldown.save.failed.invalid": "Invalid input, should be between 0 and 10",
 
   "about.description": "Show a root granted toast like Magisk",
   "about.button.repository": "Project Repository",

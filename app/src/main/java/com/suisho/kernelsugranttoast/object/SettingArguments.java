@@ -14,14 +14,16 @@ public class SettingArguments {
     public final boolean enableDebugLogs;
     public final String customToastText;
     public final boolean longTimeToast;
-    
+    public final short toastCooldownTime;
 
-    public SettingArguments(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLogs, String customToastText,boolean longTimeToast) {
+
+    public SettingArguments(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLogs, String customToastText, boolean longTimeToast,short toastCooldownTime) {
         this.packageSearchDepth = packageSearchDepth;
         this.autoDeleteLog = autoDeleteLog;
         this.enableDebugLogs = enableDebugLogs;
         this.customToastText = customToastText;
         this.longTimeToast = longTimeToast;
+        this.toastCooldownTime = toastCooldownTime;
 
 
     }
@@ -30,8 +32,9 @@ public class SettingArguments {
         short packageSearchDepth = 1;
         boolean autoDeleteLog = false;
         boolean enableDebugLogs = false;
-        boolean longTimeToast=false;
+        boolean longTimeToast = false;
         String customToastText = Messages.getLocaleMessage();
+        short toastCooldownTime=3;
         //自定义提示文本
         if(args.length > 0 && args[0] != null) {
             String tempCustomText = args[0];
@@ -111,6 +114,24 @@ public class SettingArguments {
                 Log.e(TAG, "Invalid long time toast setting!", numberFormatException);
             }
         }
-        return new SettingArguments(packageSearchDepth, autoDeleteLog, enableDebugLogs, customToastText, longTimeToast);
+        //toast弹出冷却
+        if(args.length > 6 && args[6] != null) {
+            try {
+                if(Util.checkConfigConfigValueValid("internalToastCooldown", args[6])) {
+                    Log.i(TAG, "Found toast cooldown setting");
+                    short tempToastCoolDown = Short.parseShort(args[6]);
+                    Log.i(TAG, "Set toast cooldown to " + tempToastCoolDown);
+                    if(tempToastCoolDown >= 0 && tempToastCoolDown < 11) {
+                        toastCooldownTime = tempToastCoolDown;
+                        Log.i(TAG, "Set toast cooldown to " + tempToastCoolDown);
+                    } else {
+                        Log.w(TAG, "Invalid toast cooldown setting!");
+                    }
+                }
+            } catch (NumberFormatException numberFormatException) {
+                Log.e(TAG, "Invalid toast cool down setting!", numberFormatException);
+            }
+        }
+        return new SettingArguments(packageSearchDepth, autoDeleteLog, enableDebugLogs, customToastText, longTimeToast, toastCooldownTime);
     }
 }

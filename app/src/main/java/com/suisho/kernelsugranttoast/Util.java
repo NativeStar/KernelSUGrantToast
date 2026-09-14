@@ -15,7 +15,14 @@ public class Util {
                 } catch (NumberFormatException numberFormatException) {
                     yield false;
                 }
-            //boolean系列
+            case "internalToastCooldown":
+                try {
+                    short tempCooldown = Short.parseShort(value);
+                    yield tempCooldown >= 0 && tempCooldown < 11;
+                } catch (NumberFormatException numberFormatException) {
+                    yield false;
+                }
+                //boolean系列
             case "autoDeleteLog":
             case "enableDebugLog":
             case "longTimeToast":

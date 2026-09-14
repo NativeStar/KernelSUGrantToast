@@ -7,6 +7,7 @@ const SimplifiedChineseKeys = {
     "text.cancel": "取消",
     "text.detail":"详情",
     "text.followSystem": "跟随系统",
+    "text.reset.success":"已恢复默认值",
 
     "error.title":"发生异常",
     "error.missingProcess":"模块进程已退出 请尝试重启设备\n你仍然可以关闭此对话框尝试调整设置",
@@ -50,7 +51,6 @@ const SimplifiedChineseKeys = {
     "longTimeToast.detail":"使弹出的提示Toast存在更长时间 在部分系统上可能无效 由于Android限制 此时间不支持细调",
 
     "advanced.warning":"该页面设置调整不当可能影响性能或导致工作异常",
-    "advanced.searchDepth.reset.success":"已恢复默认值",
     "advanced.searchDepth.label":"应用包搜索深度",
     "advanced.searchDepth.save.failed.invalid":"输入数值无效 应为0-32之间",
     "advanced.searchDepth.description":"输入应为0-32之间 默认值1",
@@ -59,6 +59,10 @@ const SimplifiedChineseKeys = {
     "advanced.enableDebugLog.detail":"开启后会写入'/data/local/SuToaster.log'日志文件 需重启后生效\n开启后会有一定的性能影响 请仅在需要发送日志时启用!",
     "advanced.test.showDebugToastButton":"显示测试Toast",
     "advanced.test.showDebugToastButton.description":"点击后弹出一个测试Toast 仅用作发生异常时的排查(长按按钮显示更长时间的Toast)",
+    "advanced.internalCooldown.label":"提示冷却时间",
+    "advanced.internalCooldown.description":"输入为0-10之间 默认值3 单位秒",
+    "advanced.internalCooldown.description.detail":"当收到指定应用的提权事件后 多长时间内忽略此应用提权事件\n时间过短可能导致连续弹出大量Toast",
+    "advanced.internalCooldown.save.failed.invalid":"输入数值无效 应为0-10之间",
 
     "about.description":"像Magisk一样弹出授予超级用户权限Toast",
     "about.button.repository":"项目仓库",

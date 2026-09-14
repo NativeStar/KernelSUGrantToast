@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 
 public class Entry {
-    private static final Set<String> allowedSettingKeys = new HashSet<>(Arrays.asList("customToastText", "ignorePackageNames", "packageSearchDepth","longTimeToast"));
+    private static final Set<String> allowedSettingKeys = new HashSet<>(Arrays.asList("customToastText", "ignorePackageNames", "packageSearchDepth", "longTimeToast", "internalToastCooldown"));
     private static final String TAG = "KernelSuGrantToast";
     private static Context systemContext;
     private static Handler handler;
@@ -70,7 +70,7 @@ public class Entry {
             //确定没有崩掉再加载
             //app_process没法加载内置so
             System.load(libraryFile.getAbsolutePath());
-            if(!jniInit(tmpArgs.packageSearchDepth, tmpArgs.autoDeleteLog, tmpArgs.enableDebugLogs)) {
+            if(!jniInit(tmpArgs.packageSearchDepth, tmpArgs.autoDeleteLog, tmpArgs.enableDebugLogs, tmpArgs.toastCooldownTime)) {
                 onInitFailed("Native init failed!");
                 System.exit(1);
                 return;
@@ -245,6 +245,10 @@ public class Entry {
                             updatePackageSearchDepth((short) 1);
                             Log.i(TAG, "Package search depth reset");
                             continue;
+                        } else if(splitMessage[0].equals("internalToastCooldown") && splitMessage[1].isEmpty()) {
+                            updateInternalToastCooldown((short) 3);
+                            Log.i(TAG, "Internal toast cooldown reset");
+                            continue;
                         }
                         Log.w(TAG, "Invalid config value: " + splitMessage[1]);
                         continue;
@@ -270,6 +274,11 @@ public class Entry {
                             boolean newValue = Boolean.parseBoolean(splitMessage[1]);
                             toastShowTime = newValue ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
                             Log.i(TAG, "Long time toast updated");
+                            break;
+                        case "internalToastCooldown":
+                            updateInternalToastCooldown(Short.parseShort(splitMessage[1]));
+                            Log.i(TAG, "Internal toast cooldown updated");
+                            break;
                         default:
                             //autoDeleteLog没有热更新的意义
                             Log.w(TAG, "Unknown setting key or key not supported hot update: " + splitMessage[0]);
@@ -283,12 +292,13 @@ public class Entry {
         }, "Setting IPC thread").start();
     }
 
-    private static native boolean jniInit(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLog);
+    private static native boolean jniInit(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLog,short toastCooldown);
 
     private static native void jniSetUid(int uid);
 
     private static native void jniProcessSharedUidApplication(int ppid);
 
-    //目前就这一个key需要在native层更新 先这样写着吧
     private static native void updatePackageSearchDepth(short value);
+
+    private static native void updateInternalToastCooldown(short value);
 }
