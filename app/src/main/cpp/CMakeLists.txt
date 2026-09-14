@@ -33,13 +33,18 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
       -g0
       -fvisibility=hidden
       -fvisibility-inlines-hidden
+      -flto=thin
   )
 
   target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
+      -flto=thin
       -Wl,--gc-sections
       -Wl,--exclude-libs,ALL
       -Wl,--icf=safe
       -Wl,-O2
+      -Wl,--pack-dyn-relocs=android+relr
+      -Wl,--use-android-relr-tags
+      -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libshimizu.map.txt
   )
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
