@@ -47,6 +47,8 @@ const EnglishKeys: typeof BaseLang = {
 
   "autoDeleteLog.label": "Auto-delete logs",
   "autoDeleteLog.detail": "Automatically delete SuLog logs generated during startup after initialization is complete. This can prevent log files from piling up and taking up storage, but may make it harder to report issues because these log files may be useful.",
+  "longTimeToast.label": "Extended Toast Duration",
+  "longTimeToast.detail": "Make the toast message stay on the screen longer. This may not work on some systems. Due to Android limitations, this duration cannot be finely adjusted.",
 
   "advanced.warning": "Improper settings on this page may affect performance or cause malfunctions",
   "advanced.searchDepth.reset.success": "Reset to default",

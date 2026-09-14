@@ -46,6 +46,8 @@ const SimplifiedChineseKeys = {
 
     "autoDeleteLog.label":"自动删除日志",
     "autoDeleteLog.detail":"初始化完成后自动删除启动时生成的SuLog日志 可避免日志文件堆积占用存储 但可能不利于反馈异常(这些日志文件可能有用)",
+    "longTimeToast.label":"延长提示时间", 
+    "longTimeToast.detail":"使弹出的提示Toast存在更长时间 在部分系统上可能无效 由于Android限制 此时间不支持细调",
 
     "advanced.warning":"该页面设置调整不当可能影响性能或导致工作异常",
     "advanced.searchDepth.reset.success":"已恢复默认值",

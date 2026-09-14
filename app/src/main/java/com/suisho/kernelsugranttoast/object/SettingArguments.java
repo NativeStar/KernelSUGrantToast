@@ -12,13 +12,17 @@ public class SettingArguments {
     public final short packageSearchDepth;
     public final boolean autoDeleteLog;
     public final boolean enableDebugLogs;
-    public String customToastText;
+    public final String customToastText;
+    public final boolean longTimeToast;
+    
 
-    public SettingArguments(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLogs, String customToastText) {
+    public SettingArguments(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLogs, String customToastText,boolean longTimeToast) {
         this.packageSearchDepth = packageSearchDepth;
         this.autoDeleteLog = autoDeleteLog;
         this.enableDebugLogs = enableDebugLogs;
         this.customToastText = customToastText;
+        this.longTimeToast = longTimeToast;
+
 
     }
 
@@ -26,6 +30,7 @@ public class SettingArguments {
         short packageSearchDepth = 1;
         boolean autoDeleteLog = false;
         boolean enableDebugLogs = false;
+        boolean longTimeToast=false;
         String customToastText = Messages.getLocaleMessage();
         //自定义提示文本
         if(args.length > 0 && args[0] != null) {
@@ -94,6 +99,18 @@ public class SettingArguments {
                 Log.e(TAG, "Invalid debug log setting!", numberFormatException);
             }
         }
-        return new SettingArguments(packageSearchDepth, autoDeleteLog, enableDebugLogs, customToastText);
+        //是否启用长时间Toast
+        if(args.length > 5 && args[5] != null) {
+            try {
+                if(Util.checkConfigConfigValueValid("longTimeToast", args[5])) {
+                    Log.i(TAG, "Found long time toast setting");
+                    longTimeToast = Boolean.parseBoolean(args[5]);
+                    Log.i(TAG, "Set long time toast to " + longTimeToast);
+                }
+            } catch (NumberFormatException numberFormatException) {
+                Log.e(TAG, "Invalid long time toast setting!", numberFormatException);
+            }
+        }
+        return new SettingArguments(packageSearchDepth, autoDeleteLog, enableDebugLogs, customToastText, longTimeToast);
     }
 }

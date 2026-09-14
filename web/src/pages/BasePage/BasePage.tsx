@@ -6,6 +6,7 @@ import ToastTextInput from "./components/ToastTextInput";
 import { Separator } from "@/components/ui/separator";
 import ThemeSelect from "./components/ThemeSelect";
 import AutoDeleteLogSetting from "./components/AutoDeleteLogSetting";
+import LongTimeToastSetting from "./components/LongTimeToastSetting";
 interface BasePageProps {
     setLanguage: (language: keyof typeof SupportedLangs) => void;
 }
@@ -17,6 +18,7 @@ export default function BasePage({ setLanguage }: BasePageProps) {
             <ThemeSelect />
             <Separator className="mt-5" />
             <ToastTextInput />
+            <LongTimeToastSetting />
             <Separator className="mt-5" />
             <AutoDeleteLogSetting />
         </div>

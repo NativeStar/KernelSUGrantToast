@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 
 public class Entry {
-    private static final Set<String> allowedSettingKeys = new HashSet<>(Arrays.asList("customToastText", "ignorePackageNames", "packageSearchDepth"));
+    private static final Set<String> allowedSettingKeys = new HashSet<>(Arrays.asList("customToastText", "ignorePackageNames", "packageSearchDepth","longTimeToast"));
     private static final String TAG = "KernelSuGrantToast";
     private static Context systemContext;
     private static Handler handler;
@@ -41,6 +41,7 @@ public class Entry {
     private static final LruCache<String, String> appNameCache = new LruCache<>(32);
     private static String customToastText = Messages.getLocaleMessage();
     private static final HashSet<String> ignorePackageList = new HashSet<>();
+    private static int toastShowTime = Toast.LENGTH_SHORT;
 
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     public static void main(String[] args) {
@@ -51,6 +52,7 @@ public class Entry {
         try {
             SettingArguments tmpArgs = SettingArguments.parseArguments(args, ignorePackageList);
             customToastText = tmpArgs.customToastText;
+            toastShowTime = tmpArgs.longTimeToast ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
             HiddenApiBypass.addHiddenApiExemptions("Landroid/app/ActivityThread;");
             if(Looper.getMainLooper() == null) Looper.prepareMainLooper();
             @SuppressLint("PrivateApi") Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
@@ -96,7 +98,7 @@ public class Entry {
 
     private static void showToast(String appName) {
         if(handler == null) handler = new Handler(Looper.getMainLooper());
-        handler.post(() -> Toast.makeText(systemContext, String.format(Locale.getDefault(), customToastText, appName), Toast.LENGTH_SHORT).show());
+        handler.post(() -> Toast.makeText(systemContext, String.format(Locale.getDefault(), customToastText, appName), toastShowTime).show());
     }
 
     public static void jniOnFallbackSuEvent(String cmdline) {
@@ -216,7 +218,6 @@ public class Entry {
                     //debug toast显示
                     if(line.equals("showDebugToast") || line.equals("showDebugToastLong")) {
                         if(handler == null) handler = new Handler(Looper.getMainLooper());
-                        //TODO 支持设置使用更长时间的Toast(虽然不一定有影响就是了)
                         String finalLine = line;
                         handler.post(() -> Toast.makeText(systemContext, "If you can see this toast,the test will passed!", finalLine.equals("showDebugToastLong") ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT).show());
                         continue;
@@ -265,8 +266,12 @@ public class Entry {
                             updatePackageSearchDepth(Short.parseShort(splitMessage[1]));
                             Log.i(TAG, "Package search depth updated");
                             break;
-                        //autoDeleteLog没有热更新的意义
+                        case "longTimeToast":
+                            boolean newValue = Boolean.parseBoolean(splitMessage[1]);
+                            toastShowTime = newValue ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
+                            Log.i(TAG, "Long time toast updated");
                         default:
+                            //autoDeleteLog没有热更新的意义
                             Log.w(TAG, "Unknown setting key or key not supported hot update: " + splitMessage[0]);
                     }
                 }

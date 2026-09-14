@@ -47,6 +47,8 @@ const TraditionalChineseKeys: typeof BaseLang = {
 
     "autoDeleteLog.label": "自動刪除日誌",
     "autoDeleteLog.detail": "初始化完成後自動刪除啟動時產生的 SuLog 日誌，可避免日誌檔案堆積占用儲存空間，但可能不利於回報異常（這些日誌檔案可能有用）",
+    "longTimeToast.label": "延長提示時間",
+    "longTimeToast.detail": "使彈出的提示 Toast 存在更長時間 在部分系統上可能無效 因爲 Android 限制 此時間不支持細調",
 
     "advanced.warning": "此頁面的設定若調整不當，可能影響效能或導致運作異常",
     "advanced.searchDepth.reset.success": "已還原預設值",

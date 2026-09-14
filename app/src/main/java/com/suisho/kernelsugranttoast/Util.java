@@ -18,6 +18,7 @@ public class Util {
             //boolean系列
             case "autoDeleteLog":
             case "enableDebugLog":
+            case "longTimeToast":
                 yield value.equals("true") || value.equals("false");
             default:
                 yield false;
