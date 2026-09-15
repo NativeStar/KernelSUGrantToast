@@ -49,7 +49,7 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "autoDeleteLog.label": "自動刪除日誌",
     "autoDeleteLog.detail": "初始化完成後自動刪除啟動時產生的 SuLog 日誌，可避免日誌檔案堆積占用儲存空間，但可能不利於回報異常（這些日誌檔案可能有用）",
     "longTimeToast.label": "延長提示時間",
-    "longTimeToast.detail": "使彈出的提示 Toast 存在更長時間 在部分系統上可能無效 因爲 Android 限制 此時間不支持細調",
+    "longTimeToast.detail": "讓彈出的 Toast 顯示更長時間。在部分系統上可能無效。受 Android 限制，此時間無法微調。",
 
     "advanced.warning": "此頁面的設定若調整不當，可能影響效能或導致運作異常",
     "advanced.searchDepth.label": "應用程式套件搜尋深度",
@@ -62,7 +62,7 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "advanced.test.showDebugToastButton.description": "點擊後會彈出一個測試 Toast，僅用於發生異常時的排查（長按按鈕會顯示更長時間的 Toast）",
     "advanced.internalCooldown.label": "提示冷卻時間",
     "advanced.internalCooldown.description":"輸入應為0-10之間，預設值為3，單位秒",
-    "advanced.internalCooldown.description.detail": "當收到指定應用程式提權事件後 多长时间內忽略此應用提權事件\n時間過短可能導致連續彈出大量 Toast",
+    "advanced.internalCooldown.description.detail": "當收到指定應用程式的提權事件後，在設定的時間內忽略該應用程式後續的提權事件。\n時間過短可能導致連續彈出大量 Toast",
     "advanced.internalCooldown.save.failed.invalid":"輸入數值無效，應介於0-10之間",
 
     "about.description": "像 Magisk 一樣彈出授予超級使用者權限 Toast",
