@@ -26,33 +26,35 @@ project("shimizu")
 # for GameActivity/NativeActivity derived applications, the same library name must be
 # used in the AndroidManifest.xml file.
 add_library(${CMAKE_PROJECT_NAME} SHARED
-    # List C/C++ source files with relative paths to this CMakeLists.txt.
-    core.cpp util.cpp)
+        # List C/C++ source files with relative paths to this CMakeLists.txt.
+        core.cpp util.cpp)
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
-      -O3
-      -g0
-      -fvisibility=hidden
-      -fvisibility-inlines-hidden
-      -flto=thin
-  )
+        -O3
+        -g0
+        -fvisibility=hidden
+        -fvisibility-inlines-hidden
+        -flto=thin
+)
 
-  target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
-      -flto=thin
-      -Wl,--gc-sections
-      -Wl,--exclude-libs,ALL
-      -Wl,--icf=safe
-      -Wl,-O2
-      -Wl,--pack-dyn-relocs=android+relr
-      -Wl,--use-android-relr-tags
-      -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libshimizu.map.txt
-  )
+target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
+        -flto=thin
+        -Wl,--gc-sections
+        -Wl,--exclude-libs,ALL
+        -Wl,--icf=safe
+        -Wl,-O2
+        -Wl,--pack-dyn-relocs=android+relr
+        -Wl,--use-android-relr-tags
+        -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libshimizu.map.txt
+)
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
 # build script, prebuilt third-party libraries, or Android system libraries.
 target_link_libraries(${CMAKE_PROJECT_NAME}
-    # List libraries link to the target library
-    android
-    log)
+        # List libraries link to the target library
+        android
+        log)
 target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
-      -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libshimizu.map.txt
-  )
+        -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libshimizu.map.txt
+)
+set_property(TARGET ${CMAKE_PROJECT_NAME} APPEND PROPERTY
+        LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/libshimizu.map.txt")
