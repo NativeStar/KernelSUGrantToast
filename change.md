@@ -1,4 +1,31 @@
+### 2.3
+
+优化模块初始化速度
+
+移除"设置实时生效(实验性)"开关 功能改为常驻启用
+
+大幅优化模块文件体积
+
+支持设置Toast显示时长和相同软件的提醒冷却时间
+
+尝试优化翻译
+
+修复进程崩溃后WebUI仍会尝试执行热更新(可能导致意外情况)
+
+Optimized module initialization speed.
+
+Removed the "Apply Settings in Real Time (Experimental)" toggle; the feature is now permanently enabled.
+
+Significantly reduced the module file size.
+
+Added settings for Toast display duration and the notification cooldown time for the same app.
+
+Attempted to improve translations.
+
+Fixed an issue where the WebUI would still attempt to perform a hot update after the process crashed (which could lead to unexpected behavior).
+
 ### 2.2
+
 修复在ReSukiSU上无法工作
 
 在WebUI中添加了一些调试用功能
@@ -11,10 +38,13 @@ Fixed an issue that prevented the module from working on ReSukiSU.
 
 Added several debugging features to the WebUI.
 
-Prevented installation on devices with architectures other than arm64 (there is no need to worry, as the module has only ever supported arm64 devices).
+Prevented installation on devices with architectures other than arm64 (there is no need to worry, as
+the module has only ever supported arm64 devices).
 
 Displays a notification when opening the WebUI if the module is not running properly.
+
 ### 2.1
+
 修复在最新KernelSU Release(32601)上无法工作
 
 修复设备软重启后模块进程崩溃
@@ -29,14 +59,16 @@ Fixed an issue that prevented the module from working on the latest KernelSU Rel
 
 Fixed a crash of the module process after a soft reboot.
 
-When the Add App button is long-pressed, apps can be added by manually entering their package names (useful after converting a regular app into a system app).
+When the Add App button is long-pressed, apps can be added by manually entering their package
+names (useful after converting a regular app into a system app).
 
 Residual files and data are cleaned up after uninstallation.
 
-Uses KernelSU's built-in feature to register and take over Su logs; the Su logging feature no longer needs to remain enabled.
-
+Uses KernelSU's built-in feature to register and take over Su logs; the Su logging feature no longer
+needs to remain enabled.
 
 ### 2.0
+
 由于工作方式优化 不再支持设置是否检查SuCompat事件
 
 尝试支持对部分设置项热更新 需要在WebUI中开启'设置实时生效(实验性)'开关并重启
@@ -44,11 +76,16 @@ Uses KernelSU's built-in feature to register and take over Su logs; the Su loggi
 修复新的判定方式未使用缓存的应用名 提高性能
 
 其他优化
+
 ### 1.9
+
 修复在最新版本KernelSU(32525)上无法工作
 
-改为基于应用UID获取提权数据 感谢[@hgcjd666666](https://github.com/NativeStar/KernelSUGrantToast/pull/8)
+改为基于应用UID获取提权数据
+感谢[@hgcjd666666](https://github.com/NativeStar/KernelSUGrantToast/pull/8)
+
 ### 1.8
+
 WebUI:
 
 修复应用列表项长按时误触发振动
@@ -60,21 +97,28 @@ WebUI:
 支持设置是否在启动后删除启动时生成的SuLog日志文件
 
 开启r8
+
 ### 1.7
+
 改用基于Shadcn的全新WebUI界面 支持多语言、深色模式等
 
 新增预置繁体中文和英语默认提示消息 将在模块启动时根据系统语言自动选择
 
 增加应用名缓存列表大小
+
 ### 1.6
+
 支持设置对提权应用的搜索深度 避免一些极端情况无法被检测(默认值1 过高会影响性能 酌情调整)
 
-支持设置对兼容提权的检测 避免少数情况下的提权事件被忽略(如果发现模块失效或严重漏提醒可尝试开启 但会带来性能影响)
+支持设置对兼容提权的检测 避免少数情况下的提权事件被忽略(如果发现模块失效或严重漏提醒可尝试开启
+但会带来性能影响)
 
 修复崩溃后可能无法修改模块描述提醒
 
 优化异常处理
+
 ### 1.5
+
 在初始化完成后删除启动时生成的SuLog文件 避免堆积
 
 优化安装方式 一定程度上降低安装后模块体积
@@ -82,12 +126,15 @@ WebUI:
 修改安装时文案
 
 ### 1.4
+
 修复自定义文本只能接受长度为63的字符(实际应为64)
 
 修复自定义提示文本含有某些符号时可能出现异常
 
 优化性能 移除了兼容模式提权的判定(根本用不到这个路径)
+
 ### 1.3
+
 修复忽略提示应用列表只有一个应用时功能失效
 
 新增在发生异常时修改模块描述提醒
@@ -97,15 +144,21 @@ WebUI:
 优化性能
 
 更改部分文案
+
 ### 1.2
+
 支持忽略指定应用的授权提醒
 
 使用KernelSU功能实现临时覆盖模块描述
 
 性能优化
+
 ### 1.1
+
 添加WebUI
 
 支持自定义提示文本
+
 ### 1.0
+
 首次发布

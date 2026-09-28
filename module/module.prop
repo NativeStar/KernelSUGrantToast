@@ -1,7 +1,7 @@
 id=ksuGrantToast
 name=KernelSU Grant Toast
 author=NativeStar
-version=2.2
-versionCode=13
+version=2.3
+versionCode=14
 description=(❌Disabled)Show a root granted toast like Magisk.
 updateJson=https://raw.githubusercontent.com/NativeStar/KernelSUGrantToast/master/update.json
