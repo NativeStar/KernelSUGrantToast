@@ -52,6 +52,6 @@ set_perm "$MODPATH/Shimizu" 0 0 0755
 set_perm "$MODPATH/daemon.dex" 0 0 0755
 rm -f "$MODPATH/daemon.apk"
 echo "Setting description..."
-"$KSUD" module config set --temp override.description "[Waiting reboot]Show a root granted toast like Magisk.Require SuLog enabled."
+"$KSUD" module config set --temp override.description "[Waiting reboot]Show a root granted toast like Magisk."
 echo "Installation successful!"
 echo "Please reboot for changes to take effect"

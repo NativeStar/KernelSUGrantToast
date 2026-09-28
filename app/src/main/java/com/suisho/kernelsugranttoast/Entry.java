@@ -181,7 +181,7 @@ public class Entry {
                 Log.w(TAG, "ksud file not found!");
                 return;
             }
-            String desc = String.format(Locale.getDefault(), "[%s]Show a root granted toast like Magisk.Require SuLog enabled.", descText);
+            String desc = String.format(Locale.getDefault(), "[%s]Show a root granted toast like Magisk.", descText);
             ProcessBuilder processBuilder = new ProcessBuilder("/data/adb/ksud", "module", "config", "set", "--temp", "override.description", desc);
             processBuilder.environment().put("KSU_MODULE", "ksuGrantToast");
             java.lang.Process changeDescriptorProcess = processBuilder.start();
@@ -292,7 +292,7 @@ public class Entry {
         }, "Setting IPC thread").start();
     }
 
-    private static native boolean jniInit(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLog,short toastCooldown);
+    private static native boolean jniInit(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLog, short toastCooldown);
 
     private static native void jniSetUid(int uid);
 
