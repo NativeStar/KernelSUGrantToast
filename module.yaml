@@ -1,0 +1,14 @@
+schemaVersion: 1
+id: ksuGrantToast
+name: KernelSU Grant Toast
+summary: Show a root granted toast like Magisk.让KSU像Magisk一样显示超级用户授权Toast.
+description: README.md
+license: GPL-3.0-only
+homepage: https://github.com/NativeStar/KernelSUGrantToast
+support: https://github.com/NativeStar/KernelSUGrantToast/issues
+tags: [ magisk, toast,notify ]
+authors:
+  - name: NativeStar
+    url: https://github.com/NativeStar
+compatibility:
+  architectures: [arm64-v8a]
