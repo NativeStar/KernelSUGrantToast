@@ -1,6 +1,24 @@
 #!/system/bin/sh
 KSUD=/data/adb/ksud
 export KSU_MODULE=ksuGrantToast
+CFG_DIR=/data/adb/ksu/module_configs/ksuGrantToast
+# KernelSU 3.x 起模块配置从 TOML 文本改成了 KSUM 二进制格式，但升级时不会
+# 迁移旧文件。残留的旧格式 persist.config 会让所有 `ksud module config`
+# 调用报 "Invalid config magic"，WebUI 也因此无法读取/保存配置。这里只在
+# 检测到该错误时备份旧文件并删除，让 ksud 重建为新格式，不影响旧版内核。
+migrate_legacy_config() {
+  [ -f "$CFG_DIR/persist.config" ] || return 0
+  local err
+  err=$("$KSUD" module config get manage.sulog 2>&1 >/dev/null)
+  case "$err" in
+    *"Invalid config magic"*)
+      echo "Migrating legacy module config (TOML -> KSUM)..."
+      cp -f "$CFG_DIR/persist.config" "$CFG_DIR/persist.config.toml.bak" &&
+        rm -f "$CFG_DIR/persist.config"
+      ;;
+  esac
+}
+migrate_legacy_config
 #接管功能
 #一直接管会导致功能被彻底关闭 日志数据也随之消失
 # 临时释放一下让他能启动 后续恢复管理阻止改设置
