@@ -24,7 +24,7 @@ export default function ToastTextInput() {
             const result = await deleteConfig("customToastText");
             if (isEnabledHotUpdateConfig()) {
                 //热重置设置
-                setConfig("customToastText", "");
+                setConfig("customToastText", "", true);
                 result ? toast.success(getLang("toast.save.reset.success")) : toast.error(getLang("text.save.failed"))
             } else {
                 result ? toast.success(getLang("toast.save.reset.success"), { description: getLang("text.reboot.tip") }) : toast.error(getLang("text.save.failed"))
@@ -39,7 +39,7 @@ export default function ToastTextInput() {
             toast.warning(getLang("toast.save.error.missionPlaceholder"))
             return
         }
-        if (customToastText.split("%s").length>2) {
+        if (customToastText.split("%s").length > 2) {
             toast.warning(getLang("toast.save.error.tooManyPlaceholders"))
             return
         }

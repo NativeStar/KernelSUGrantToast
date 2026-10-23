@@ -30,7 +30,7 @@ export default function SearchDepthSetting() {
             const result = await deleteConfig("packageSearchDepth");
             if (isEnabledHotUpdateConfig()) {
                 //热重置设置
-                setConfig("packageSearchDepth", "");
+                setConfig("packageSearchDepth", "", true);
                 result ? toast.success(getLang("text.reset.success")) : toast.error(getLang("text.save.failed"))
             } else {
                 result ? toast.success(getLang("text.reset.success"), { description: getLang("text.reboot.tip") }) : toast.error(getLang("text.save.failed"))

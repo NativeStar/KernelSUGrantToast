@@ -37,8 +37,17 @@ export function useKsu() {
         if (result.errno !== 0) return null;
         return result.stdout === "true"
     }, []);
-    const setConfig = useCallback(async (configKey: string, value: string) => {
+    const setConfig = useCallback(async (configKey: string, value: string, hotUpdateOnly: boolean = false) => {
         if (mock) return true
+        // 适用于删除配置时热更新数据
+        if (hotUpdateOnly) {
+            if (!isEnabledHotUpdate || NotHotUpdateConfigKeys.includes(configKey)) {
+                return false
+            }
+            const ipcContent = `${configKey}${String.fromCharCode(0x2)} ${value}`;
+            spawn(`echo ${shellQuote(ipcContent)} > /data/adb/toast_ipc`)
+            return true
+        }
         const result = await exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config set ${configKey} ${shellQuote(value)}`)
         //autoDeleteLog只在启动后检查触发一次 没有热更新的意义
         if (isEnabledHotUpdate && result.errno === 0 && !NotHotUpdateConfigKeys.includes(configKey)) {

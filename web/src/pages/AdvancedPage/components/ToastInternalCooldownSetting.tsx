@@ -30,7 +30,7 @@ export default function ToastInternalCooldownSetting() {
             const result = await deleteConfig("internalToastCooldown");
             if (isEnabledHotUpdateConfig()) {
                 //热重置设置
-                setConfig("internalToastCooldown", "");
+                setConfig("internalToastCooldown", "", true);
                 result ? toast.success(getLang("text.reset.success")) : toast.error(getLang("text.save.failed"))
             } else {
                 result ? toast.success(getLang("text.reset.success"), { description: getLang("text.reboot.tip") }) : toast.error(getLang("text.save.failed"))
