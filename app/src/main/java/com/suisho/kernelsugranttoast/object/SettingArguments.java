@@ -2,13 +2,13 @@ package com.suisho.kernelsugranttoast.object;
 
 import android.util.Log;
 
+import com.suisho.kernelsugranttoast.Entry;
 import com.suisho.kernelsugranttoast.Messages;
 import com.suisho.kernelsugranttoast.Util;
 
 import java.util.HashSet;
 
 public class SettingArguments {
-    private static final String TAG = "KernelSuGrantToast";
     public final short packageSearchDepth;
     public final boolean autoDeleteLog;
     public final boolean enableDebugLogs;
@@ -17,7 +17,7 @@ public class SettingArguments {
     public final short toastCooldownTime;
 
 
-    public SettingArguments(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLogs, String customToastText, boolean longTimeToast,short toastCooldownTime) {
+    public SettingArguments(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLogs, String customToastText, boolean longTimeToast, short toastCooldownTime) {
         this.packageSearchDepth = packageSearchDepth;
         this.autoDeleteLog = autoDeleteLog;
         this.enableDebugLogs = enableDebugLogs;
@@ -28,108 +28,80 @@ public class SettingArguments {
 
     }
 
-    public static SettingArguments parseArguments(String[] args, HashSet<String> ignorePackageList) {
+    public static SettingArguments initSettings(String[] args, HashSet<String> ignorePackageList) {
         short packageSearchDepth = 1;
         boolean autoDeleteLog = false;
         boolean enableDebugLogs = false;
         boolean longTimeToast = false;
         String customToastText = Messages.getLocaleMessage();
-        short toastCooldownTime=3;
+        short toastCooldownTime = 3;
         //自定义提示文本
-        if(args.length > 0 && args[0] != null) {
-            String tempCustomText = args[0];
-            Log.i(TAG, "Found custom toast text");
-            if(Util.checkConfigConfigValueValid("customToastText", tempCustomText)) {
-                customToastText = tempCustomText;
-            } else {
-                Log.w(TAG, "Invalid custom toast text!");
-            }
+        String tempCustomText = Util.getModuleConfig("customToastText", String.class);
+        if(tempCustomText != null && Util.checkConfigConfigValueValid("customToastText", tempCustomText)) {
+            Log.i(Entry.TAG, "Found custom toast text");
+            customToastText = tempCustomText;
         } else {
-            Log.i(TAG, "Use default toast text");
+            Log.w(Entry.TAG, "Invalid custom toast text!");
         }
         //忽略包列表
-        if(args.length > 1 && args[1] != null) {
-            String tempRawIgnorePackageList = args[1];
-            Log.i(TAG, "Found ignore package list");
-            if(!tempRawIgnorePackageList.isEmpty()) {
-                String[] rawSplit = tempRawIgnorePackageList.split(";");
-                for(String packageName : rawSplit) {
-                    if(!packageName.isEmpty()) ignorePackageList.add(packageName);
-                }
-                Log.i(TAG, "Added all ignore package");
-            } else {
-                Log.w(TAG, "Invalid ignore package list");
+        String tempRawIgnorePackageList = Util.getModuleConfig("ignorePackageNames", String.class);
+        if(tempRawIgnorePackageList != null && !tempRawIgnorePackageList.isEmpty()) {
+            Log.i(Entry.TAG, "Found ignore package list");
+            String[] rawSplit = tempRawIgnorePackageList.split(";");
+            for(String packageName : rawSplit) {
+                if(!packageName.isEmpty()) ignorePackageList.add(packageName);
             }
+            Log.i(Entry.TAG, "Added all ignore package");
+        } else {
+            Log.w(Entry.TAG, "Invalid ignore package list");
         }
         //搜索深度
-        if(args.length > 2 && args[2] != null) {
-            try {
-                if(Util.checkConfigConfigValueValid("packageSearchDepth", args[2])) {
-                    short tempSearchDepth = Short.parseShort(args[2]);
-                    Log.i(TAG, "Found custom package search depth");
-                    if(tempSearchDepth >= 0 && tempSearchDepth < 33) {
-                        packageSearchDepth = tempSearchDepth;
-                        Log.i(TAG, "Set package search depth to " + tempSearchDepth);
-                    } else {
-                        Log.w(TAG, "Invalid package search depth!");
-                    }
-                }
-            } catch (NumberFormatException numberFormatException) {
-                Log.e(TAG, "Invalid package search depth!", numberFormatException);
+        Short rawPackageSearchDepth = Util.getModuleConfig("packageSearchDepth", Short.class);
+        if(rawPackageSearchDepth != null) {
+            Log.i(Entry.TAG, "Found custom package search depth");
+            if(rawPackageSearchDepth >= 0 && rawPackageSearchDepth < 33) {
+                packageSearchDepth = rawPackageSearchDepth;
+                Log.i(Entry.TAG, "Set package search depth to " + rawPackageSearchDepth);
+            } else {
+                Log.w(Entry.TAG, "Invalid package search depth!");
             }
         }
         //自动移除log
-        if(args.length > 3 && args[3] != null) {
-            try {
-                if(Util.checkConfigConfigValueValid("autoDeleteLog", args[3])) {
-                    Log.i(TAG, "Found auto delete log setting");
-                    autoDeleteLog = Boolean.parseBoolean(args[3]);
-                    Log.i(TAG, "Set auto delete log to " + autoDeleteLog);
-                }
-            } catch (NumberFormatException numberFormatException) {
-                Log.e(TAG, "Invalid auto delete log setting!", numberFormatException);
-            }
+        Boolean rawAutoDeleteLog = Util.getModuleConfig("autoDeleteLog", Boolean.class);
+        if(rawAutoDeleteLog != null) {
+            Log.i(Entry.TAG, "Found auto delete log setting");
+            autoDeleteLog = rawAutoDeleteLog;
+            Log.i(Entry.TAG, "Set auto delete log to " + autoDeleteLog);
+        } else {
+            Log.w(Entry.TAG, "Invalid auto delete log setting");
         }
         //启用调试日志
-        if(args.length > 4 && args[4] != null) {
-            try {
-                if(Util.checkConfigConfigValueValid("enableDebugLog", args[4])) {
-                    Log.i(TAG, "Found debug log setting");
-                    enableDebugLogs = Boolean.parseBoolean(args[4]);
-                    Log.i(TAG, "Set debug log to " + enableDebugLogs);
-                }
-            } catch (NumberFormatException numberFormatException) {
-                Log.e(TAG, "Invalid debug log setting!", numberFormatException);
-            }
+        Boolean rawEnableDebugLogs = Util.getModuleConfig("enableDebugLog", Boolean.class);
+        if(rawEnableDebugLogs != null) {
+            Log.i(Entry.TAG, "Found debug log setting");
+            enableDebugLogs = rawEnableDebugLogs;
+            Log.i(Entry.TAG, "Set debug log to " + enableDebugLogs);
+        } else {
+            Log.w(Entry.TAG, "Invalid debug log setting");
         }
         //是否启用长时间Toast
-        if(args.length > 5 && args[5] != null) {
-            try {
-                if(Util.checkConfigConfigValueValid("longTimeToast", args[5])) {
-                    Log.i(TAG, "Found long time toast setting");
-                    longTimeToast = Boolean.parseBoolean(args[5]);
-                    Log.i(TAG, "Set long time toast to " + longTimeToast);
-                }
-            } catch (NumberFormatException numberFormatException) {
-                Log.e(TAG, "Invalid long time toast setting!", numberFormatException);
-            }
+        Boolean rawLongTimeToast = Util.getModuleConfig("longTimeToast", Boolean.class);
+        if(rawLongTimeToast != null) {
+            Log.i(Entry.TAG, "Found long time toast setting");
+            longTimeToast = rawLongTimeToast;
+            Log.i(Entry.TAG, "Set long time toast to " + longTimeToast);
+        } else {
+            Log.w(Entry.TAG, "Invalid long time toast setting");
         }
         //toast弹出冷却
-        if(args.length > 6 && args[6] != null) {
-            try {
-                if(Util.checkConfigConfigValueValid("internalToastCooldown", args[6])) {
-                    Log.i(TAG, "Found toast cooldown setting");
-                    short tempToastCoolDown = Short.parseShort(args[6]);
-                    Log.i(TAG, "Set toast cooldown to " + tempToastCoolDown);
-                    if(tempToastCoolDown >= 0 && tempToastCoolDown < 11) {
-                        toastCooldownTime = tempToastCoolDown;
-                        Log.i(TAG, "Set toast cooldown to " + tempToastCoolDown);
-                    } else {
-                        Log.w(TAG, "Invalid toast cooldown setting!");
-                    }
-                }
-            } catch (NumberFormatException numberFormatException) {
-                Log.e(TAG, "Invalid toast cool down setting!", numberFormatException);
+        Short rawToastCooldownTime = Util.getModuleConfig("internalToastCooldown", Short.class);
+        if(rawToastCooldownTime != null) {
+            Log.i(Entry.TAG, "Found toast cooldown setting");
+            if(rawToastCooldownTime >= 0 && rawToastCooldownTime < 11) {
+                toastCooldownTime = rawToastCooldownTime;
+                Log.i(Entry.TAG, "Set toast cooldown to " + rawToastCooldownTime);
+            } else {
+                Log.w(Entry.TAG, "Invalid toast cooldown setting!");
             }
         }
         return new SettingArguments(packageSearchDepth, autoDeleteLog, enableDebugLogs, customToastText, longTimeToast, toastCooldownTime);

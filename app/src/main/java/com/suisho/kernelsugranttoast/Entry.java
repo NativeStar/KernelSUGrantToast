@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Entry {
     private static final Set<String> allowedSettingKeys = new HashSet<>(Arrays.asList("customToastText", "ignorePackageNames", "packageSearchDepth", "longTimeToast", "internalToastCooldown"));
-    private static final String TAG = "KernelSuGrantToast";
+    public static final String TAG = "KernelSuGrantToast";
     private static Context systemContext;
     private static Handler handler;
     private static PackageManager packageManager;
@@ -50,7 +50,7 @@ public class Entry {
             return;
         }
         try {
-            SettingArguments tmpArgs = SettingArguments.parseArguments(args, ignorePackageList);
+            SettingArguments tmpArgs = SettingArguments.initSettings(args, ignorePackageList);
             customToastText = tmpArgs.customToastText;
             toastShowTime = tmpArgs.longTimeToast ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
             HiddenApiBypass.addHiddenApiExemptions("Landroid/app/ActivityThread;");

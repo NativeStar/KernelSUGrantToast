@@ -56,6 +56,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.annotation)
     implementation(libs.hiddenapibypass)
 }
 
