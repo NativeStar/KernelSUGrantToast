@@ -1,6 +1,6 @@
 [versions]
-agp = "9.1.0"
-hiddenapibypass = "6.1"
+agp = "9.4.1"
+hiddenapibypass = "6.2"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"

@@ -5,8 +5,7 @@ plugins {
 android {
     namespace = "com.suisho.kernelsugranttoast"
     compileSdk {
-        version = release(36) {
-        }
+        version = release(37)
     }
 
     defaultConfig {
@@ -61,6 +60,6 @@ dependencies {
 }
 
 configurations.configureEach {
-    exclude(group = "org.jetbrains.kotlin")
+//    exclude(group = "org.jetbrains.kotlin")
     exclude(group = "org.jetbrains", module = "annotations")
 }
