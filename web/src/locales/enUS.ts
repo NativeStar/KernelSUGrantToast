@@ -17,7 +17,7 @@ const EnglishKeys: typeof BaseLang = {
   "tabs.base": "Basic",
   "tabs.about": "About",
   "text.reset.success": "Restored default settings",
-  
+
   "language.label": "Language",
   "language.select": "Select Language",
 
@@ -33,6 +33,8 @@ const EnglishKeys: typeof BaseLang = {
   "toast.save.error.invalidLength": "Message length must be less than 64 characters",
   "toast.save.error.missionPlaceholder": "Message must contain '%s' placeholder",
   "toast.save.error.tooManyPlaceholders": "Only one placeholder is allowed",
+  "enableWebHaptic.label": "WebUI Haptic Feedback",
+  "enableWebHaptic.detail": "Provides haptic feedback when clicking buttons, changing settings, etc.\nNote that turning off this switch will not disable haptic feedback added by the Webview itself (such as long-pressing certain controls).",
 
   "ignorePackage.tip": "Requests from apps in this list will not trigger a superuser toast",
   "ignorePackage.tip.longPress": "Long press to add custom package name",

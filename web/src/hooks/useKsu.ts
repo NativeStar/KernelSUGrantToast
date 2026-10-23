@@ -9,6 +9,7 @@ const VibrationType = {
     CONFIRM: 75
 }
 let isEnabledHotUpdate: boolean | null = null;
+let isEnabledHaptic: boolean = true;
 export function useKsu() {
     const mock = !Reflect.has(window, "ksu");
     if (mock) {
@@ -20,6 +21,16 @@ export function useKsu() {
             isEnabledHotUpdate = result.errno === 0;
         })
     }
+    //初始化振动反馈
+    new Promise(() => {
+        let rawEnabledHaptic = localStorage.getItem("isEnabledHaptic")
+        if (rawEnabledHaptic === null) {
+            // 默认开启 我写了好久的触感反馈啊
+            isEnabledHaptic = true
+            return
+        }
+        isEnabledHaptic = rawEnabledHaptic === "true"
+    })
     const getStringConfig = useCallback(async (configKey: string) => {
         if (mock) {
             if (configKey === "packageSearchDepth") {
@@ -114,7 +125,7 @@ export function useKsu() {
         exec(`am start -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d '${url}'`)
     }, []);
     const vibration = useCallback(async (type: keyof typeof VibrationType) => {
-        if (mock) return
+        if (mock || !isEnabledHaptic) return
         spawn(`cmd vibrator_manager synced oneshot ${VibrationType[type]}`)
     }, []);
     const getVersion = useCallback(() => {
@@ -131,7 +142,16 @@ export function useKsu() {
         const result = await exec(`pidof SuToaster`)
         return result.errno === 0;
     }, []);
-    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration, getVersion, showDebugToast, isModuleProcessAvailable }
+    const setEnableHaptic = useCallback(async (enable: boolean) => {
+        // 纯web层的设置 不用ksu的方式保存
+        if (mock) return
+        isEnabledHaptic = enable;
+        localStorage.setItem("isEnabledHaptic", enable ? "true" : "false");
+    }, []);
+    const getEnableHaptic = useCallback(() => {
+        return isEnabledHaptic
+    }, [])
+    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration, getVersion, showDebugToast, isModuleProcessAvailable, setEnableHaptic, getEnableHaptic }
 }
 export function isEnabledHotUpdateConfig() {
     return isEnabledHotUpdate ?? false;

@@ -33,6 +33,8 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "toast.save.error.invalidLength": "訊息長度需小於64個字元",
     "toast.save.error.missionPlaceholder": "訊息需包含「%s」預留位置",
     "toast.save.error.tooManyPlaceholders": "只允許存在一個預留位置",
+    "enableWebHaptic.label": "WebUI振動反饋",
+    "enableWebHaptic.detail": "在點擊按鈕、更改設定等操作時提供振動反饋。\n請注意，關閉此開關不會禁用Webview本身添加的振動反饋（例如長按某些控件）。",
 
     "ignorePackage.tip": "清單中的應用程式發起提權時將不會提醒",
     "ignorePackage.tip.longPress": "長按按鈕新增自訂套件名稱",

@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import ThemeSelect from "./components/ThemeSelect";
 import AutoDeleteLogSetting from "./components/AutoDeleteLogSetting";
 import LongTimeToastSetting from "./components/LongTimeToastSetting";
+import WebHapticSetting from "./components/WebHapticSetting";
 interface BasePageProps {
     setLanguage: (language: keyof typeof SupportedLangs) => void;
 }
@@ -21,6 +22,7 @@ export default function BasePage({ setLanguage }: BasePageProps) {
             <LongTimeToastSetting />
             <Separator className="mt-5" />
             <AutoDeleteLogSetting />
+            <WebHapticSetting />
         </div>
     )
 }
