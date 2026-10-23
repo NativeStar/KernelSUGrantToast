@@ -33,6 +33,10 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "toast.save.error.invalidLength": "訊息長度需小於64個字元",
     "toast.save.error.missionPlaceholder": "訊息需包含「%s」預留位置",
     "toast.save.error.tooManyPlaceholders": "只允許存在一個預留位置",
+    "toast.vibration.label": "提權振動提醒時間",
+    "toast.vibration.description": "顯示提醒時附加振動回饋的時長，單位：毫秒",
+    "toast.vibration.description.detail": "通常100毫秒以內的振動較為舒適，設為0即可停用此功能",
+    "toast.vibration.unsupported": "此功能僅支援 Android 12 及以上版本\nKernelSU 管理器最低要求 Android 12，你是怎麼安裝上的？",
     "enableWebHaptic.label": "WebUI振動反饋",
     "enableWebHaptic.detail": "在點擊按鈕、更改設定等操作時提供振動反饋。\n請注意，關閉此開關不會禁用Webview本身添加的振動反饋（例如長按某些控件）。",
 
@@ -64,7 +68,7 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "advanced.test.showDebugToastButton.description": "點擊後會彈出一個測試 Toast，僅用於發生異常時的排查（長按按鈕會顯示更長時間的 Toast）",
     "advanced.internalCooldown.label": "提示冷卻時間",
     "advanced.internalCooldown.description":"輸入應為0-10之間，預設值為3，單位秒",
-    "advanced.internalCooldown.description.detail": "當收到指定應用程式的提權事件後，在設定的時間內忽略該應用程式後續的提權事件。\n時間過短可能導致連續彈出大量 Toast",
+    "advanced.internalCooldown.description.detail": "收到指定應用程式的提權事件後，在設定的時間內忽略該應用程式後續的提權事件。\n時間過短可能導致連續彈出大量 Toast",
     "advanced.internalCooldown.save.failed.invalid":"輸入數值無效，應介於0-10之間",
 
     "about.description": "像 Magisk 一樣彈出授予超級使用者權限 Toast",

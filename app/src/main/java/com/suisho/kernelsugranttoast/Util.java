@@ -31,6 +31,13 @@ public class Util {
                 } catch (NumberFormatException numberFormatException) {
                     yield false;
                 }
+            case "rootGrantVibrationTime":
+                try {
+                    short tempCooldown = Short.parseShort(value);
+                    yield tempCooldown >= 0 && tempCooldown <= 1000;
+                } catch (NumberFormatException numberFormatException) {
+                    yield false;
+                }
                 //boolean系列
             case "autoDeleteLog":
             case "enableDebugLog":

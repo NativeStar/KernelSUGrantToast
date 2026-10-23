@@ -8,6 +8,7 @@ import ThemeSelect from "./components/ThemeSelect";
 import AutoDeleteLogSetting from "./components/AutoDeleteLogSetting";
 import LongTimeToastSetting from "./components/LongTimeToastSetting";
 import WebHapticSetting from "./components/WebHapticSetting";
+import RootGrantVibrationSetting from "./components/RootGrantVibrationSetting";
 interface BasePageProps {
     setLanguage: (language: keyof typeof SupportedLangs) => void;
 }
@@ -20,6 +21,7 @@ export default function BasePage({ setLanguage }: BasePageProps) {
             <Separator className="mt-5" />
             <ToastTextInput />
             <LongTimeToastSetting />
+            <RootGrantVibrationSetting />
             <Separator className="mt-5" />
             <AutoDeleteLogSetting />
             <WebHapticSetting />

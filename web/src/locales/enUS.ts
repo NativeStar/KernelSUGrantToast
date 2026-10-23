@@ -33,6 +33,10 @@ const EnglishKeys: typeof BaseLang = {
   "toast.save.error.invalidLength": "Message length must be less than 64 characters",
   "toast.save.error.missionPlaceholder": "Message must contain '%s' placeholder",
   "toast.save.error.tooManyPlaceholders": "Only one placeholder is allowed",
+  "toast.vibration.label": "Root Grant Vibration Duration",
+  "toast.vibration.description": "Duration of the vibration feedback added when a toast notification is shown, in milliseconds",
+  "toast.vibration.description.detail": "Vibrations of 100 ms or less usually feel comfortable. Set to 0 to disable this feature",
+  "toast.vibration.unsupported": "This feature is only supported on Android 12 and later\nThe minimum Android version required by the KernelSU Manager is 12. How did you install it?",
   "enableWebHaptic.label": "WebUI Haptic Feedback",
   "enableWebHaptic.detail": "Provides haptic feedback when clicking buttons, changing settings, etc.\nNote that turning off this switch will not disable haptic feedback added by the Webview itself (such as long-pressing certain controls).",
 

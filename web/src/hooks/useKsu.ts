@@ -151,7 +151,16 @@ export function useKsu() {
     const getEnableHaptic = useCallback(() => {
         return isEnabledHaptic
     }, [])
-    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration, getVersion, showDebugToast, isModuleProcessAvailable, setEnableHaptic, getEnableHaptic }
+    const getAndroidVersion = useCallback(async () => {
+        if (mock) return 12
+        const result = await exec("getprop ro.build.version.release")
+        if (result.errno !== 0) return -1;
+        const rawVersion = result.stdout
+        // 不知道12.1这样的版本怎么返回
+        const parsedVersion = parseFloat(rawVersion)
+        return isNaN(parsedVersion) ? -1 : parsedVersion;
+    }, []);
+    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration, getVersion, showDebugToast, isModuleProcessAvailable, setEnableHaptic, getEnableHaptic, getAndroidVersion }
 }
 export function isEnabledHotUpdateConfig() {
     return isEnabledHotUpdate ?? false;

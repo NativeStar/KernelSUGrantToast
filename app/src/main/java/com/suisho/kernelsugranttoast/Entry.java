@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
+import android.os.VibrationEffect;
+import android.os.VibratorManager;
 import android.util.Log;
 import android.util.LruCache;
 import android.widget.Toast;
@@ -30,18 +32,20 @@ import java.util.concurrent.TimeUnit;
 
 
 public class Entry {
-    private static final Set<String> allowedSettingKeys = new HashSet<>(Arrays.asList("customToastText", "ignorePackageNames", "packageSearchDepth", "longTimeToast", "internalToastCooldown"));
+    private static final Set<String> allowedSettingKeys = new HashSet<>(Arrays.asList("customToastText", "ignorePackageNames", "packageSearchDepth", "longTimeToast", "internalToastCooldown", "rootGrantVibrationTime"));
     public static final String TAG = "KernelSuGrantToast";
     private static Context systemContext;
     private static Handler handler;
     private static PackageManager packageManager;
     private static FileInputStream ipcInputStream;
     private static RandomAccessFile ipcPipe;
+    private static VibratorManager vibratorManager = null;
     //缓存应用名 避免每次都走PackageManager
     private static final LruCache<String, String> appNameCache = new LruCache<>(32);
     private static String customToastText = Messages.getLocaleMessage();
     private static final HashSet<String> ignorePackageList = new HashSet<>();
     private static int toastShowTime = Toast.LENGTH_SHORT;
+    private static short grantVibrationTime = 0;
 
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     public static void main(String[] args) {
@@ -53,6 +57,7 @@ public class Entry {
             SettingArguments tmpArgs = SettingArguments.initSettings(args, ignorePackageList);
             customToastText = tmpArgs.customToastText;
             toastShowTime = tmpArgs.longTimeToast ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
+            grantVibrationTime = tmpArgs.rootGrantVibrationTime;
             HiddenApiBypass.addHiddenApiExemptions("Landroid/app/ActivityThread;");
             if(Looper.getMainLooper() == null) Looper.prepareMainLooper();
             @SuppressLint("PrivateApi") Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
@@ -80,6 +85,9 @@ public class Entry {
             //降权 不然就是java.lang.SecurityException: Package android is not owned by uid 0
             //等写入描述完成才执行 系统框架没模块目录权限
             jniSetUid(1000);
+            //KernelSU管理器最低要求Android版本12 刚好支持这个api
+            //这要是崩了就自生自灭吧
+            vibratorManager = (VibratorManager) context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
             //刚启动时不知道为啥占用会达到130MB 调用以加速回落
             System.gc();
             Log.i(TAG, "Init success!");
@@ -98,6 +106,8 @@ public class Entry {
 
     private static void showToast(String appName) {
         if(handler == null) handler = new Handler(Looper.getMainLooper());
+        if(vibratorManager != null && grantVibrationTime > 0)
+            vibratorManager.getDefaultVibrator().vibrate(VibrationEffect.createOneShot(grantVibrationTime, VibrationEffect.EFFECT_HEAVY_CLICK));
         handler.post(() -> Toast.makeText(systemContext, String.format(Locale.getDefault(), customToastText, appName), toastShowTime).show());
     }
 
@@ -249,6 +259,10 @@ public class Entry {
                             updateInternalToastCooldown((short) 3);
                             Log.i(TAG, "Internal toast cooldown reset");
                             continue;
+                        } else if(splitMessage[0].equals("rootGrantVibrationTime") && splitMessage[1].isEmpty()) {
+                            grantVibrationTime = 0;
+                            Log.i(TAG, "Root grant vibration time reset");
+                            continue;
                         }
                         Log.w(TAG, "Invalid config value: " + splitMessage[1]);
                         continue;
@@ -278,6 +292,10 @@ public class Entry {
                         case "internalToastCooldown":
                             updateInternalToastCooldown(Short.parseShort(splitMessage[1]));
                             Log.i(TAG, "Internal toast cooldown updated");
+                            break;
+                        case "rootGrantVibrationTime":
+                            grantVibrationTime = Short.parseShort(splitMessage[1]);
+                            Log.i(TAG, "Root grant vibration time updated");
                             break;
                         default:
                             //autoDeleteLog没有热更新的意义

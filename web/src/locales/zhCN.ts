@@ -32,6 +32,10 @@ const SimplifiedChineseKeys = {
     "toast.save.error.invalidLength": "消息长度需小于64字符",
     "toast.save.error.missionPlaceholder": "消息需带有'%s'占位符",
     "toast.save.error.tooManyPlaceholders": "只允许存在一个占位符",
+    "toast.vibration.label": "提权振动提醒时间",
+    "toast.vibration.description": "当发出提醒时附加振动反馈的时长 单位:毫秒",
+    "toast.vibration.description.detail": "通常100ms以内的时长手感较为舒适 设为0可关闭该功能",
+    "toast.vibration.unsupported": "该功能只支持Android 12及更高版本\nKernelSU管理器最低Android版本要求是12 你是怎么装上的?",
 
     "enableWebHaptic.label": "WebUI振动反馈",
     "enableWebHaptic.detail": "在点击按钮、更改设置等操作时给予振动反馈\n注意关闭该开关无法关闭Webview本身添加的振动反馈(如长按部分控件的振动)",

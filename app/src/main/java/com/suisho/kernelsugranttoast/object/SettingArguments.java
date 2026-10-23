@@ -15,16 +15,17 @@ public class SettingArguments {
     public final String customToastText;
     public final boolean longTimeToast;
     public final short toastCooldownTime;
+    public final short rootGrantVibrationTime;
 
 
-    public SettingArguments(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLogs, String customToastText, boolean longTimeToast, short toastCooldownTime) {
+    public SettingArguments(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLogs, String customToastText, boolean longTimeToast, short toastCooldownTime, short rootGrantVibrationTime) {
         this.packageSearchDepth = packageSearchDepth;
         this.autoDeleteLog = autoDeleteLog;
         this.enableDebugLogs = enableDebugLogs;
         this.customToastText = customToastText;
         this.longTimeToast = longTimeToast;
         this.toastCooldownTime = toastCooldownTime;
-
+        this.rootGrantVibrationTime = rootGrantVibrationTime;
 
     }
 
@@ -35,6 +36,7 @@ public class SettingArguments {
         boolean longTimeToast = false;
         String customToastText = Messages.getLocaleMessage();
         short toastCooldownTime = 3;
+        short rootGrantVibrationTime = 0;
         //自定义提示文本
         String tempCustomText = Util.getModuleConfig("customToastText", String.class);
         if(tempCustomText != null && Util.checkConfigConfigValueValid("customToastText", tempCustomText)) {
@@ -104,6 +106,17 @@ public class SettingArguments {
                 Log.w(Entry.TAG, "Invalid toast cooldown setting!");
             }
         }
-        return new SettingArguments(packageSearchDepth, autoDeleteLog, enableDebugLogs, customToastText, longTimeToast, toastCooldownTime);
+        //提权振动反馈时长
+        Short rawRootGrantVibrationTime = Util.getModuleConfig("rootGrantVibrationTime", Short.class);
+        if(rawRootGrantVibrationTime != null) {
+            Log.i(Entry.TAG, "Found root grant vibration time setting");
+            if(rawRootGrantVibrationTime >= 0 && rawRootGrantVibrationTime <= 1000) {
+                rootGrantVibrationTime = rawRootGrantVibrationTime;
+                Log.i(Entry.TAG, "Set root grant vibration time to " + rawRootGrantVibrationTime);
+            } else {
+                Log.w(Entry.TAG, "Invalid root grant vibration time setting!");
+            }
+        }
+        return new SettingArguments(packageSearchDepth, autoDeleteLog, enableDebugLogs, customToastText, longTimeToast, toastCooldownTime, rootGrantVibrationTime);
     }
 }
