@@ -10,7 +10,7 @@ const SimplifiedChineseKeys = {
     "text.reset.success": "已恢复默认值",
 
     "error.title": "发生异常",
-    "error.missingProcess": "模块进程已退出 请尝试重启设备\n你仍然可以关闭此对话框尝试调整设置",
+    "error.missingProcess": "模块进程已退出 请尝试重启设备\n你仍然可以使用WebUI修改设置",
 
     "tabs.base": "基础",
     "tabs.ignorePackage": "忽略列表",
