@@ -4,8 +4,9 @@
 [English](https://github.com/NativeStar/KernelSUGrantToast/blob/master/README.md)
 ##### 让KernelSU像Magisk一样弹出'授予超级用户权限' Toast
 ### 截图
-![](./mdAssets/1000132279.png)
-![](./mdAssets/1000130680.png)
+![](./mdAssets/1000023200.jpg)
+![](./mdAssets/1000023198.jpg)
+![](./mdAssets/1000023199.jpg)
 ### 功能
 - 在应用提权时弹出Toast提醒
 - 支持自定义提醒文本
