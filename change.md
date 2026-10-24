@@ -1,3 +1,28 @@
+### 2.4
+重写初始化时加载配置的方式
+
+支持设置是否启用WebUI振动反馈
+
+支持在提示提权时使用振动进行提醒 并支持设置振动时长 该功能默认关闭
+
+修复部分配置项在保存时可能出现异常
+
+修复WebUI在初始化时无论是否处于深色模式均会出现短暂白屏
+
+更新依赖项
+
+Rewrote the way the configuration is loaded during initialization.
+
+Added an option to enable or disable vibration feedback in the WebUI.
+
+Added support for using vibration as a reminder when a privilege grant toast is shown, with a configurable vibration duration; this feature is disabled by default.
+
+Fixed an issue where some configuration items could be saved incorrectly.
+
+Fixed a brief white screen in the WebUI during initialization regardless of whether dark mode was enabled.
+
+Updated dependencies.
+
 ### 2.3
 
 优化模块初始化速度

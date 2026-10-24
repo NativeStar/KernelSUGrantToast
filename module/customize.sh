@@ -44,10 +44,10 @@ sleep 0.3
 unzip -oj "$MODPATH/daemon.apk" 'lib/arm64-v8a/libshimizu.so' -d "$MODPATH"
 mv -f "$MODPATH/libshimizu.so" "$MODPATH/Shimizu"
 #dex
-sleep 0.1
+sleep 0.2
 unzip -oj "$MODPATH/daemon.apk" 'classes.dex' -d "$MODPATH"
 mv -f "$MODPATH/classes.dex" "$MODPATH/daemon.dex"
-sleep 0.1
+sleep 0.2
 set_perm "$MODPATH/Shimizu" 0 0 0755
 set_perm "$MODPATH/daemon.dex" 0 0 0755
 rm -f "$MODPATH/daemon.apk"
