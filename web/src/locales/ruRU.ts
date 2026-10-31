@@ -16,7 +16,7 @@ const RussianKeys: typeof BaseLang = {
   "tabs.advanced": "Расшир.",
   "tabs.ignorePackage": "Список исключений",
   "tabs.base": "Основные",
-  "tabs.about": "О программе",
+  "tabs.about": "Инфо",
   "text.reset.success": "Настройки по умолчанию восстановлены",
 
   "language.label": "Язык",
