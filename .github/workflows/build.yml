@@ -1,3 +1,4 @@
+
 name: Build KernelSU Grant Toast
 
 on:
@@ -11,6 +12,10 @@ on:
       - master
   workflow_dispatch:
 
+# Важно: добавляем разрешения на запись для создания релизов
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,6 +24,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 1. Настройка Java для сборки Gradle
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      # 2. Настройка pnpm & Node.js для сборки WebUI
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
@@ -31,23 +47,40 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: 'web/pnpm-lock.yaml'
 
-      - name: Install Dependencies & Build WebUI
+      # 3. Сборка WebUI
+      - name: Build WebUI
         run: |
           cd web
           pnpm install --frozen-lockfile
           pnpm run build
 
+      # 4. Сборка Android/Native части
+      - name: Build Android Project
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      # 5. Копирование собранного WebUI в папку модуля
+      - name: Prepare Module Files
+        run: |
+          mkdir -p module/webroot
+          cp -r web/dist/* module/webroot/ 2>/dev/null || cp -r web/out/* module/webroot/ 2>/dev/null || true
+
+      # 6. Упаковка папки module в ZIP-архив
       - name: Package Module ZIP
         run: |
-          zip -r KernelSUGrantToast.zip . -x "web/*" ".*" ".git*" ".github/*"
+          cd module
+          zip -r ../KernelSUGrantToast.zip .
 
+      # 7. Загрузка готового модуля в артефакты GitHub Actions
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: KernelSUGrantToast
           path: KernelSUGrantToast.zip
 
-      - name: Create Release
+      # 8. Автоматическая публикация релиза и загрузка ZIP при создании тега (например, v1.0.0)
+      - name: Create Release and Upload Asset
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
