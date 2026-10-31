@@ -1,0 +1,53 @@
+name: Build KernelSU Grant Toast
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'web/package-lock.json'
+
+      - name: Install Dependencies & Build WebUI
+        run: |
+          cd web
+          npm ci
+          npm run build
+
+      - name: Package Module ZIP
+        run: |
+          # Создаем ZIP-архив модуля (исключая исходники WebUI и скрытые файлы git)
+          zip -r KernelSUGrantToast.zip . -x "web/*" ".*" ".git*" ".github/*"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KernelSUGrantToast
+          path: KernelSUGrantToast.zip
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: KernelSUGrantToast.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
