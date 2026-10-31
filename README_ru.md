@@ -1,9 +1,5 @@
 # KernelSU Grant Toast
 
-[简体中文](https://github.com/NativeStar/KernelSUGrantToast/blob/master/README_zh.md)
-[English](https://github.com/NativeStar/KernelSUGrantToast/blob/master/README.md)
-[Русский](https://github.com/NativeStar/KernelSUGrantToast/blob/master/README_ru.md)
-
 <p align="center">
   <a href="/README.md">English</a> | 
   <a href="/README_zh.md">简体中文</a> | 
