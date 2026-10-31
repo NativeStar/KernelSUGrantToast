@@ -72,7 +72,7 @@ const RussianKeys: typeof BaseLang = {
   "advanced.internalCooldown.description.detail": "Когда получается запрос superuser от определенного приложения, последующие запросы от этого приложения будут игнорироваться в течение настроенной длительности.\nКороткая длительность может вызывать появление множества всплывающих окон подряд.",
   "advanced.internalCooldown.save.failed.invalid": "Неверный ввод, значение должно быть от 0 до 10",
 
-  "about.description": "Показывать всплывающее уведомление о предоставлении прав Root, как в Magisk",
+  "about.description": "Всплывающее уведомление о предоставлении прав Root, как в Magisk",
   "about.button.repository": "Репозиторий проекта",
   "about.otherProjects.title": "Другие проекты",
   "about.otherProjects.description.kyouka": "Многофункциональное расширение для браузера, поддерживающее изменение веб-страниц, перехват вызовов, экспорт данных и многое другое",
