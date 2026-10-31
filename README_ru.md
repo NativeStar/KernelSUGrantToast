@@ -4,6 +4,13 @@
 [English](https://github.com/NativeStar/KernelSUGrantToast/blob/master/README.md)
 [Русский](https://github.com/NativeStar/KernelSUGrantToast/blob/master/README_ru.md)
 
+<p align="center">
+  <a href="/README.md">English</a> | 
+  <a href="/README_zh.md">简体中文</a> | 
+  <b>Русский</b>
+</p>
+<hr>
+
 ##### Сделайте так, чтобы KernelSU показывал всплывающее уведомление «Предоставлены права Суперпользователя» (как в Magisk).
 
 ### Скриншоты
