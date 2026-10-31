@@ -13,8 +13,8 @@ const RussianKeys: typeof BaseLang = {
   "error.title": "Произошла ошибка",
   "error.missingProcess": "Процесс модуля завершил работу. Пожалуйста, перезагрузите устройство.\nВы всё ещё можете использовать WebUI для настройки параметров",
 
-  "tabs.advanced": "Дополнительно",
-  "tabs.ignorePackage": "Список игнорирования",
+  "tabs.advanced": "Расшир.",
+  "tabs.ignorePackage": "Список исключений",
   "tabs.base": "Основные",
   "tabs.about": "О программе",
   "text.reset.success": "Настройки по умолчанию восстановлены",
