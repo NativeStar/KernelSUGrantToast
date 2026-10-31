@@ -2,6 +2,7 @@
 
 [简体中文](https://github.com/NativeStar/KernelSUGrantToast/blob/master/README_zh.md)
 [English](https://github.com/NativeStar/KernelSUGrantToast/blob/master/README.md)
+[Русский](https://github.com/NativeStar/KernelSUGrantToast/blob/master/README_ru.md)
 
 ##### Make KernelSU display a "Superuser access granted" toast, like Magisk.
 
