@@ -1,7 +1,11 @@
 # KernelSU Grant Toast
 
-[简体中文](https://github.com/NativeStar/KernelSUGrantToast/blob/master/README-zh.md)
-[English](https://github.com/NativeStar/KernelSUGrantToast/blob/master/README.md)
+<p align="center">
+  <a href="/README.md">English</a> | 
+  <b>简体中文</b> | 
+  <a href="/README_ru.md">Русский</a>
+</p>
+<hr>
 ##### 让KernelSU像Magisk一样弹出'授予超级用户权限' Toast
 ### 截图
 ![](./mdAssets/1000023200.jpg)
