@@ -1,4 +1,4 @@
-### 2.4 Fix Regeneration
+### 2.4 Fix and Regeneration
 
 Changelog
 Localized installer messages and module statuses based on the system language.
