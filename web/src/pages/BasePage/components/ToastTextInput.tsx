@@ -1,6 +1,5 @@
 import { FieldLabel, FieldDescription } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { ButtonGroup } from "@/components/ui/button-group"
 import { Button } from "@/components/ui/button"
 import { LanguageContext } from "@/contexts/LanguageContext";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -48,13 +47,13 @@ export default function ToastTextInput() {
         })
     }, [customToastText, languageContext]);
     return (
-        <>
+        <div className="setting-toast-text">
             <FieldLabel className="mt-2">{getLang("toast.custom.title")}</FieldLabel>
-            <ButtonGroup className="w-[90%]">
+            <div className="setting-input-actions">
                 <Input value={customToastText} maxLength={64} onChange={e => setCustomToastText(e.target.value)} className="placeholder:text-[11px]" placeholder={getLang("toast.custom.placeholder")} />
                 <Button variant="outline" onClick={saveMessage}>{getLang("text.save")}</Button>
-            </ButtonGroup>
+            </div>
             <FieldDescription className="self-center text-center">{getLang("toast.custom.description")}</FieldDescription>
-        </>
+        </div>
     )
 }
