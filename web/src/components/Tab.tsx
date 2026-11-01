@@ -24,15 +24,16 @@ export function Tab({ setLanguage }: TabProps) {
             ignorePackagePageLoader();
         });
     }, []);
+    // TODO 俄语移除推广内容
     return (
-        <Tabs defaultValue="base" className="w-full h-full">
-            <TabsList variant="line">
+        <Tabs defaultValue="base" className="w-full h-full min-w-0">
+            <TabsList variant="line" className="w-full overflow-x-auto">
                 <TabsTrigger value="base">{getLang("tabs.base")}</TabsTrigger>
                 <TabsTrigger value="ignorePackage">{getLang("tabs.ignorePackage")}</TabsTrigger>
                 <TabsTrigger value="advanced">{getLang("tabs.advanced")}</TabsTrigger>
                 <TabsTrigger value="about">{getLang("tabs.about")}</TabsTrigger>
             </TabsList>
-            <TabsContent value="base">
+            <TabsContent value="base" className="overflow-y-scroll">
                 <BasePage setLanguage={setLanguage} />
             </TabsContent>
             <TabsContent value="ignorePackage" className="min-h-0">

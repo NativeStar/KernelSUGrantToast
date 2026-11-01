@@ -10,6 +10,7 @@ import ProjectItem from "./components/ProjectItem";
 import ProjectsList from "./projects"
 import { useKsu } from "@/hooks/useKsu";
 import { Alert } from "@/components/Alert";
+import ChineseKeys from "@/const/ChineseKeys"
 
 export default function AboutPage() {
     const language = useContext(LanguageContext);
@@ -47,7 +48,7 @@ export default function AboutPage() {
                             ProjectsList.map((item, index) =>
                                 // 只对中文用户展示部分项目 因为它们没有多语言支持且暂无计划(或实现太难)添加
                                 //港澳台应该看得懂简体
-                                <TableRow hidden={language === "en-US" && !item.hasI18n} key={index} onClick={() => {
+                                <TableRow hidden={!ChineseKeys.includes(language) && !item.hasI18n} key={index} onClick={() => {
                                     vibration("KEY")
                                     openUrl(item.url)
                                 }}>

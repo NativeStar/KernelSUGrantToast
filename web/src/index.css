@@ -14,8 +14,8 @@
 }
 
 ::selection {
-  color:var(--primary-foreground);
-  background-color:var(--primary);
+  color: var(--primary-foreground);
+  background-color: var(--primary);
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -150,6 +150,16 @@ html,
 body,
 #root {
   height: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 #root {
@@ -163,6 +173,6 @@ body {
 
 * {
   user-select: none;
-  touch-action: pan-x pan-y;
+  touch-action: pan-y;
   -webkit-user-drag: none;
 }
