@@ -58,6 +58,7 @@ get_module_locale() {
       MSG_SETTING_DESCRIPTION="Настройка описания..."
       MSG_INSTALL_SUCCESS="Установка завершена успешно!"
       MSG_REBOOT="Перезагрузите устройство, чтобы изменения вступили в силу."
+      DESC_DISABLED="(❌Отключён)Показывает уведомление при предоставлении root-доступа, как в Magisk."
       DESC_WAITING="[Ожидание перезагрузки]Показывает уведомление при предоставлении root-доступа, как в Magisk."
       DESC_BOOTING="[Запуск...]Показывает уведомление при предоставлении root-доступа, как в Magisk."
       ;;
@@ -79,6 +80,7 @@ get_module_locale() {
       MSG_SETTING_DESCRIPTION="正在設定模組描述..."
       MSG_INSTALL_SUCCESS="安裝成功！"
       MSG_REBOOT="請重新啟動裝置以套用變更。"
+      DESC_DISABLED="(❌已停用)像 Magisk 一樣，在授予 root 權限時顯示提示。"
       DESC_WAITING="[等待重新啟動]像 Magisk 一樣，在授予 root 權限時顯示提示。"
       DESC_BOOTING="[啟動中...]像 Magisk 一樣，在授予 root 權限時顯示提示。"
       ;;
@@ -100,6 +102,7 @@ get_module_locale() {
       MSG_SETTING_DESCRIPTION="正在设置模块描述..."
       MSG_INSTALL_SUCCESS="安装成功！"
       MSG_REBOOT="请重启设备以使更改生效。"
+      DESC_DISABLED="(❌已禁用)像 Magisk 一样，在授予 root 权限时显示提示。"
       DESC_WAITING="[等待重启]像 Magisk 一样，在授予 root 权限时显示提示。"
       DESC_BOOTING="[启动中...]像 Magisk 一样，在授予 root 权限时显示提示。"
       ;;
@@ -121,6 +124,7 @@ get_module_locale() {
       MSG_SETTING_DESCRIPTION="Setting module description..."
       MSG_INSTALL_SUCCESS="Installation successful!"
       MSG_REBOOT="Please reboot for changes to take effect."
+      DESC_DISABLED="(❌Disabled)Shows a root granted toast like Magisk."
       DESC_WAITING="[Waiting for reboot]Shows a root granted toast like Magisk."
       DESC_BOOTING="[Starting...]Shows a root granted toast like Magisk."
       ;;
