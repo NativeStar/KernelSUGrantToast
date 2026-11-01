@@ -24,7 +24,6 @@ export function Tab({ setLanguage }: TabProps) {
             ignorePackagePageLoader();
         });
     }, []);
-    // TODO 俄语移除推广内容
     return (
         <Tabs defaultValue="base" className="w-full h-full min-w-0">
             <TabsList variant="line" className="w-full overflow-x-auto">

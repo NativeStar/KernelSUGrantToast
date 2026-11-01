@@ -64,6 +64,7 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "advanced.searchDepth.description.detail": "過高會影響效能，過低可能導致某些提權資料被忽略。\n此設定只在遇到使用共享 UID 的應用程式（需要退回舊的檢測邏輯）時生效",
     "advanced.enableDebugLog.label": "啟用除錯日誌",
     "advanced.enableDebugLog.detail": "啟用後會寫入 '/data/local/SuToaster.log' 日誌檔案，需重新啟動後生效。\n啟用後會有一定的效能影響，請僅在需要傳送日誌時啟用！",
+    "advanced.debugOptions.collapsible.label": "除錯用功能",
     "advanced.test.showDebugToastButton": "顯示測試 Toast",
     "advanced.test.showDebugToastButton.description": "點擊後會彈出一個測試 Toast，僅用於發生異常時的排查（長按按鈕會顯示更長時間的 Toast）",
     "advanced.internalCooldown.label": "提示冷卻時間",

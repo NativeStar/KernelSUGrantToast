@@ -64,6 +64,7 @@ const EnglishKeys: typeof BaseLang = {
   "advanced.searchDepth.description.detail": "Setting this too high may hurt performance, while setting it too low may cause some privilege-escalation data to be ignored.\nThis setting only takes effect when encountering apps with shared UIDs (which require falling back to the old detection logic).",
   "advanced.enableDebugLog.label": "Enable Debug Logs",
   "advanced.enableDebugLog.detail": "Enabling this will write logs to '/data/local/SuToaster.log'. A device reboot is required for this to take effect.\nEnabling this will have a certain performance impact. Please enable it only when you need to send logs.",
+  "advanced.debugOptions.collapsible.label": "Debug Options",
   "advanced.test.showDebugToastButton": "Show Test Toast",
   "advanced.test.showDebugToastButton.description": "Click to show a test toast, used only for troubleshooting when an issue occurs. (Long press to show a longer-lasting toast)",
   "advanced.internalCooldown.label": "Toast Cooldown",

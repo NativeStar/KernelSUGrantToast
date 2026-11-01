@@ -62,6 +62,7 @@ const SimplifiedChineseKeys = {
     "advanced.searchDepth.save.failed.invalid": "输入数值无效 应为0-32之间",
     "advanced.searchDepth.description": "输入应为0-32之间 默认值1",
     "advanced.searchDepth.description.detail": '过高影响性能 过低可能导致某些提权数据被忽略.\n该设置只在遇到使用共享UID的应用(需要回退到旧检测逻辑)时生效',
+    "advanced.debugOptions.collapsible.label": "调试用功能",
     "advanced.enableDebugLog.label": "启用调试日志",
     "advanced.enableDebugLog.detail": "开启后会写入'/data/local/SuToaster.log'日志文件 需重启后生效\n开启后会有一定的性能影响 请仅在需要发送日志时启用!",
     "advanced.test.showDebugToastButton": "显示测试Toast",
