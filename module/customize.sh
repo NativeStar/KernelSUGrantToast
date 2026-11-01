@@ -45,6 +45,7 @@ set_perm "$MODPATH/Shimizu" 0 0 0755
 set_perm "$MODPATH/daemon.dex" 0 0 0755
 rm -f "$MODPATH/daemon.apk"
 echo "$MSG_SETTING_DESCRIPTION"
+sed -i "s|^description=.*|description=$DESC_DISABLED|" "$MODPATH/module.prop"
 "$KSUD" module config set --temp override.description "$DESC_WAITING"
 echo "$MSG_INSTALL_SUCCESS"
 echo "$MSG_REBOOT"
