@@ -11,7 +11,7 @@ export default function ThemeSelect() {
     const { setTheme, theme } = useTheme();
     const {vibration} = useKsu();
     return (
-        <>
+        <div className="select-setting">
             <Label className="mt-3" htmlFor="themeSelect">{getLang("theme.label")}</Label>
             <Select value={theme} onValueChange={(value => {
                 vibration("KEY")
@@ -22,7 +22,7 @@ export default function ThemeSelect() {
                 <SelectTrigger className="w-[90%] mt-1.5">
                     <SelectValue placeholder={getLang("theme.select")} />
                 </SelectTrigger>
-                <SelectContent id="themeSelect">
+                <SelectContent id="themeSelect" className="compact-select-popup">
                     <SelectGroup>
                         <SelectLabel>{getLang("theme.select")}</SelectLabel>
                         <SelectItem value="system">{getLang("text.followSystem")}</SelectItem>
@@ -31,6 +31,6 @@ export default function ThemeSelect() {
                     </SelectGroup>
                 </SelectContent>
             </Select>
-        </>
+        </div>
     )
 }
