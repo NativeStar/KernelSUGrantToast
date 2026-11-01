@@ -1,0 +1,116 @@
+
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release Tag'
+        required: true
+        type: string
+
+      title:
+        description: 'Release Title'
+        required: true
+        type: string
+
+      notes:
+        description: 'Release Description'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+# Prevent simultaneous releases with the same tag
+concurrency:
+  group: release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout selected branch / commit
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # 2. Java 17
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      # 3. Node.js 22
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # 4. pnpm 10
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      # 5. Android SDK
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: ""
+
+      # 6. Install SDK packages
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager "platforms;android-37.0" \
+            "ndk;28.0.13004108" \
+            "cmake;3.22.1"
+
+      # 7. Install web dependencies
+      - name: Install web dependencies
+        working-directory: web
+        run: pnpm install --frozen-lockfile
+
+      # 8. Build
+      - name: Build module ZIP
+        run: bash ./gradlew buildModule
+
+      # 9. Verify build output
+      - name: Validate build output
+        run: |
+          test -f tempOutput/KernelSUGrantToast.zip
+          test -s tempOutput/KernelSUGrantToast.zip
+
+      # 10. Validate tag
+      - name: Validate Release Tag
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          if ! git check-ref-format "refs/tags/$RELEASE_TAG"; then
+            echo "Invalid tag: $RELEASE_TAG"
+            exit 1
+          fi
+
+          if [ -n "$(git ls-remote --tags origin \
+            "refs/tags/$RELEASE_TAG")" ]; then
+            echo "Tag already exists: $RELEASE_TAG"
+            exit 1
+          fi
+
+      # 11. Create and publish Release
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_TITLE: ${{ inputs.title }}
+          RELEASE_NOTES: ${{ inputs.notes }}
+        run: |
+          gh release create "$RELEASE_TAG" \
+            tempOutput/KernelSUGrantToast.zip \
+            --target "$GITHUB_SHA" \
+            --title "$RELEASE_TITLE" \
+            --notes "$RELEASE_NOTES"
+
