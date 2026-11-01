@@ -32,8 +32,8 @@ export default function LongTimeToastSetting() {
                 vibration("KEY")
                 setOpenDetailAlert(false)
             }} title={getLang("text.detail")} />
-            <div className="flex flex-col items-center mt-2">
-                <div className="flex space-x-2.5">
+            <div className="setting-row">
+                <div className="setting-control-row">
                     <Switch onClick={onSwitchChange} checked={longTimeToast} id="longTimeToast" />
                     <Label htmlFor="longTimeToast">{getLang("longTimeToast.label")}
                         <Badge variant="ghost" onClick={(e) => {
