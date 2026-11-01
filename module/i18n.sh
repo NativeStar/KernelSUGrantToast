@@ -39,6 +39,7 @@ get_module_locale() {
   MODULE_LOCALE=$(printf '%s' "$MODULE_LOCALE" |
     tr '_' '-' |
     tr '[:upper:]' '[:lower:]')
+  export KSU_GRANT_TOAST_LOCALE="$MODULE_LOCALE"
   case "$MODULE_LOCALE" in
     ru|ru-*)
       MSG_WELCOME="Добро пожаловать"
@@ -130,3 +131,4 @@ get_module_locale() {
       ;;
   esac
 }
+
