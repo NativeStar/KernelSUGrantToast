@@ -1,43 +1,36 @@
 #!/system/bin/sh
 KSUD=/data/adb/ksud
 export KSU_MODULE=ksuGrantToast
-echo "Welcome"
+. "$MODPATH/i18n.sh"
+get_module_locale
+echo "$MSG_WELCOME"
 #仅限ksu使用
 if [ ! "$KSU" ]; then
-  abort "This module only support KernelSU!"
+  abort "$MSG_KERNELSU_ONLY"
 fi
 if [ "$ARCH" != "arm64" ]; then
-  abort "This module only support arm64 device!"
+  abort "$MSG_ARM64_ONLY"
 fi
 if [ "$KSU_KERNEL_VER_CODE" -lt 32457 ]; then
-  abort "Please update KernelSU!(Minimum version required 32457)"
+  abort "$MSG_UPDATE_KSU"
 fi
 #判断旧进程是否存在
 oldProcessPid=$(pidof SuToaster)
 if [ "$oldProcessPid" ]; then
-  echo "Killing old process..."
+  echo "$MSG_KILLING_OLD"
   kill -9 "$oldProcessPid"
 fi
-#重要警告 双语显示吧
-echo "该项目仅在官方版本KernelSU上进行测试"
-echo "不保证在其他分支版本上正常工作"
-echo "This project only test on official KernelSU"
-echo "It is not guaranteed to work properly on other branch versions"
+echo "$MSG_TESTED_OFFICIAL"
+echo "$MSG_FORK_WARNING"
 sleep 3
-echo "警告:"
-echo "由于该模块接管了原本日志进程的数据"
-echo "在安装后原本的Su日志将不再被记录"
-echo "也无法在管理器中查看Su日志"
-echo "这是正常现象 不必惊慌"
-echo "安装将在5秒后继续"
-echo "WARNING:"
-echo "Because this module takes over data from the logger process"
-echo "The original SuLog will no longer be recorded"
-echo "SuLog can no longer be viewed in the manager"
-echo "This is normal. No need to be alarmed"
-echo "Module installation will continue in 5 seconds"
+echo "$MSG_WARNING"
+echo "$MSG_TAKES_OVER"
+echo "$MSG_LOG_NOT_RECORDED"
+echo "$MSG_LOG_UNAVAILABLE"
+echo "$MSG_NORMAL"
+echo "$MSG_CONTINUE_IN"
 sleep 5
-echo "Extracting libraries..."
+echo "$MSG_EXTRACTING"
 #sleep没什么意义 但好玩
 sleep 0.3
 #so
@@ -51,7 +44,7 @@ sleep 0.2
 set_perm "$MODPATH/Shimizu" 0 0 0755
 set_perm "$MODPATH/daemon.dex" 0 0 0755
 rm -f "$MODPATH/daemon.apk"
-echo "Setting description..."
-"$KSUD" module config set --temp override.description "[Waiting reboot]Show a root granted toast like Magisk."
-echo "Installation successful!"
-echo "Please reboot for changes to take effect"
+echo "$MSG_SETTING_DESCRIPTION"
+"$KSUD" module config set --temp override.description "$DESC_WAITING"
+echo "$MSG_INSTALL_SUCCESS"
+echo "$MSG_REBOOT"
