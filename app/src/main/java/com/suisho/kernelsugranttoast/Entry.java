@@ -191,7 +191,7 @@ public class Entry {
                 Log.w(TAG, "ksud file not found!");
                 return;
             }
-            Locale locale = Locale.getDefault();
+            Locale locale = getModuleLocale();
             String desc = String.format(locale, "[%s]%s", localizeModuleStatus(descText, locale), localizeModuleSummary(locale));
             ProcessBuilder processBuilder = new ProcessBuilder("/data/adb/ksud", "module", "config", "set", "--temp", "override.description", desc);
             processBuilder.environment().put("KSU_MODULE", "ksuGrantToast");
@@ -202,6 +202,17 @@ public class Entry {
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "Failed to modify module description", e);
         }
+    }
+
+    private static Locale getModuleLocale() {
+        String moduleLocale = System.getenv("KSU_GRANT_TOAST_LOCALE");
+        if (moduleLocale != null && !moduleLocale.isEmpty()) {
+            Locale detectedLocale = Locale.forLanguageTag(moduleLocale.replace('_', '-'));
+            if (!detectedLocale.getLanguage().isEmpty()) {
+                return detectedLocale;
+            }
+        }
+        return Locale.getDefault();
     }
 
     private static String localizeModuleSummary(Locale locale) {
