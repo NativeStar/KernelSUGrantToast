@@ -1,3 +1,10 @@
+### 2.4 Fix Regeneration
+
+Changelog
+Localized installer messages and module statuses based on the system language.
+Added Russian translations for module descriptions and runtime status messages.
+Refreshed the WebUI with a Material 3-inspired design.
+
 ### 2.4
 重写初始化时加载配置的方式
 
