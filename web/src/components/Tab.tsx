@@ -5,6 +5,7 @@ import { Spinner } from "@/components/ui/spinner"
 import type SupportedLangs from "@/locales/SupportedLangs";
 import BasePage from "@/pages/BasePage/BasePage";
 import { useContext, lazy, Suspense, useEffect } from "react";
+import { Info, Settings2, ShieldBan, SlidersHorizontal, ShieldCheck } from "lucide-react";
 interface TabProps {
     setLanguage: (language: keyof typeof SupportedLangs) => void;
 }
@@ -25,31 +26,49 @@ export function Tab({ setLanguage }: TabProps) {
         });
     }, []);
     return (
-        <Tabs defaultValue="base" className="w-full h-full min-w-0">
-            <TabsList variant="line" className="w-full overflow-x-auto">
-                <TabsTrigger value="base">{getLang("tabs.base")}</TabsTrigger>
-                <TabsTrigger value="ignorePackage">{getLang("tabs.ignorePackage")}</TabsTrigger>
-                <TabsTrigger value="advanced">{getLang("tabs.advanced")}</TabsTrigger>
-                <TabsTrigger value="about">{getLang("tabs.about")}</TabsTrigger>
-            </TabsList>
-            <TabsContent value="base" className="overflow-y-scroll">
+        <Tabs defaultValue="base" className="app-shell">
+            <header className="app-header">
+                <div className="app-brand-mark"><ShieldCheck aria-hidden="true" /></div>
+                <div className="app-brand-copy">
+                    <span className="app-brand-title">KernelSU Grant Toast</span>
+                </div>
+            </header>
+            <TabsContent value="base" className="app-page">
                 <BasePage setLanguage={setLanguage} />
             </TabsContent>
-            <TabsContent value="ignorePackage" className="min-h-0">
+            <TabsContent value="ignorePackage" className="app-page">
                 <Suspense fallback={<Spinner className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12" />}>
                     <IgnorePackagePage />
                 </Suspense>
             </TabsContent>
-            <TabsContent value="advanced">
+            <TabsContent value="advanced" className="app-page">
                 <Suspense fallback={<Spinner className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12" />}>
                     <AdvancedPage />
                 </Suspense>
             </TabsContent>
-            <TabsContent value="about">
+            <TabsContent value="about" className="app-page">
                 <Suspense fallback={<Spinner className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12" />}>
                     <AboutPage />
                 </Suspense>
             </TabsContent>
+            <TabsList className="app-navigation">
+                <TabsTrigger value="base" className="app-navigation-item">
+                    <span className="app-navigation-icon"><Settings2 aria-hidden="true" /></span>
+                    <span>{getLang("tabs.base")}</span>
+                </TabsTrigger>
+                <TabsTrigger value="ignorePackage" className="app-navigation-item">
+                    <span className="app-navigation-icon"><ShieldBan aria-hidden="true" /></span>
+                    <span>{getLang("tabs.ignorePackage")}</span>
+                </TabsTrigger>
+                <TabsTrigger value="advanced" className="app-navigation-item">
+                    <span className="app-navigation-icon"><SlidersHorizontal aria-hidden="true" /></span>
+                    <span>{getLang("tabs.advanced")}</span>
+                </TabsTrigger>
+                <TabsTrigger value="about" className="app-navigation-item">
+                    <span className="app-navigation-icon"><Info aria-hidden="true" /></span>
+                    <span>{getLang("tabs.about")}</span>
+                </TabsTrigger>
+            </TabsList>
         </Tabs>
     )
 }
