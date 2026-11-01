@@ -29,8 +29,8 @@ export default function WebHapticSetting() {
                 vibration("KEY")
                 setOpenDetailAlert(false)
             }} title={getLang("text.detail")} />
-            <div className="flex flex-col items-center mt-2">
-                <div className="flex space-x-2.5">
+            <div className="setting-row">
+                <div className="setting-control-row">
                     <Switch onClick={onSwitchChange} checked={enableHapticSwitchState} id="enableWebHaptic" />
                     <Label htmlFor="enableWebHaptic">{getLang("enableWebHaptic.label")}
                         <Badge variant="ghost" onClick={(e) => {
