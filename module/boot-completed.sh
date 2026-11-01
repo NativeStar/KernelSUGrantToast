@@ -1,6 +1,9 @@
 #!/system/bin/sh
 KSUD=/data/adb/ksud
 export KSU_MODULE=ksuGrantToast
+MODDIR=${0%/*}
+. "$MODDIR/i18n.sh"
+get_module_locale
 #接管功能
 #一直接管会导致功能被彻底关闭 日志数据也随之消失
 # 临时释放一下让他能启动 后续恢复管理阻止改设置
@@ -18,5 +21,5 @@ fi
 #创建ipc管道
 rm  -f /data/adb/toast_ipc
 mkfifo /data/adb/toast_ipc
-"$KSUD" module config set --temp override.description "[Booting...]Show a root granted toast like Magisk."
+"$KSUD" module config set --temp override.description "$DESC_BOOTING"
 exec /system/bin/app_process -Djava.class.path=./daemon.dex / --nice-name=SuToaster com.suisho.kernelsugranttoast.Entry
