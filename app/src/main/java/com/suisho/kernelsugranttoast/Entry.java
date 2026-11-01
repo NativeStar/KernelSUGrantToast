@@ -191,7 +191,8 @@ public class Entry {
                 Log.w(TAG, "ksud file not found!");
                 return;
             }
-            String desc = String.format(Locale.getDefault(), "[%s]Show a root granted toast like Magisk.", descText);
+            Locale locale = Locale.getDefault();
+            String desc = String.format(locale, "[%s]%s", localizeModuleStatus(descText, locale), localizeModuleSummary(locale));
             ProcessBuilder processBuilder = new ProcessBuilder("/data/adb/ksud", "module", "config", "set", "--temp", "override.description", desc);
             processBuilder.environment().put("KSU_MODULE", "ksuGrantToast");
             java.lang.Process changeDescriptorProcess = processBuilder.start();
@@ -201,6 +202,45 @@ public class Entry {
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "Failed to modify module description", e);
         }
+    }
+
+    private static String localizeModuleSummary(Locale locale) {
+        if ("ru".equals(locale.getLanguage())) {
+            return "Показывает уведомление при предоставлении root-доступа, как в Magisk.";
+        }
+        if ("zh".equals(locale.getLanguage())) {
+            if ("TW".equals(locale.getCountry()) || "HK".equals(locale.getCountry()) || "MO".equals(locale.getCountry()) || "Hant".equals(locale.getScript())) {
+                return "像 Magisk 一樣，在授予 root 權限時顯示提示。";
+            }
+            return "像 Magisk 一样，在授予 root 权限时显示提示。";
+        }
+        return "Shows a root granted toast like Magisk.";
+    }
+
+    private static String localizeModuleStatus(String status, Locale locale) {
+        String language = locale.getLanguage();
+        if ("ru".equals(language)) {
+            if (status.startsWith("✅Working.PID:")) return status.replaceFirst("✅Working\\.PID:", "✅Работает.ПИД:");
+            if (status.equals("❌Library file not found!Please reinstall module!!!")) return "❌Файл библиотеки не найден! Переустановите модуль!";
+            if (status.equals("❌Native init failed!")) return "❌Ошибка инициализации native!";
+            if (status.equals("❌Crashed!")) return "❌Аварийное завершение!";
+            if (status.equals("❌Failed to read IPC pipe file")) return "❌Не удалось прочитать файл IPC-канала";
+            if (status.equals("❌Failed to open IPC pipe file")) return "❌Не удалось открыть файл IPC-канала";
+            if (status.equals("❌Error on showing toast!")) return "❌Ошибка при показе уведомления!";
+            if (status.equals("❌Error on working,Exited")) return "❌Ошибка работы, процесс завершён";
+        }
+        if ("zh".equals(language)) {
+            boolean traditional = "TW".equals(locale.getCountry()) || "HK".equals(locale.getCountry()) || "MO".equals(locale.getCountry()) || "Hant".equals(locale.getScript());
+            if (status.startsWith("✅Working.PID:")) return status.replaceFirst("✅Working\\.PID:", "✅运行中.PID:");
+            if (status.equals("❌Library file not found!Please reinstall module!!!")) return traditional ? "❌找不到函式庫檔案！請重新安裝模組！" : "❌找不到库文件！请重新安装模块！";
+            if (status.equals("❌Native init failed!")) return traditional ? "❌原生程式初始化失敗！" : "❌原生库初始化失败！";
+            if (status.equals("❌Crashed!")) return traditional ? "❌程序已崩潰！" : "❌程序已崩溃！";
+            if (status.equals("❌Failed to read IPC pipe file")) return traditional ? "❌無法讀取 IPC 管道檔案" : "❌无法读取 IPC 管道文件";
+            if (status.equals("❌Failed to open IPC pipe file")) return traditional ? "❌無法開啟 IPC 管道檔案" : "❌无法打开 IPC 管道文件";
+            if (status.equals("❌Error on showing toast!")) return traditional ? "❌顯示提示時發生錯誤！" : "❌显示提示时发生错误！";
+            if (status.equals("❌Error on working,Exited")) return traditional ? "❌執行錯誤，程序已結束" : "❌运行错误，进程已退出";
+        }
+        return status;
     }
 
     private static void initSettingHotUpdateIpcListener() {
