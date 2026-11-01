@@ -8,7 +8,7 @@ const VibrationType = {
     KEY: 45,
     CONFIRM: 75
 }
-let isEnabledHotUpdate: boolean | null = null;
+let isEnabledHotUpdate: boolean | null | undefined = undefined;
 let isEnabledHaptic: boolean = true;
 export function useKsu() {
     const mock = !Reflect.has(window, "ksu");
@@ -16,7 +16,8 @@ export function useKsu() {
         console.warn("ipc mocking!");
         isEnabledHotUpdate = false;
     }
-    if (isEnabledHotUpdate === null) {
+    if (isEnabledHotUpdate === undefined) {
+        isEnabledHotUpdate = null
         exec("test -e /data/adb/toast_ipc && pidof SuToaster >/dev/null").then(result => {
             isEnabledHotUpdate = result.errno === 0;
         })
