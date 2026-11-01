@@ -15,16 +15,23 @@ interface BasePageProps {
 export default function BasePage({ setLanguage }: BasePageProps) {
     const languageContext = useContext(LanguageContext);
     return (
-        <div className="flex flex-col items-center">
-            <LanguageSelect setLanguage={setLanguage} languageContext={languageContext} />
-            <ThemeSelect />
-            <Separator className="mt-5" />
-            <ToastTextInput />
-            <LongTimeToastSetting />
-            <RootGrantVibrationSetting />
-            <Separator className="mt-5" />
-            <AutoDeleteLogSetting />
-            <WebHapticSetting />
+        <div className="settings-page">
+            <section className="settings-card settings-card-preferences">
+                <LanguageSelect setLanguage={setLanguage} languageContext={languageContext} />
+                <ThemeSelect />
+            </section>
+            <section className="settings-card settings-card-group">
+                <ToastTextInput />
+                <Separator />
+                <LongTimeToastSetting />
+                <Separator />
+                <RootGrantVibrationSetting />
+            </section>
+            <section className="settings-card settings-card-group">
+                <AutoDeleteLogSetting />
+                <Separator />
+                <WebHapticSetting />
+            </section>
         </div>
     )
 }
