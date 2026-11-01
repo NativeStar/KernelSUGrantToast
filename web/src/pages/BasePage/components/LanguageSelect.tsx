@@ -12,7 +12,7 @@ export default function LanguageSelect({ languageContext, setLanguage }: Languag
     const { getLang ,resetLanguage} = useI18n(languageContext);
     const {vibration}=useKsu();
     return (
-        <>
+        <div className="select-setting">
             <Label htmlFor="languageSelect">{getLang("language.label")}</Label>
             <Select value={languageContext} onValueChange={(value => {
                 vibration("KEY")
@@ -28,7 +28,7 @@ export default function LanguageSelect({ languageContext, setLanguage }: Languag
                 <SelectTrigger className="w-[90%] mt-1.5">
                     <SelectValue placeholder={getLang("language.select")} />
                 </SelectTrigger>
-                <SelectContent id="languageSelect">
+                <SelectContent id="languageSelect" className="compact-select-popup">
                     <SelectGroup>
                         <SelectLabel>{getLang("language.select")}</SelectLabel>
                         <SelectItem value="system">{getLang("text.followSystem")}</SelectItem>
@@ -39,6 +39,6 @@ export default function LanguageSelect({ languageContext, setLanguage }: Languag
                     </SelectGroup>
                 </SelectContent>
             </Select>
-        </>
+        </div>
     )
 }
