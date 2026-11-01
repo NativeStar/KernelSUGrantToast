@@ -1,7 +1,6 @@
 import { Alert } from "@/components/Alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import { FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { LanguageContext } from "@/contexts/LanguageContext";
@@ -21,7 +20,10 @@ export default function RootGrantVibrationSetting() {
     const [androidVersion, setAndroidVersion] = useState<number>(-1);
     useEffect(() => {
         getStringConfig("rootGrantVibrationTime").then(time => {
-            time && setVibrationTime(parseInt(time));
+            const parsedTime = time ? parseInt(time, 10) : 0;
+            if (Number.isFinite(parsedTime)) {
+                setVibrationTime(parsedTime);
+            }
         })
     }, []);
     useEffect(() => {
@@ -61,12 +63,12 @@ export default function RootGrantVibrationSetting() {
                 vibration("KEY")
                 setOpenDetailAlert(false)
             }} title={getLang("text.detail")} />
-            <div className="flex flex-col mt-2 items-center">
+            <div className="setting-vibration">
                 <FieldLabel className="mt-2">{getLang("toast.vibration.label")}</FieldLabel>
-                <ButtonGroup className="w-[70%]">
+                <div className="setting-input-actions">
                     <Input disabled={androidVersion < 12} type="number" value={vibrationTime} min={0} max={1000} onChange={e => setVibrationTime(parseInt(e.target.value))} className="placeholder:text-[11px] w-[70%]" placeholder={"0"} />
                     <Button variant="outline" onClick={saveTime}>{getLang("text.save")}</Button>
-                </ButtonGroup>
+                </div>
                 <FieldDescription className="flex items-center">
                     {getLang("toast.vibration.description")}
                     <Badge variant="ghost" onClick={() => {
