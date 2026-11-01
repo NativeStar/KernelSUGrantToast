@@ -32,8 +32,8 @@ export default function AutoDeleteLogSetting() {
                 vibration("KEY")
                 setOpenDetailAlert(false)
             }} title={getLang("text.detail")} />
-            <div className="flex flex-col items-center mt-2">
-                <div className="flex space-x-2.5">
+            <div className="setting-row">
+                <div className="setting-control-row">
                     <Switch onClick={onSwitchChange} checked={autoDeleteLog} id="autoDeleteLog" />
                     <Label htmlFor="autoDeleteLog">{getLang("autoDeleteLog.label")}
                         <Badge variant="ghost" onClick={(e) => {
