@@ -37,6 +37,9 @@ export function useKsu() {
             if (configKey === "packageSearchDepth") {
                 return "6"
             }
+            if (configKey === "customToastText" || configKey === "rootGrantVibrationTime") {
+                return null
+            }
             return "mocking"
         }
         const result = await exec(`export KSU_MODULE=ksuGrantToast&&/data/adb/ksud module config get ${configKey}`)
