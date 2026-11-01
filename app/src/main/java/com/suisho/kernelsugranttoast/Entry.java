@@ -231,7 +231,7 @@ public class Entry {
     private static String localizeModuleStatus(String status, Locale locale) {
         String language = locale.getLanguage();
         if ("ru".equals(language)) {
-            if (status.startsWith("✅Working.PID:")) return status.replaceFirst("✅Working\\.PID:", "✅Работает.ПИД:");
+            if (status.startsWith("✅Working.PID:")) return status.replaceFirst("✅Working\\.PID:", "✅Работает.PID:");
             if (status.equals("❌Library file not found!Please reinstall module!!!")) return "❌Файл библиотеки не найден! Переустановите модуль!";
             if (status.equals("❌Native init failed!")) return "❌Ошибка инициализации native!";
             if (status.equals("❌Crashed!")) return "❌Аварийное завершение!";
