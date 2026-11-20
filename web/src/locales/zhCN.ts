@@ -14,6 +14,7 @@ const SimplifiedChineseKeys = {
 
     "tabs.base": "基础",
     "tabs.ignorePackage": "忽略列表",
+    "tabs.audit": "审计",
     "tabs.advanced": "高级",
     "tabs.about": "关于",
 
@@ -51,6 +52,11 @@ const SimplifiedChineseKeys = {
     "ignorePackage.add.dialog.search.placeholder": "根据应用名或包名过滤",
     "ignorePackage.add.exist": "此应用已在列表中",
     "ignorePackage.showSystemApps.label": "显示系统应用",
+
+    "audit.tip.1":"在应用提权时记录审计日志",
+    "audit.tip.2":"审计日志会在设备重启时自动清空",
+    "audit.switch":"启用审计日志",
+    "audit.list.noData": "暂无审计日志",
 
     "autoDeleteLog.label": "自动删除日志",
     "autoDeleteLog.detail": "初始化完成后自动删除启动时生成的SuLog日志 可避免日志文件堆积占用存储 但可能不利于反馈异常(这些日志文件可能有用)",

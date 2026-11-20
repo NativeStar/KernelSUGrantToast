@@ -14,6 +14,7 @@ const EnglishKeys: typeof BaseLang = {
 
   "tabs.advanced": "Advanced",
   "tabs.ignorePackage": "Ignore List",
+  "tabs.audit": "Audit",
   "tabs.base": "Basic",
   "tabs.about": "About",
   "text.reset.success": "Restored default settings",
@@ -51,6 +52,11 @@ const EnglishKeys: typeof BaseLang = {
   "ignorePackage.add.dialog.search.placeholder": "Filter by app name or package name",
   "ignorePackage.add.exist": "This application is already in the list",
   "ignorePackage.showSystemApps.label": "Show System Applications",
+
+  "audit.tip.1": "Record audit logs when apps request superuser privileges",
+  "audit.tip.2": "Audit logs are automatically cleared when the device restarts",
+  "audit.switch": "Enable Audit Logs",
+  "audit.list.noData": "No audit logs yet",
 
   "autoDeleteLog.label": "Auto-delete logs",
   "autoDeleteLog.detail": "Automatically delete SuLog logs generated during startup after initialization is complete. This can prevent log files from piling up and taking up storage, but may make it harder to report issues because these log files may be useful.",

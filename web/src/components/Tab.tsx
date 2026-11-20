@@ -5,6 +5,7 @@ import { Spinner } from "@/components/ui/spinner"
 import type SupportedLangs from "@/locales/SupportedLangs";
 import BasePage from "@/pages/BasePage/BasePage";
 import { useContext, lazy, Suspense, useEffect } from "react";
+import AuditPage from "@/pages/AuditPage/AuditPage";
 interface TabProps {
     setLanguage: (language: keyof typeof SupportedLangs) => void;
 }
@@ -29,6 +30,7 @@ export function Tab({ setLanguage }: TabProps) {
             <TabsList variant="line" className="w-full overflow-x-auto">
                 <TabsTrigger value="base">{getLang("tabs.base")}</TabsTrigger>
                 <TabsTrigger value="ignorePackage">{getLang("tabs.ignorePackage")}</TabsTrigger>
+                <TabsTrigger value="audit">{getLang("tabs.audit")}</TabsTrigger>
                 <TabsTrigger value="advanced">{getLang("tabs.advanced")}</TabsTrigger>
                 <TabsTrigger value="about">{getLang("tabs.about")}</TabsTrigger>
             </TabsList>
@@ -38,6 +40,11 @@ export function Tab({ setLanguage }: TabProps) {
             <TabsContent value="ignorePackage" className="min-h-0">
                 <Suspense fallback={<Spinner className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12" />}>
                     <IgnorePackagePage />
+                </Suspense>
+            </TabsContent>
+            <TabsContent value="audit" className="min-h-0">
+                <Suspense fallback={<Spinner className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12" />}>
+                    <AuditPage />
                 </Suspense>
             </TabsContent>
             <TabsContent value="advanced">

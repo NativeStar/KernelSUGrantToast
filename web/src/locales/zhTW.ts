@@ -15,6 +15,7 @@ const TraditionalChineseKeys: typeof BaseLang = {
 
     "tabs.base": "基本",
     "tabs.ignorePackage": "忽略清單",
+    "tabs.audit": "稽核",
     "tabs.advanced": "進階",
     "tabs.about": "關於",
 
@@ -51,6 +52,11 @@ const TraditionalChineseKeys: typeof BaseLang = {
     "ignorePackage.add.dialog.search.placeholder": "依應用程式名稱或套件名稱篩選",
     "ignorePackage.add.exist": "此應用程式已在清單中",
     "ignorePackage.showSystemApps.label": "顯示系統應用程式",
+
+    "audit.tip.1": "在應用程式提權時記錄稽核日誌",
+    "audit.tip.2": "稽核日誌會在裝置重新啟動時自動清空",
+    "audit.switch": "啟用稽核日誌",
+    "audit.list.noData": "暫無稽核日誌",
 
     "autoDeleteLog.label": "自動刪除日誌",
     "autoDeleteLog.detail": "初始化完成後自動刪除啟動時產生的 SuLog 日誌，可避免日誌檔案堆積占用儲存空間，但可能不利於回報異常（這些日誌檔案可能有用）",

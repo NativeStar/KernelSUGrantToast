@@ -16,9 +16,10 @@ public class SettingArguments {
     public final boolean longTimeToast;
     public final short toastCooldownTime;
     public final short rootGrantVibrationTime;
+    public final boolean enableAuditLog;
 
 
-    public SettingArguments(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLogs, String customToastText, boolean longTimeToast, short toastCooldownTime, short rootGrantVibrationTime) {
+    public SettingArguments(short packageSearchDepth, boolean autoDeleteLog, boolean enableDebugLogs, String customToastText, boolean longTimeToast, short toastCooldownTime, short rootGrantVibrationTime, boolean enableAuditLog) {
         this.packageSearchDepth = packageSearchDepth;
         this.autoDeleteLog = autoDeleteLog;
         this.enableDebugLogs = enableDebugLogs;
@@ -26,6 +27,7 @@ public class SettingArguments {
         this.longTimeToast = longTimeToast;
         this.toastCooldownTime = toastCooldownTime;
         this.rootGrantVibrationTime = rootGrantVibrationTime;
+        this.enableAuditLog = enableAuditLog;
 
     }
 
@@ -37,6 +39,7 @@ public class SettingArguments {
         String customToastText = Messages.getLocaleMessage();
         short toastCooldownTime = 3;
         short rootGrantVibrationTime = 0;
+        boolean enableAuditLog = false;
         //自定义提示文本
         String tempCustomText = Util.getModuleConfig("customToastText", String.class);
         if(tempCustomText != null && Util.checkConfigConfigValueValid("customToastText", tempCustomText)) {
@@ -117,6 +120,14 @@ public class SettingArguments {
                 Log.w(Entry.TAG, "Invalid root grant vibration time setting!");
             }
         }
-        return new SettingArguments(packageSearchDepth, autoDeleteLog, enableDebugLogs, customToastText, longTimeToast, toastCooldownTime, rootGrantVibrationTime);
+        Boolean rawEnableAuditLog = Util.getModuleConfig("enableAuditLog", Boolean.class);
+        if(rawEnableAuditLog != null) {
+            Log.i(Entry.TAG, "Found audit log setting");
+            enableAuditLog = rawEnableAuditLog;
+            Log.i(Entry.TAG, "Set audit log to " + enableAuditLog);
+        } else {
+            Log.w(Entry.TAG, "Invalid audit log setting");
+        }
+        return new SettingArguments(packageSearchDepth, autoDeleteLog, enableDebugLogs, customToastText, longTimeToast, toastCooldownTime, rootGrantVibrationTime, enableAuditLog);
     }
 }

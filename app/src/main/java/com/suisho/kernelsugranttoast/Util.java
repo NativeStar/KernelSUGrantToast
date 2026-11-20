@@ -38,10 +38,11 @@ public class Util {
                 } catch (NumberFormatException numberFormatException) {
                     yield false;
                 }
-                //boolean系列
+                //boolean大家族
             case "autoDeleteLog":
             case "enableDebugLog":
             case "longTimeToast":
+            case "enableAuditLog":
                 yield value.equals("true") || value.equals("false");
             default:
                 yield false;

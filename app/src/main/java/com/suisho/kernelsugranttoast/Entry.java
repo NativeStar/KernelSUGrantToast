@@ -18,12 +18,15 @@ import com.suisho.kernelsugranttoast.object.SettingArguments;
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
@@ -32,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 
 
 public class Entry {
-    private static final Set<String> allowedSettingKeys = new HashSet<>(Arrays.asList("customToastText", "ignorePackageNames", "packageSearchDepth", "longTimeToast", "internalToastCooldown", "rootGrantVibrationTime"));
+    private static final Set<String> allowedSettingKeys = new HashSet<>(Arrays.asList("customToastText", "ignorePackageNames", "packageSearchDepth", "longTimeToast", "internalToastCooldown", "rootGrantVibrationTime", "enableAuditLog"));
     public static final String TAG = "KernelSuGrantToast";
     private static Context systemContext;
     private static Handler handler;
@@ -43,9 +46,11 @@ public class Entry {
     //缓存应用名 避免每次都走PackageManager
     private static final LruCache<String, String> appNameCache = new LruCache<>(32);
     private static String customToastText = Messages.getLocaleMessage();
+    private static BufferedWriter auditLogWriter;
     private static final HashSet<String> ignorePackageList = new HashSet<>();
     private static int toastShowTime = Toast.LENGTH_SHORT;
     private static short grantVibrationTime = 0;
+    private static boolean enableAuditLog = true;
 
     @SuppressLint("UnsafeDynamicallyLoadedCode")
     public static void main(String[] args) {
@@ -54,10 +59,11 @@ public class Entry {
             return;
         }
         try {
-            SettingArguments tmpArgs = SettingArguments.initSettings(args, ignorePackageList);
-            customToastText = tmpArgs.customToastText;
-            toastShowTime = tmpArgs.longTimeToast ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
-            grantVibrationTime = tmpArgs.rootGrantVibrationTime;
+            SettingArguments settings = SettingArguments.initSettings(args, ignorePackageList);
+            customToastText = settings.customToastText;
+            toastShowTime = settings.longTimeToast ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
+            grantVibrationTime = settings.rootGrantVibrationTime;
+            enableAuditLog = settings.enableAuditLog;
             HiddenApiBypass.addHiddenApiExemptions("Landroid/app/ActivityThread;");
             if(Looper.getMainLooper() == null) Looper.prepareMainLooper();
             @SuppressLint("PrivateApi") Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
@@ -75,11 +81,12 @@ public class Entry {
             //确定没有崩掉再加载
             //app_process没法加载内置so
             System.load(libraryFile.getAbsolutePath());
-            if(!jniInit(tmpArgs.packageSearchDepth, tmpArgs.autoDeleteLog, tmpArgs.enableDebugLogs, tmpArgs.toastCooldownTime)) {
+            if(!jniInit(settings.packageSearchDepth, settings.autoDeleteLog, settings.enableDebugLogs, settings.toastCooldownTime)) {
                 onInitFailed("Native init failed!");
                 System.exit(1);
                 return;
             }
+            initAuditLogFile();
             modifyModuleDescription(String.format(Locale.getDefault(), "✅Working.PID:%d", Process.myPid()));
             initSettingHotUpdateIpcListener();
             //降权 不然就是java.lang.SecurityException: Package android is not owned by uid 0
@@ -126,11 +133,13 @@ public class Entry {
             String cachedAppName = appNameCache.get(packageName);
             if(cachedAppName != null) {
                 showToast(cachedAppName);
+                writeAuditLog(packageName);
                 return;
             }
             ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
             String appName = appInfo.loadLabel(packageManager).toString();
             appNameCache.put(packageName, appName);
+            writeAuditLog(packageName);
             showToast(appName);
         } catch (PackageManager.NameNotFoundException e) {
             Log.w(TAG, "Failed to get app info", e);
@@ -159,11 +168,13 @@ public class Entry {
             String cachedAppName = appNameCache.get(packageName);
             if(cachedAppName != null) {
                 showToast(cachedAppName);
+                writeAuditLog(packageName);
                 return;
             }
             ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
             String appName = appInfo.loadLabel(packageManager).toString();
             appNameCache.put(packageName, appName);
+            writeAuditLog(packageName);
             showToast(appName);
         } catch (PackageManager.NameNotFoundException e) {
             Log.w(TAG, "Failed to get app info", e);
@@ -200,6 +211,39 @@ public class Entry {
             changeDescriptorProcess.destroyForcibly();
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "Failed to modify module description", e);
+        }
+    }
+
+    private static void initAuditLogFile() {
+        try {
+            File auditFile = new File("/data/adb/ksu/log/su_audit.log");
+            //只保留本次启动的日志
+            if(auditFile.exists() && !auditFile.delete()) {
+                Log.w(TAG, "Failed to delete old su audit log file");
+            }
+            if(!new File("/data/adb/ksu/log/").mkdirs()) {
+                Log.w(TAG, "Failed to ensure KernelSU log directory");
+            }
+            auditLogWriter = Files.newBufferedWriter(auditFile.toPath(), StandardCharsets.UTF_8, StandardOpenOption.APPEND, StandardOpenOption.CREATE);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to init su audit log file", e);
+        }
+    }
+
+    private static void writeAuditLog(String packageName) {
+        if(!enableAuditLog) {
+            return;
+        }
+        if(auditLogWriter == null) {
+            Log.w(TAG, "Audit log writer is null,skip write log!");
+            return;
+        }
+        try {
+            auditLogWriter.write(String.format(Locale.US, "%d\t%s", System.currentTimeMillis(), packageName));
+            auditLogWriter.newLine();
+            auditLogWriter.flush();
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to write to su audit log file", e);
         }
     }
 
@@ -296,6 +340,10 @@ public class Entry {
                         case "rootGrantVibrationTime":
                             grantVibrationTime = Short.parseShort(splitMessage[1]);
                             Log.i(TAG, "Root grant vibration time updated");
+                            break;
+                        case "enableAuditLog":
+                            enableAuditLog = Boolean.parseBoolean(splitMessage[1]);
+                            Log.i(TAG, "Enable audit log updated");
                             break;
                         default:
                             //autoDeleteLog没有热更新的意义

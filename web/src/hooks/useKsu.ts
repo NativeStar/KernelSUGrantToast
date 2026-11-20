@@ -1,5 +1,5 @@
 import { shellQuote } from "@/lib/utils";
-import type { ModuleInfo } from "@/types";
+import type { ModuleInfo, PackageInfo } from "@/types";
 import { exec, listPackages, getPackagesInfo, spawn, moduleInfo } from "kernelsu"
 import { useCallback } from "react"
 import { NotHotUpdateConfigKeys } from "@/const/NotHotUpdateConfigKeys";
@@ -10,6 +10,7 @@ const VibrationType = {
 }
 let isEnabledHotUpdate: boolean | null | undefined = undefined;
 let isEnabledHaptic: boolean = true;
+const packageInfoCache = new Map<string, PackageInfo>();
 export function useKsu() {
     const mock = !Reflect.has(window, "ksu");
     if (mock) {
@@ -97,7 +98,7 @@ export function useKsu() {
             }
         })
     }, []);
-    const getPackageInfo = useCallback(async (packages: string[]) => {
+    const getPackageInfo = useCallback(async (pkgName: string[] | string, useCache: boolean = true) => {
         if (mock) {
             const temp = [];
             for (let i = 0; i < 5; i++) {
@@ -108,8 +109,16 @@ export function useKsu() {
             }
             return temp;
         }
+        // 缓存只在查询单个包时生效
+        if (typeof pkgName === "string" && useCache && packageInfoCache.has(pkgName)) {
+            return [packageInfoCache.get(pkgName)!];
+        }
         try {
-            const packagesInfo = getPackagesInfo(packages);
+            const packagesInfo = getPackagesInfo(typeof pkgName === "string" ? [pkgName] : pkgName);
+            // 缓存数据
+            if (typeof pkgName === "string" && packagesInfo.length > 0) {
+                packageInfoCache.set(pkgName, { packageName: packagesInfo[0].packageName, name: packagesInfo[0].appLabel ?? packagesInfo[0].packageName });
+            }
             return packagesInfo.map(info => {
                 return {
                     packageName: info.packageName,
@@ -161,7 +170,13 @@ export function useKsu() {
         const parsedVersion = parseFloat(rawVersion)
         return isNaN(parsedVersion) ? -1 : parsedVersion;
     }, []);
-    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration, getVersion, showDebugToast, isModuleProcessAvailable, setEnableHaptic, getEnableHaptic, getAndroidVersion }
+    const readFile = useCallback(async (path: string) => {
+        if (mock) return "1\tcom.example.app\n6666666666\tcom.example.app\n"
+        const result = await exec(`cat ${path}`)
+        if (result.errno !== 0) return "";
+        return result.stdout;
+    }, [])
+    return { getStringConfig, getBooleanConfig, setConfig, deleteConfig, listAllPackages, getPackageInfo, openUrl, vibration, getVersion, showDebugToast, isModuleProcessAvailable, setEnableHaptic, getEnableHaptic, getAndroidVersion, readFile }
 }
 export function isEnabledHotUpdateConfig() {
     return isEnabledHotUpdate ?? false;
