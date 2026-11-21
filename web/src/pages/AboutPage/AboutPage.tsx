@@ -4,18 +4,20 @@ import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import { useI18n } from "@/hooks/useI18n";
-import { GitBranch } from "lucide-react";
+import { GitBranch, HandHeart } from "lucide-react";
 import { useContext, useState } from "react";
 import ProjectItem from "./components/ProjectItem";
 import ProjectsList from "./projects"
 import { useKsu } from "@/hooks/useKsu";
 import { Alert } from "@/components/Alert";
 import ChineseKeys from "@/const/ChineseKeys"
+import EnvelopeAlert from "./components/EnvelopeAlert";
 
 export default function AboutPage() {
     const language = useContext(LanguageContext);
     const { getLang } = useI18n(language);
     const [openEasterEggAlert, setOpenEasterEggAlert] = useState(false);
+    const [openEnvelopeAlert, setOpenEnvelopeAlert] = useState(false);
     const { openUrl, vibration, getVersion } = useKsu();
     const versionInfo = getVersion();
     return (
@@ -24,6 +26,7 @@ export default function AboutPage() {
                 vibration("KEY")
                 setOpenEasterEggAlert(false)
             }} />
+            <EnvelopeAlert open={openEnvelopeAlert} setOpen={setOpenEnvelopeAlert} />
             <div className="flex flex-col items-center">
                 <h3 className="text-2xl text-center">KernelSU Grant Toast</h3>
                 <span>{getLang("about.description")}</span>
@@ -38,6 +41,17 @@ export default function AboutPage() {
                     <GitBranch />
                     {getLang("about.button.repository")}
                 </Button>
+                {/* 仅对简体中文用户展示 */}
+                {/* 懒得走i18n了 */}
+                {language === "zh-CN" && (
+                    <Button className="mt-2 w-[70%]" variant={"secondary"} onClick={() => {
+                        vibration("CONFIRM")
+                        setOpenEnvelopeAlert(true)
+                    }}>
+                        <HandHeart />
+                        支持作者(免费)
+                    </Button>
+                )}
                 <Separator className="mt-2" />
                 <FieldDescription className="mt-2">
                     {getLang("about.otherProjects.title")}
