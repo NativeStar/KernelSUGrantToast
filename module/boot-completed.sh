@@ -1,6 +1,9 @@
 #!/system/bin/sh
 KSUD=/data/adb/ksud
 export KSU_MODULE=ksuGrantToast
+#软重启时这个脚本会执行两次
+exec 9>/data/adb/toast_boot.lock
+flock -n 9 || exit 0
 #接管功能
 #一直接管会导致功能被彻底关闭 日志数据也随之消失
 # 临时释放一下让他能启动 后续恢复管理阻止改设置
@@ -11,12 +14,10 @@ sleep 1
 
 "$KSUD" module config set manage.sulog true
 #杀死旧进程 修复软重启后崩溃
-oldProcessPid=$(pidof SuToaster)
-if [ "$oldProcessPid" ]; then
-  kill -9 "$oldProcessPid"
-fi
+kill -9 $(pidof SuToaster) 2>/dev/null
 #创建ipc管道
 rm  -f /data/adb/toast_ipc
 mkfifo /data/adb/toast_ipc
 "$KSUD" module config set --temp override.description "[Booting...]Show a root granted toast like Magisk."
+exec 9>&-
 exec /system/bin/app_process -Djava.class.path=./daemon.dex / --nice-name=SuToaster com.suisho.kernelsugranttoast.Entry

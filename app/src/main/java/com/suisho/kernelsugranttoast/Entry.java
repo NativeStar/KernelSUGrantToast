@@ -100,12 +100,12 @@ public class Entry {
             Log.i(TAG, "Init success!");
             Looper.loop();
         } catch (Throwable e) {
-            Log.e(TAG, "Crashed!", e);
+            Log.e(TAG, "Daemon Crashed!", e);
             //重新提权 否则无法执行ksud
             if(Process.myUid() != 0) {
                 jniSetUid(0);
             }
-            onInitFailed("Crashed!");
+            onInitFailed("Daemon Crashed!");
             systemContext = null;
             System.exit(1);
         }
