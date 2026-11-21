@@ -1,3 +1,26 @@
+### 2.5
+新增"审计"功能 当弹出提权提醒时写入日志 可在WebUI中查看(相比原始SuLog日志更简单 普通人可以很轻松的阅读 代价是丢失大量信息)
+
+新增俄语翻译by [LegacyFreeman](https://github.com/LegacyFreeman)
+
+尝试优化WebUI启动速度
+
+修复软重启后低概率触发模块描述异常
+
+微调WebUI部分页面的布局
+
+Added an "Audit" feature that records an audit log whenever a privilege grant toast is shown; the
+log can be viewed in the WebUI (it is simpler than the original SuLog logs and easy for ordinary
+users to read, at the cost of losing a lot of information).
+
+Added Russian translation by [LegacyFreeman](https://github.com/LegacyFreeman).
+
+Attempted to optimize WebUI startup speed.
+
+Fixed a module description anomaly that could rarely occur after a soft reboot.
+
+Fine-tuned the layout of some WebUI pages.
+
 ### 2.4
 重写初始化时加载配置的方式
 
